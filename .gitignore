@@ -1,0 +1,7 @@
+*.log
+*.swp
+.project
+.settings
+*.jar
+*.class
+
