@@ -7,7 +7,7 @@ import java.util.*;
  * Plugin do pobierania z Demotywatorow
  * @author pmikos (sokar92)
  */
-public class DemotywatoryDownPlugin : IDownloadPlugin {
+public class DemotywatoryDownPlugin implements IDownloadPlugin {
 	private static String _workingUrl = "www.demotywatory.pl";
 	private Map<String, object> _properties;
 	
