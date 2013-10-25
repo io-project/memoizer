@@ -5,3 +5,8 @@
 *.jar
 *.class
 
+/target
+.classpath
+*.zip
+*.rar
+*.tar
