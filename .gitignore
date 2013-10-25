@@ -4,4 +4,4 @@
 .settings
 *.jar
 *.class
-
+!bin/memoizer.jar

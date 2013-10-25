@@ -13,14 +13,12 @@ import javax.swing.JToggleButton;
 import java.awt.image.BufferedImage;
 import java.net.URL;
 
-import javax.swing.UIManager;
 import javax.swing.Box;
 
 import java.awt.Component;
 import java.awt.Desktop;
 
 
-//import org.eclipse.wb.swing.FocusTraversalOnArray;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JTextArea;
 
@@ -55,11 +53,13 @@ public class JImagePanel extends JPanel {
 		horizontalBox.add(horizontalGlue);
 		
 		JToggleButton toggleButton = new JToggleButton("★");//star: ★
+		
 		//toggleButton.setBorder(null);
-		toggleButton.setIconTextGap(0);
 		//toggleButton.setIcon(new ImageIcon(JImagePanel.class.getResource("/resources/non-starred.png")));
 		//toggleButton.setSelectedIcon(new ImageIcon(JImagePanel.class.getResource("/resources/starred.png")));
+		
 		toggleButton.setAlignmentX(Component.RIGHT_ALIGNMENT);
+		toggleButton.setIconTextGap(0);
 		horizontalBox.add(toggleButton);
 		toggleButton.setFont(new Font("Dialog", Font.BOLD, 20));
 		
@@ -70,19 +70,22 @@ public class JImagePanel extends JPanel {
 			JTextArea description = new JTextArea();
 			description.setWrapStyleWord(true);
 			description.setLineWrap(true);
-			description.setBackground(UIManager.getColor("Viewport.background"));
+			description.setOpaque(false);
 			description.setEditable(false);
 			description.setText(content.getDescription());
 			add(description);
 		}
 		
+		/**
+		 * TODO Zamienić na border
+		 */
 		Component verticalStrut_1 = Box.createVerticalStrut(6);
 		add(verticalStrut_1);
 		
 		/**
-		 * TODO W przypadku problemu z pobraniem obrazka, dodać jakiś placeholder
+		 * TODO W przypadku problemu z pobraniem obrazka, dodać jakiś placeholder 
 		 * TODO Po kliknięciu w obrazek zrobić reload
-		 * 
+		 * TODO Dodać resizowanie w przypadku gdy obrazek jest za duży, /wtedy po kliknięciu w niego powinien się powiększyć/
 		 */
 		if(content.getImageUrl()!=null){
 			JLabel image = new JLabel("");
@@ -108,14 +111,17 @@ public class JImagePanel extends JPanel {
 			add(image);
 		}
 
-		//Wspomagający panel dla linków, lików, itp.
+		//Wspomagający panel dla linków, likeów, itp.
 		JPanel panel = new JPanel();
 		FlowLayout flowLayout = (FlowLayout) panel.getLayout();
 		flowLayout.setAlignment(FlowLayout.LEADING);
+		panel.setOpaque(false);
 		add(panel);
 		
 		if(content.getUrl()!=null){
 			JLabel browserLink = new JLabel("<HTML><A HREF=\"\">open in browser</A></HTML>");
+			
+			//Listener otwierający stronę z obrazkiem w domyślej przeglądarce
 			browserLink.addMouseListener(new MouseAdapter() {
 				@Override
 				public void mouseClicked(MouseEvent ev) {

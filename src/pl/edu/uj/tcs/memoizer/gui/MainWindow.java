@@ -18,7 +18,6 @@ import javax.swing.JSeparator;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.Scrollable;
 import javax.swing.SwingUtilities;
-import javax.swing.border.BevelBorder;
 import javax.swing.JLabel;
 import javax.swing.ImageIcon;
 import javax.swing.SwingConstants;
@@ -35,15 +34,16 @@ import javax.swing.JButton;
 import javax.swing.Box;
 
 import java.awt.Font;
-
 import java.awt.Insets;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 
 public class MainWindow {
 	
 	/**
 	 * TODO utrzymywanie wysokości przy resizowaniu okna
-	 * 
+	 * TODO Niewypisywać debugów na stdout
 	 */
 	@SuppressWarnings("serial")
 	private class ScrollablePanel extends JPanel implements Scrollable{
@@ -111,7 +111,6 @@ public class MainWindow {
 		frmMemoizer.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		final JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setViewportBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		frmMemoizer.getContentPane().add(scrollPane, BorderLayout.CENTER);
 		
@@ -140,6 +139,8 @@ public class MainWindow {
 			panelInner.add(x);
 		}
 		
+		
+		/* Testowa implementacja infinityScroll'a */
 		scrollPane.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener(){
 			@Override
 			public void adjustmentValueChanged(AdjustmentEvent ae) {
@@ -159,6 +160,10 @@ public class MainWindow {
 					        	executorService.execute(new Runnable() {
 					        	    public void run() {
 					        	        System.out.println("Asynchronous task");
+					        	        
+					        	        /** 
+					        	         * TODO Dodać ładowanie więcej niż jednego obrazka 
+					        	         */ 
 					        	        final JImagePanel imagePanel = new JImagePanel(contentToShow);
 					        	       
 		
@@ -259,16 +264,85 @@ public class MainWindow {
 		Component horizontalGlue = Box.createHorizontalGlue();
 		menuBar.add(horizontalGlue);
 		
-		JButton button = new JButton("«");
-		button.setMargin(new Insets(0, 8, 0, 8));
-		button.setFont(new Font("Dialog", Font.BOLD, 20));
-		button.setHorizontalAlignment(SwingConstants.RIGHT);
-		menuBar.add(button);
+		JButton buttonPrevImage = new JButton("«");
+		buttonPrevImage.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ev) {
+				/** 
+				 * TODO add TreeLock more at javadoc
+				 * TODO Lepsze sprawdzanie IndexOutOfBoundException zamiast try/catch
+				 * TODO Sprawdzić w czy "get nth component" nie działa w czasie O(n) 
+				 */
+				int a = -1, b = panelInner.getComponentCount()-1;
+				int Y = scrollPane.getVerticalScrollBar().getValue();
+				//Szukamy największego n takiego ze Y(nth component)<Y;
+				while(a<b){
+					int s = (a+b+1)/2;
+					if(panelInner.getComponent(s).getLocation().y>=Y)
+						b = s-1;
+					else
+						a = s;
+					System.out.println(a+" "+b);
+				}
+				
+				try{
+					while(a>=0&&panelInner.getComponent(a).getClass()!=JImagePanel.class)
+						a--;
+					if(a<0)a=0;
+					
+					System.out.println("BinarySearch result: "+a+" -> "+panelInner.getComponent(a).getClass());
+					//panelInner.getComponent(a).setBackground(Color.BLACK);
+					scrollPane.getVerticalScrollBar().setValue(panelInner.getComponent(a).getLocation().y);//scroll to next image
+				}catch(Exception e){
+					e.printStackTrace();
+				}
+			}
+		});
 		
-		JButton button_1 = new JButton("»");
-		button_1.setMargin(new Insets(0, 8, 0, 8));
-		button_1.setFont(new Font("Dialog", Font.BOLD, 20));
-		menuBar.add(button_1);
+		buttonPrevImage.setMargin(new Insets(0, 8, 0, 8));
+		buttonPrevImage.setFont(new Font("Dialog", Font.BOLD, 20));
+		buttonPrevImage.setHorizontalAlignment(SwingConstants.RIGHT);
+		menuBar.add(buttonPrevImage);
+		
+		
+		JButton buttonNextImage = new JButton("»");
+		buttonNextImage.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ev) {
+				/**
+				 * TODO add TreeLock more at javadoc 
+				 * TODO Dodać jakieś lepsze sprawdzanie IndexOutOfBoundException zamiast try
+				 * TODO Rozwiązać problem z tym gdy dochodzimy do konca strony i nie można bardziej zescrollować strony
+				 * TODO Sprawdzić w czy "get nth component" nie działa w czasie O(n)
+				 */
+				int a = 0, b = panelInner.getComponentCount();
+				int Y = scrollPane.getVerticalScrollBar().getValue();
+				//Szukamy najmniejszego n takiego ze Y(nth component)>Y;
+				while(a<b){
+					int s = (a+b)/2;
+					if(panelInner.getComponent(s).getLocation().y<=Y)
+						a = s+1;
+					else
+						b = s;
+					System.out.println(a+" "+b);
+				}
+				
+				try{
+					while(a<panelInner.getComponentCount()&&panelInner.getComponent(a).getClass()!=JImagePanel.class)
+						a++;
+					if(a>=panelInner.getComponentCount())
+						a=panelInner.getComponentCount()-1;
+					
+					System.out.println("BinarySearch result: "+a+" -> "+panelInner.getComponent(a).getClass());
+					//panelInner.getComponent(a).setBackground(Color.BLACK);
+					scrollPane.getVerticalScrollBar().setValue(panelInner.getComponent(a).getLocation().y);//scroll to next image
+				}catch(Exception e){
+					e.printStackTrace();
+				}
+			}
+		});
+		
+		buttonNextImage.setMargin(new Insets(0, 8, 0, 8));
+		buttonNextImage.setFont(new Font("Dialog", Font.BOLD, 20));
+		menuBar.add(buttonNextImage);
 	}
 
 }
