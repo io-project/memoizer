@@ -9,7 +9,7 @@ import java.lang.*;
 public interface IDownloadPlugin extends IPlugin {
 	
 	/*
-	 * Returns all records since last visit on page
+	 * Zwraca wszystkei memy od odstatniego update'a
 	 */
-	public Iterable<Record> getRecordsSinceLast();
+	public Iterable<MemeInfo> getRecordsSinceLast();
 }
