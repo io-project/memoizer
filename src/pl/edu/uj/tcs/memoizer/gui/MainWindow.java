@@ -1,4 +1,5 @@
 package pl.edu.uj.tcs.memoizer.gui;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Rectangle;
@@ -37,6 +38,8 @@ import java.awt.Font;
 import java.awt.Insets;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 
 
 public class MainWindow {
@@ -106,6 +109,7 @@ public class MainWindow {
 	 */
 	private void initialize() {
 		frmMemoizer = new JFrame();
+		
 		frmMemoizer.setTitle("Memoizer");
 		frmMemoizer.setBounds(100, 100, 600, 500);
 		frmMemoizer.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -123,13 +127,25 @@ public class MainWindow {
 		panelOutter.add(panelInner);
 		panelInner.setLayout(new BoxLayout(panelInner, BoxLayout.Y_AXIS));
 		
-		JLabel lblSpinner = new JLabel("");
+		final JLabel lblSpinner = new JLabel("");
+		lblSpinner.setPreferredSize(new Dimension(100, 600));
+		lblSpinner.setBackground(Color.BLACK);
 		lblSpinner.setAlignmentX(Component.CENTER_ALIGNMENT);
+		lblSpinner.setAlignmentY(Component.TOP_ALIGNMENT);
 		lblSpinner.setBorder(new EmptyBorder(10, 0, 10, 0));
 		lblSpinner.setHorizontalTextPosition(SwingConstants.CENTER);
+		lblSpinner.setVerticalAlignment(SwingConstants.TOP);
 		panelOutter.add(lblSpinner, BorderLayout.SOUTH);
 		lblSpinner.setHorizontalAlignment(SwingConstants.CENTER);
 		lblSpinner.setIcon(new ImageIcon(this.getClass().getResource("/resources/ajax-loader.gif")));
+		
+		frmMemoizer.addComponentListener(new ComponentAdapter() {
+			@Override
+			public void componentResized(ComponentEvent e) {
+				System.out.println(scrollPane.getSize());
+				lblSpinner.setPreferredSize(scrollPane.getSize());
+			}
+		});
 		
 		for(int i=0;i<1;i++){
 			JImagePanel imagePanel = new JImagePanel();
@@ -146,7 +162,7 @@ public class MainWindow {
 			public void adjustmentValueChanged(AdjustmentEvent ae) {
 		        int extent = scrollPane.getVerticalScrollBar().getModel().getExtent();
 		        
-		        if(scrollPane.getVerticalScrollBar().getValue()+extent+40>scrollPane.getVerticalScrollBar().getMaximum()){
+		        if(scrollPane.getVerticalScrollBar().getValue()+extent+lblSpinner.getHeight()>scrollPane.getVerticalScrollBar().getMaximum()){
 		        	
 		        	/**
 		        	 * TODO zabezpieczyć na wypadek sigfaulta w workerze
