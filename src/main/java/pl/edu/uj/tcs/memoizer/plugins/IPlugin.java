@@ -22,10 +22,10 @@ public interface IPlugin {
 	/*
 	 * Pobiera mape wlasciwosci pluginu
 	 */
-	public Map<String, object> getProperties();
+	public Map<String, Object> getProperties();
 	
 	/*
 	 * Ustawia mape wlasciwosci pluginu
 	 */
-	public void setProperties(Map<String, object> properties);
+	public void setProperties(Map<String, Object> properties);
 }
