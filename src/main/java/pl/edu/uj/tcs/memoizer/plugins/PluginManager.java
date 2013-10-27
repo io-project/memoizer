@@ -5,5 +5,5 @@ package pl.edu.uj.tcs.memoizer.plugins;
  * @author pmikos (sokar92)
  */
 public class PluginManager {
-	
+
 }

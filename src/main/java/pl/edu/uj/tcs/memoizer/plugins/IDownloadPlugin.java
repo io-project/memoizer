@@ -1,6 +1,5 @@
 package pl.edu.uj.tcs.memoizer.plugins;
 
-import java.lang.*;
 
 /*
  * Interfejs opisujacy pluginy do pobierania memow
