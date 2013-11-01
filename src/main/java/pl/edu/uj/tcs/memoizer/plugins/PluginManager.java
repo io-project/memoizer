@@ -16,18 +16,31 @@ public class PluginManager {
 	private Set<String> _directories;
 	private List<IPlugin> _plugins;
 	
+	/*
+	 * Instantiates new Plugin Manager
+	 */
 	public PluginManager(){
 		_directories = new HashSet<String>();
 	}
 	
+	/*
+	 * Add new plugin folder to set
+	 */
 	public void addPluginDirectory(String dir){
 		_directories.add(dir);
 	}
 	
+	/*
+	 * Clear Plugin Directories Set
+	 */
 	public void clearPluginDirectories(){
 		_directories = new HashSet<String>();
 	}
 	
+	/*
+	 * Loads plugins from directories defined in
+	 * Plugin Directories Set
+	 */
 	public void loadPlugins(){
 		_plugins = new ArrayList<IPlugin>();
 		
@@ -40,6 +53,19 @@ public class PluginManager {
 		}
 	}
 	
+	/*
+	 * Returns list of loaded plugins.
+	 * Every loaded plugin is an instance of basic IPlugin interface
+	 */
+	public List<IPlugin> getLoadedPlugins(){
+		return _plugins;
+	}
+	
+	/*
+	 * Recursively finds all *.jar files in folder tree
+	 * starting from rootDir
+	 * Result: list of found jar files (their absolute paths)
+	 */
 	private static List<String> findJars(File rootDir){
 		List<String> lst = new ArrayList<String>();
 		
@@ -65,9 +91,16 @@ public class PluginManager {
 		return lst;
 	}
 	
+	/*
+	 * Loads all classes implementing IPlugin from jar file
+	 * Result: list of plugin instances
+	 */
 	private static List<IPlugin> loadPluginsFromJar(String jarName){
 		List<IPlugin> list = new ArrayList<IPlugin>();
 		String pkg = "pl.edu.uj.tcs.memoizer.plugins.impl";
+		
+		if(jarName == null)
+			return list;
 		
 		JarInputStream jarFile = null;
 		JarEntry jarEntry = null;
