@@ -3,13 +3,18 @@ package pl.edu.uj.tcs.memoizer.plugins;
 import java.lang.*;
 
 /*
- * Interfejs opisujacy pluginy do pobierania memow
+ * Interface implemented by download plugin
  * @author pmikos (sokar92)
  */
 public interface IDownloadPlugin extends IPlugin {
 	
 	/*
-	 * Zwraca wszystkei memy od odstatniego update'a
+	 * Returns all memes since last update
 	 */
 	public Iterable<MemeInfo> getRecordsSinceLast();
+	
+	/*
+	 * Returns memes from "Top 10" subpage
+	 */
+	public Iterable<MemeInfo> getTopRecords();
 }

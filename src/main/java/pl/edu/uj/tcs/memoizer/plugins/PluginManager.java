@@ -21,6 +21,7 @@ public class PluginManager {
 	 */
 	public PluginManager(){
 		_directories = new HashSet<String>();
+		_plugins = new ArrayList<IPlugin>();
 	}
 	
 	/*
