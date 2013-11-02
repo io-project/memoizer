@@ -44,9 +44,13 @@ public class DemotywatoryDownPlugin implements IDownloadPlugin {
 		_properties = properties;
 	}
 	
-	//TO DO
+	/*
+	 * Returns all demots from star page (TO DO more)
+	 */
 	public Iterable<MemeInfo> getRecordsSinceLast(){
-		return null;
+		return extractMemesFromNodes(
+				extractMemeNodes(
+				downloadPageSource(_workingUrl)));
 	}
 	
 	//TO DO
