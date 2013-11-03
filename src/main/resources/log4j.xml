@@ -24,6 +24,7 @@
     <category name="pl.edu.uj.tcs.memoizer.plugins" additivity="false">
         <priority value="DEBUG"/>
         <appender-ref ref="PLUGIN_FILE"/>
+        <appender-ref ref="CONSOLE"/>
     </category>
 
     <root>
