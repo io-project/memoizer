@@ -1,49 +1,47 @@
 package pl.edu.uj.tcs.memoizer.gui;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.EventQueue;
-import java.awt.Rectangle;
-
-import javax.swing.JFrame;
-import javax.swing.JScrollPane;
-
 import java.awt.BorderLayout;
-
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JPanel;
-import javax.swing.BoxLayout;
-import javax.swing.JSeparator;
-import javax.swing.ScrollPaneConstants;
-import javax.swing.Scrollable;
-import javax.swing.SwingUtilities;
-import javax.swing.JLabel;
-import javax.swing.ImageIcon;
-import javax.swing.SwingConstants;
-import javax.swing.border.EmptyBorder;
-
+import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Insets;
+import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
 
-import javax.swing.JButton;
 import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.Scrollable;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
+import javax.swing.border.EmptyBorder;
 
-import java.awt.Font;
-import java.awt.Insets;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
+import org.apache.log4j.Logger;
 
 
 public class MainWindow {
 	
+	private static final Logger LOG = Logger.getLogger(MainWindow.class);
+
 	/**
 	 * TODO utrzymywanie wysokości przy resizowaniu okna
 	 * TODO Niewypisywać debugów na stdout
@@ -130,7 +128,7 @@ public class MainWindow {
 		frmMemoizer.addComponentListener(new ComponentAdapter() {
 			@Override
 			public void componentResized(ComponentEvent e) {
-				System.out.println(scrollPane.getSize());
+				LOG.debug(scrollPane.getSize());
 				lblSpinner.setPreferredSize(scrollPane.getSize());
 			}
 		});
@@ -156,14 +154,14 @@ public class MainWindow {
 		        	 * TODO zabezpieczyć na wypadek sigfaulta w workerze
 		        	 */
 		        	if(backgroundThreadIsRunning.tryAcquire()){
-		        		System.out.println("Added AsyncTask");
+		        		LOG.debug("Added AsyncTask");
 		        		
 		        		if(contentProvider!=null){
 		        			final Content contentToShow = contentProvider.getNext();
 		        			if(contentToShow!=null){
 					        	executorService.execute(new Runnable() {
 					        	    public void run() {
-					        	        System.out.println("Asynchronous task");
+						        		LOG.debug("Asynchronous task");
 					        	        
 					        	        /** 
 					        	         * TODO Dodać ładowanie więcej niż jednego obrazka 
@@ -285,7 +283,7 @@ public class MainWindow {
 						b = s-1;
 					else
 						a = s;
-					System.out.println(a+" "+b);
+	        		LOG.debug(a + " " + b);
 				}
 				
 				try{
@@ -293,7 +291,7 @@ public class MainWindow {
 						a--;
 					if(a<0)a=0;
 					
-					System.out.println("BinarySearch result: "+a+" -> "+panelInner.getComponent(a).getClass());
+					LOG.debug("BinarySearch result: "+a+" -> "+panelInner.getComponent(a).getClass());
 					//panelInner.getComponent(a).setBackground(Color.BLACK);
 					scrollPane.getVerticalScrollBar().setValue(panelInner.getComponent(a).getLocation().y);//scroll to next image
 				}catch(Exception e){
@@ -326,7 +324,7 @@ public class MainWindow {
 						a = s+1;
 					else
 						b = s;
-					System.out.println(a+" "+b);
+					LOG.debug(a+" "+b);
 				}
 				
 				try{
@@ -335,7 +333,7 @@ public class MainWindow {
 					if(a>=panelInner.getComponentCount())
 						a=panelInner.getComponentCount()-1;
 					
-					System.out.println("BinarySearch result: "+a+" -> "+panelInner.getComponent(a).getClass());
+					LOG.debug("BinarySearch result: "+a+" -> "+panelInner.getComponent(a).getClass());
 					//panelInner.getComponent(a).setBackground(Color.BLACK);
 					scrollPane.getVerticalScrollBar().setValue(panelInner.getComponent(a).getLocation().y);//scroll to next image
 				}catch(Exception e){
