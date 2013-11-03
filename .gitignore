@@ -4,9 +4,9 @@
 .settings
 *.jar
 *.class
-
 /target
 .classpath
 *.zip
 *.rar
 *.tar
+!bin/memoizer.jar
