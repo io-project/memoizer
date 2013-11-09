@@ -1,6 +1,7 @@
 package pl.edu.uj.tcs.memoizer.plugins.impl;
 
 import pl.edu.uj.tcs.memoizer.plugins.*;
+
 import java.net.*;
 import java.util.*;
 import java.awt.Image;
@@ -154,4 +155,17 @@ public class DemotywatoryDownPlugin implements IDownloadPlugin {
 		} catch(IOException e){}
 		return null;
 	}
+
+	@Override
+	public List<EViewType> getAvailableViews() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setView(EViewType viewType) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

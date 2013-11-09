@@ -12,7 +12,7 @@ import java.util.jar.JarInputStream;
  * Klasa zarzadzajaca pluginami
  * @author pmikos (sokar92)
  */
-public class PluginManager {
+public class PluginManager implements IPluginManager {
 	private Set<String> _directories;
 	private List<IPlugin> _plugins;
 	
@@ -27,6 +27,7 @@ public class PluginManager {
 	/*
 	 * Add new plugin folder to set
 	 */
+	@Override
 	public void addPluginDirectory(String dir){
 		_directories.add(dir);
 	}
@@ -34,6 +35,7 @@ public class PluginManager {
 	/*
 	 * Clear Plugin Directories Set
 	 */
+	@Override
 	public void clearPluginDirectories(){
 		_directories = new HashSet<String>();
 	}
@@ -42,6 +44,7 @@ public class PluginManager {
 	 * Loads plugins from directories defined in
 	 * Plugin Directories Set
 	 */
+	@Override
 	public void loadPlugins(){
 		_plugins = new ArrayList<IPlugin>();
 		
@@ -58,6 +61,7 @@ public class PluginManager {
 	 * Returns list of loaded plugins.
 	 * Every loaded plugin is an instance of basic IPlugin interface
 	 */
+	@Override
 	public List<IPlugin> getLoadedPlugins(){
 		return _plugins;
 	}
