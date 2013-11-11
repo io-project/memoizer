@@ -23,7 +23,7 @@ import pl.edu.uj.tcs.memoizer.plugins.IPlugin;
 import pl.edu.uj.tcs.memoizer.plugins.IPluginManager;
 import pl.edu.uj.tcs.memoizer.plugins.IPluginView;
 import pl.edu.uj.tcs.memoizer.plugins.InvalidPlugin;
-import pl.edu.uj.tcs.memoizer.plugins.MemeInfo;
+import pl.edu.uj.tcs.memoizer.plugins.Meme;
 
 public class PluginConnector implements IPluginConnector, IEventObserver<MemeDownloadedEvent> {
 	
@@ -36,11 +36,11 @@ public class PluginConnector implements IPluginConnector, IEventObserver<MemeDow
 
 	// relates on references
 	private Map<IDownloadPlugin, IScheduledMemeDownloader> downloaders = new TreeMap<>(); 
-	private Map<EViewType, BlockingQueue<MemeInfo>> buffers = new HashMap<>();
+	private Map<EViewType, BlockingQueue<Meme>> buffers = new HashMap<>();
 
-	private IHandler<MemeInfo> guiHandler;
+	private IHandler<Meme> guiHandler;
 	
-	public PluginConnector(IPluginManager pluginManager, IEventService eventService, IHandler<MemeInfo> guiHandler) {
+	public PluginConnector(IPluginManager pluginManager, IEventService eventService, IHandler<Meme> guiHandler) {
 
 		this.pluginManager = pluginManager;
 		this.eventService = eventService;
@@ -57,7 +57,7 @@ public class PluginConnector implements IPluginConnector, IEventObserver<MemeDow
 		}
 		
 		for(EViewType vt: EViewType.values()) {
-			buffers.put(vt, new LinkedBlockingDeque<MemeInfo>());
+			buffers.put(vt, new LinkedBlockingDeque<Meme>());
 		}
 	}
 
@@ -160,7 +160,7 @@ public class PluginConnector implements IPluginConnector, IEventObserver<MemeDow
 	}
 	
 	private void clear() {
-		for(BlockingQueue<MemeInfo> que: buffers.values()) {
+		for(BlockingQueue<Meme> que: buffers.values()) {
 			que.clear();
 		}
 	}
@@ -178,8 +178,8 @@ public class PluginConnector implements IPluginConnector, IEventObserver<MemeDow
 	
 	private void provideEnqueued() { // in synchronized(pluginView) block
 
-		ArrayList<MemeInfo> results = new ArrayList<MemeInfo>();
-		BlockingQueue<MemeInfo> que = buffers.get(pluginView.getViewType());
+		ArrayList<Meme> results = new ArrayList<Meme>();
+		BlockingQueue<Meme> que = buffers.get(pluginView.getViewType());
 		
 		que.drainTo(results);
 		while(!results.isEmpty()) {
@@ -189,13 +189,13 @@ public class PluginConnector implements IPluginConnector, IEventObserver<MemeDow
 	
 	private void enqueue(MemeDownloadedEvent event) {
 		// TODO limit number of elements in queues by stopping all slowing down downloaders
-		BlockingQueue<MemeInfo> que = buffers.get(event.getViewType());
-		que.add(event.getMemeInfo());
+		BlockingQueue<Meme> que = buffers.get(event.getViewType());
+		que.add(event.getMeme());
 	}
 
 	@Override
 	public void notify(MemeDownloadedEvent event) {
-		LOG.debug("Calling notify on plugin connector with new message: " + event.getMemeInfo().getDescription());
+		LOG.debug("Calling notify on plugin connector with new message: " + event.getMeme().getDescription());
 		
 		enqueue(event);
 		synchronized(pluginView) {

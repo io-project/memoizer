@@ -17,5 +17,5 @@ public interface IPluginView {
 	 * @param memes 
 	 * @return next meme to be printed
 	 */
-	MemeInfo extractNextMeme(List<MemeInfo> memes);
+	Meme extractNextMeme(List<Meme> memes);
 }

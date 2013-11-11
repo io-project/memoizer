@@ -4,28 +4,28 @@ import java.awt.*;
 import java.util.*;
 
 /*
- * Interfejs wymagany do implementacji przez pluginy
+ * Interface required to implement by plugins
  * @author pmikos (sokar92)
  */
 public interface IPlugin {
 	
 	/*
-	 * Zwraca opis pluginu np DemotywatoryDownloadPlugin
+	 * Returns plugin description for ex. DemotywatoryDownloadPlugin
 	 */
 	public String getName();
 	
 	/*
-	 * Zwraca obrazek stowarzyszony z pluginem (ikonke) 
+	 * Returns icon related to given plugin 
 	 */
 	public Image getIcon();
 	
 	/*
-	 * Pobiera mape wlasciwosci pluginu
+	 * Returns plugin properties map
 	 */
 	public Map<String, Object> getProperties();
 	
 	/*
-	 * Ustawia mape wlasciwosci pluginu
+	 * Sets plugin properties map
 	 */
 	public void setProperties(Map<String, Object> properties);
 }

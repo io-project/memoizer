@@ -82,7 +82,7 @@ public class ScheduledMemeDownloader implements IScheduledMemeDownloader {
 
 		@Override
 		public void run() {
-			//Iterable<MemeInfo> memes = ScheduledMemeDownloader.this.plugin.getRecordsSinceLast(); // to change
+			//Iterable<Meme> memes = ScheduledMemeDownloader.this.plugin.getRecordsSinceLast(); // to change
 			// TODO dumb implementation - fill with proper solution
 			try {
 				eventService.call(new MemeDownloadedEvent(null, plugin, EViewType.CHRONOLOGICAL));

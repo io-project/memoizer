@@ -9,7 +9,7 @@ import javax.naming.directory.InvalidAttributesException;
 
 import pl.edu.uj.tcs.memoizer.plugins.EViewType;
 import pl.edu.uj.tcs.memoizer.plugins.IDownloadPlugin;
-import pl.edu.uj.tcs.memoizer.plugins.MemeInfo;
+import pl.edu.uj.tcs.memoizer.plugins.Meme;
 
 public class DownloadPluginMock implements IDownloadPlugin {
 	
@@ -34,16 +34,6 @@ public class DownloadPluginMock implements IDownloadPlugin {
 	public void setProperties(Map<String, Object> properties) { }
 
 	@Override
-	public Iterable<MemeInfo> getRecordsSinceLast() {
-		return null;
-	}
-
-	@Override
-	public Iterable<MemeInfo> getTopRecords() {
-		return null;
-	}
-
-	@Override
 	public List<EViewType> getAvailableViews() {
 		return Arrays.asList(new EViewType[]{EViewType.CHRONOLOGICAL, EViewType.UNSEEN });
 	}
@@ -53,6 +43,21 @@ public class DownloadPluginMock implements IDownloadPlugin {
 		if(viewType == EViewType.CHRONOLOGICAL || viewType == EViewType.UNSEEN) {
 			this.currentView = viewType;
 		} 
+	}
+	
+	@Override
+	public boolean hasNext(){
+		return true;
+	}
+	
+	@Override
+	public Meme getNext(){
+		return null;
+	}
+	
+	@Override
+	public Iterable<Meme> getNext(int n){
+		return null;
 	}
 
 }

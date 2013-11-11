@@ -7,7 +7,7 @@ import pl.edu.uj.tcs.memoizer.plugins.EViewType;
 import pl.edu.uj.tcs.memoizer.plugins.IDownloadPlugin;
 import pl.edu.uj.tcs.memoizer.plugins.IPluginView;
 import pl.edu.uj.tcs.memoizer.plugins.InvalidPlugin;
-import pl.edu.uj.tcs.memoizer.plugins.MemeInfo;
+import pl.edu.uj.tcs.memoizer.plugins.Meme;
 
 public interface IPluginConnector {
 

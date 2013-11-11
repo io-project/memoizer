@@ -1,12 +1,13 @@
 package pl.edu.uj.tcs.memoizer.plugins;
 
 import java.net.*;
+import java.awt.Image;
 
 /*
  * Describes Meme
  * @author pmikos (sokar92) 
  */
-public class MemeInfo {
+public class Meme {
 	//links
 	private URL _imageLink;
 	private URL _pageLink;
@@ -19,34 +20,48 @@ public class MemeInfo {
 	private int _width;
 	private int _heigth;
 	
-	/*
-	 * Instantiates new Meme with
-	 * image linked to specific URL
-	 */
-	public MemeInfo(URL imageUrl){
-		this(imageUrl, null, null, null, 0, 0);
-	}
+	//image
+	private Image _image;
+	
+	//owner
+	private IPlugin _owner;
 	
 	/*
-	 * Instantiates new Meme with
-	 * image linked to first URL
-	 * and base page linked to second URL
+	 * Instantiates new Meme linked to given owner
 	 */
-	public MemeInfo(URL imageUrl, URL pageUrl){
-		this(imageUrl, pageUrl, null, null, 0, 0);
+	public Meme(IPlugin owner, Meme meme){
+		this(meme.getImageLink(), meme.getPageLink(),
+				meme.getTitle(), meme.getDescription(),
+				meme.getWidth(), meme.getHeight(),
+				meme.getImage());
+		_owner = owner;
 	}
 	
 	/*
 	 * Instantiates new Meme linked to specific URL
 	 * with given title, description and size
 	 */
-	public MemeInfo(URL imageUrl, URL pageUrl, String title, String description, int width, int heigth){
+	public Meme(URL imageUrl, URL pageUrl, 
+			String title, String description, 
+			int width, int heigth,
+			Image image)
+	{
+		_owner = null;
 		_imageLink = imageUrl;
 		_pageLink = pageUrl;
 		_title = title == null ? "" : title;
 		_desc = description == null ? "" : description;
 		_width = width;
 		_heigth = heigth;
+		_image = image;
+	}
+	
+	/*
+	 * Returns meme owner - plugin
+	 * which generated this meme
+	 */
+	public IPlugin getOwner(){
+		return _owner;
 	}
 	
 	/*
@@ -92,5 +107,19 @@ public class MemeInfo {
 	 */
 	public int getHeight(){
 		return _heigth;
+	}
+	
+	/*
+	 * Returns downloaded image
+	 */
+	public Image getImage(){
+		return _image;
+	}
+	
+	/*
+	 * Sets downloaded image
+	 */
+	public void setImage(Image img){
+		_image = img;
 	}
 }
