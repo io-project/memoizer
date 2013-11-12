@@ -56,6 +56,19 @@ public class Meme {
 		_image = image;
 	}
 	
+	@Override
+	public boolean equals(Object obj){
+		if(_imageLink == null && obj == null) return true;
+		if(_imageLink == null || obj == null) return false;
+		return _imageLink.equals(obj);
+	}
+	
+	@Override
+	public int hashCode(){
+		if(_imageLink == null) return 0;
+		return _imageLink.hashCode();
+	}
+	
 	/*
 	 * Returns meme owner - plugin
 	 * which generated this meme

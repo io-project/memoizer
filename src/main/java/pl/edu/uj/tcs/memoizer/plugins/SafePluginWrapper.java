@@ -25,15 +25,9 @@ public class SafePluginWrapper implements IPlugin {
 	}
 
 	@Override
-	public Map<String, Object> getProperties() {
+	public Map<String, Object> getState() {
 		// TODO Auto-generated method stub
 		return null;
-	}
-
-	@Override
-	public void setProperties(Map<String, Object> properties) {
-		// TODO Auto-generated method stub
-
 	}
 
 }

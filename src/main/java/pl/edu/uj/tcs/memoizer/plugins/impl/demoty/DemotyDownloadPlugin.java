@@ -13,7 +13,7 @@ import java.awt.Image;
  * @author pmikos (sokar92)
  */
 public final class DemotyDownloadPlugin implements IDownloadPlugin {
-	private DemotyPropertiesSet _properties;
+	private Map<String, Object> _state;
 	private EViewType _view;
 	private Map<EViewType, IMemeBuffer> _viewBuffer;
 	
@@ -21,15 +21,15 @@ public final class DemotyDownloadPlugin implements IDownloadPlugin {
 	 * Instantiates new download plugin designed
 	 * for "Demotywatory.pl" page
 	 */
-	public DemotyDownloadPlugin(){		
-		_properties = new DemotyPropertiesSet();
+	public DemotyDownloadPlugin(Map<String, Object> state){		
+		_state = state;
 		_view = null;
 		
 		_viewBuffer = new HashMap<EViewType, IMemeBuffer>();
-		_viewBuffer.put(EViewType.CHRONOLOGICAL, new DemotyMemeBufferChrono());
-		_viewBuffer.put(EViewType.UNSEEN, new DemotyMemeBufferUnseen());
-		_viewBuffer.put(EViewType.FAVOURITE, new DemotyMemeBufferTop());
-		_viewBuffer.put(EViewType.QUEUE, new DemotyMemeBufferQueue());
+		_viewBuffer.put(EViewType.CHRONOLOGICAL, new DemotyMemeBufferChrono(_state));
+		_viewBuffer.put(EViewType.UNSEEN, new DemotyMemeBufferUnseen(_state));
+		_viewBuffer.put(EViewType.FAVOURITE, new DemotyMemeBufferTop(_state));
+		_viewBuffer.put(EViewType.QUEUE, new DemotyMemeBufferQueue(_state));
 	}
 	
 	@Override
@@ -39,16 +39,8 @@ public final class DemotyDownloadPlugin implements IDownloadPlugin {
 	public Image getIcon() { return null; }
 	
 	@Override
-	public Map<String, Object> getProperties(){
-		return _properties.getMap();
-	}
-	
-	@Override
-	public void setProperties(Map<String, Object> properties){
-		if(properties == null)
-			throw new NullPointerException();
-		
-		_properties = new DemotyPropertiesSet(properties);
+	public Map<String, Object> getState(){
+		return _state;
 	}
 
 	@Override

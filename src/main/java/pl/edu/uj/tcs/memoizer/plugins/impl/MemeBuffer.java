@@ -6,6 +6,11 @@ import pl.edu.uj.tcs.memoizer.plugins.Meme;
 public abstract class MemeBuffer implements IMemeBuffer {
 	
 	private Queue<Meme> _queue = new LinkedList<Meme>();
+	protected Map<String, Object> _state = null;
+	
+	public MemeBuffer(Map<String, Object> state){
+		_state = state;
+	}
 	
 	@Override
 	public final boolean hasNext(){
@@ -30,7 +35,7 @@ public abstract class MemeBuffer implements IMemeBuffer {
 	/*
 	 * Returns true if after update queue is NOT empty
 	 */
-	private boolean updateWaitingQueue(){
+	private final boolean updateWaitingQueue(){
 		Iterable<Meme> it = downloadMemes();
 		for(Meme m : it) 
 			_queue.add(m);
@@ -39,7 +44,7 @@ public abstract class MemeBuffer implements IMemeBuffer {
 	}
 	
 	/*
-	 * Specialied buffer should implement only this one method
+	 * Specialied buffer should implement this
 	 */
 	protected Iterable<Meme> downloadMemes(){
 		return null;

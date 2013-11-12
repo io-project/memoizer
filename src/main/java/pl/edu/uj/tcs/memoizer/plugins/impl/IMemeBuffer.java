@@ -1,6 +1,7 @@
 package pl.edu.uj.tcs.memoizer.plugins.impl;
 
 import pl.edu.uj.tcs.memoizer.plugins.Meme;
+import java.util.Map;
 
 public interface IMemeBuffer {
 	

@@ -20,12 +20,7 @@ public interface IPlugin {
 	public Image getIcon();
 	
 	/*
-	 * Returns plugin properties map
+	 * Returns plugin state
 	 */
-	public Map<String, Object> getProperties();
-	
-	/*
-	 * Sets plugin properties map
-	 */
-	public void setProperties(Map<String, Object> properties);
+	public Map<String, Object> getState();
 }
