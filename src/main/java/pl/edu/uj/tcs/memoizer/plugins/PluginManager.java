@@ -49,6 +49,7 @@ public class PluginManager implements IPluginManager {
 		_pluginFactories = new ArrayList<IPluginFactory>();
 		
 		for(String dir : _directories){
+			//System.out.println(" Dir: " + dir);
 			try {
 				List<String> jars = findJars(new File(dir));
 				for(String jar : jars)
@@ -84,6 +85,7 @@ public class PluginManager implements IPluginManager {
 					directories.add(file);
 				} else if (file.getName().endsWith(".jar")) {
 					lst.add(file.getAbsolutePath());
+					//System.out.println(" Found jar: " + file.getAbsolutePath());
 				}
 			}
 	
@@ -119,8 +121,10 @@ public class PluginManager implements IPluginManager {
 				if(jarEntry == null)
 					break;
 				
-				if(jarEntry.getName().startsWith(pkg) && jarEntry.getName().endsWith(".class")) {
-					String classname = jarEntry.getName().replaceAll("/", "\\.");
+				String classname = jarEntry.getName().replaceAll("/", "\\.");
+				//System.out.println("JarEntry: " + classname);
+				
+				if(classname.startsWith(pkg) && classname.endsWith(".class")) {
 					classname = classname.substring(0, classname.length() - ".class".length());
 
 					if(!classname.contains("$")) {
@@ -130,9 +134,11 @@ public class PluginManager implements IPluginManager {
 	                	
 						try
 						{
+							//System.out.println("Try : " + classname);
 							Class<IPluginFactory> myLoadedClass = (Class<IPluginFactory>)ucl.loadClass(classname);
 							IPluginFactory myClass = (IPluginFactory)myLoadedClass.newInstance();
 							list.add(myClass);
+							//System.out.println("Added class: " + myClass.getName());
 						} catch(Exception e){}
 					}
 				}
