@@ -10,5 +10,5 @@ public interface IPluginManager {
 
 	void loadPlugins();
 
-	List<IPlugin> getLoadedPlugins();
+	List<IPluginFactory> getLoadedPluginFactories();
 }

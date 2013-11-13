@@ -10,17 +10,8 @@ import java.util.*;
 public interface IPlugin {
 	
 	/*
-	 * Returns plugin description for ex. DemotywatoryDownloadPlugin
-	 */
-	public String getName();
-	
-	/*
-	 * Returns icon related to given plugin 
-	 */
-	public Image getIcon();
-	
-	/*
 	 * Returns plugin state
 	 */
 	public Map<String, Object> getState();
+
 }

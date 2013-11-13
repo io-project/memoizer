@@ -47,14 +47,14 @@ public class PluginConnector implements IPluginConnector, IEventObserver<MemeDow
 		this.guiHandler = guiHandler;
 		
 		eventService.attach(this);
-		
+		/*
 		for(IPlugin plugin: pluginManager.getLoadedPlugins()) {
 			if(plugin instanceof IDownloadPlugin) {
 				downloaders.put(
 						(IDownloadPlugin) plugin, 
 						new ScheduledMemeDownloader((IDownloadPlugin) plugin, eventService));
 			}
-		}
+		}*/
 		
 		for(EViewType vt: EViewType.values()) {
 			buffers.put(vt, new LinkedBlockingDeque<Meme>());
@@ -79,7 +79,7 @@ public class PluginConnector implements IPluginConnector, IEventObserver<MemeDow
 						downloader.setMinRefreshRate(DEFAULT_SELECTED_REFRESH_RATE);
 						downloader.start();
 					} else {
-						LOG.error("No downloader for this plugin " + plugin.getName() + " - Strange :(");
+						//LOG.error("No downloader for this plugin " + plugin.getName() + " - Strange :(");
 					}
 					
 					for(Entry<IDownloadPlugin, IScheduledMemeDownloader> entry: downloaders.entrySet()) {
@@ -117,12 +117,13 @@ public class PluginConnector implements IPluginConnector, IEventObserver<MemeDow
 		
 		List<EViewType> result = new ArrayList<EViewType>();
 
+		/*
 		for(IPlugin plugin: pluginManager.getLoadedPlugins()) {
 
 			if(plugin instanceof IDownloadPlugin) {
 				result.addAll(((IDownloadPlugin) plugin).getAvailableViews());
 			}
-		}
+		}*/
 
 		return result;
 	}
@@ -131,7 +132,7 @@ public class PluginConnector implements IPluginConnector, IEventObserver<MemeDow
 	public List<IDownloadPlugin> getPluginsForView(EViewType viewType) {
 
 		List<IDownloadPlugin> result = new ArrayList<IDownloadPlugin>();
-		
+		/*
 		for(IPlugin plugin: pluginManager.getLoadedPlugins()) {
 
 			if(plugin instanceof IDownloadPlugin) {
@@ -139,7 +140,7 @@ public class PluginConnector implements IPluginConnector, IEventObserver<MemeDow
 					result.add((IDownloadPlugin) plugin);
 				}
 			}
-		}
+		}*/
 		return result;
 	}
 

@@ -13,18 +13,6 @@ public class SafePluginWrapper implements IPlugin {
 	}
 
 	@Override
-	public String getName() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Image getIcon() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public Map<String, Object> getState() {
 		// TODO Auto-generated method stub
 		return null;

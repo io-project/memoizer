@@ -14,14 +14,14 @@ import java.util.jar.JarInputStream;
  */
 public class PluginManager implements IPluginManager {
 	private Set<String> _directories;
-	private List<IPlugin> _plugins;
+	private List<IPluginFactory> _pluginFactories;
 	
 	/*
 	 * Instantiates new Plugin Manager
 	 */
 	public PluginManager(){
 		_directories = new HashSet<String>();
-		_plugins = new ArrayList<IPlugin>();
+		_pluginFactories = new ArrayList<IPluginFactory>();
 	}
 	
 	/*
@@ -46,24 +46,23 @@ public class PluginManager implements IPluginManager {
 	 */
 	@Override
 	public void loadPlugins(){
-		_plugins = new ArrayList<IPlugin>();
+		_pluginFactories = new ArrayList<IPluginFactory>();
 		
 		for(String dir : _directories){
 			try {
 				List<String> jars = findJars(new File(dir));
 				for(String jar : jars)
-					_plugins.addAll(loadPluginsFromJar(jar));
+					_pluginFactories.addAll(loadPluginsFromJar(jar));
 			} catch(Exception e){}
 		}
 	}
 	
 	/*
-	 * Returns list of loaded plugins.
-	 * Every loaded plugin is an instance of basic IPlugin interface
+	 * Returns set of loaded plugin factory instances.
 	 */
 	@Override
-	public List<IPlugin> getLoadedPlugins(){
-		return _plugins;
+	public List<IPluginFactory> getLoadedPluginFactories(){
+		return _pluginFactories;
 	}
 	
 	/*
@@ -97,11 +96,11 @@ public class PluginManager implements IPluginManager {
 	}
 	
 	/*
-	 * Loads all classes implementing IPlugin from jar file
-	 * Result: list of plugin instances
+	 * Loads all classes implementing IPluginFactory from jar file
+	 * Result: list of plugin factory instances
 	 */
-	private static List<IPlugin> loadPluginsFromJar(String jarName){
-		List<IPlugin> list = new ArrayList<IPlugin>();
+	private static List<IPluginFactory> loadPluginsFromJar(String jarName){
+		List<IPluginFactory> list = new ArrayList<IPluginFactory>();
 		String pkg = "pl.edu.uj.tcs.memoizer.plugins.impl";
 		
 		if(jarName == null)
@@ -131,8 +130,8 @@ public class PluginManager implements IPluginManager {
 	                	
 						try
 						{
-							Class<IPlugin> myLoadedClass = (Class<IPlugin>)ucl.loadClass(classname);
-							IPlugin myClass = (IPlugin)myLoadedClass.newInstance();
+							Class<IPluginFactory> myLoadedClass = (Class<IPluginFactory>)ucl.loadClass(classname);
+							IPluginFactory myClass = (IPluginFactory)myLoadedClass.newInstance();
 							list.add(myClass);
 						} catch(Exception e){}
 					}

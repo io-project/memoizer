@@ -33,12 +33,6 @@ public final class DemotyDownloadPlugin implements IDownloadPlugin {
 	}
 	
 	@Override
-	public String getName() { return "Demotywatory"; }
-	
-	@Override
-	public Image getIcon() { return null; }
-	
-	@Override
 	public Map<String, Object> getState(){
 		return _state;
 	}

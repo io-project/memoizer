@@ -16,22 +16,9 @@ public class DownloadPluginMock implements IDownloadPlugin {
 	EViewType currentView = EViewType.CHRONOLOGICAL;
 
 	@Override
-	public String getName() {
-		return "DownloadPluginMock";
-	}
-
-	@Override
-	public Image getIcon() {
+	public Map<String, Object> getState() {
 		return null;
 	}
-
-	@Override
-	public Map<String, Object> getProperties() {
-		return null;
-	}
-
-	@Override
-	public void setProperties(Map<String, Object> properties) { }
 
 	@Override
 	public List<EViewType> getAvailableViews() {

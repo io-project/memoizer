@@ -6,10 +6,10 @@ import java.util.List;
 public class PluginManagerMock implements IPluginManager {
 	
 	private IDownloadPlugin pluginMock = new DownloadPluginMock();
-	private ArrayList<IPlugin> plugins = new ArrayList<>();
+	private ArrayList<IPluginFactory> plugins = new ArrayList<>();
 	
 	{
-		plugins.add(new DownloadPluginMock());
+		//plugins.add(new DownloadPluginMock());
 	}
 
 	@Override
@@ -22,7 +22,7 @@ public class PluginManagerMock implements IPluginManager {
 	public void loadPlugins() { }
 
 	@Override
-	public List<IPlugin> getLoadedPlugins() {
+	public List<IPluginFactory> getLoadedPluginFactories() {
 		return plugins;
 	}
 
