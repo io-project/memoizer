@@ -12,6 +12,8 @@ public class DemotyMemeBufferQueue extends MemeBuffer {
 	
 	@Override
 	protected Iterable<Meme> downloadMemes(){
-		return null;
+		return DemotyDownloader.downloadMemesFromPage(
+				DemotyUrlFactory.getQueuePageUrl(1)
+				);
 	}
 }

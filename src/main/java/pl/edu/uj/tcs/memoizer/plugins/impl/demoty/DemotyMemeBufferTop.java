@@ -12,6 +12,8 @@ public class DemotyMemeBufferTop extends MemeBuffer {
 	
 	@Override
 	protected Iterable<Meme> downloadMemes(){
-		return null;
+		return DemotyDownloader.downloadMemesFromPage(
+				DemotyUrlFactory.getTopByPercentPageUrl(1)
+				);
 	}
 }

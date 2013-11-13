@@ -12,6 +12,8 @@ public class DemotyMemeBufferChrono extends MemeBuffer {
 	
 	@Override
 	protected Iterable<Meme> downloadMemes(){
-		return null;
+		return DemotyDownloader.downloadMemesFromPage(
+				DemotyUrlFactory.getMainPageUrl(1)
+				);
 	}
 }
