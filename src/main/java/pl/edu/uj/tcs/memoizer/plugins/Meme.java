@@ -26,6 +26,9 @@ public class Meme {
 	//owner
 	private IPlugin _owner;
 	
+	//viewType
+	private EViewType _viewType;
+	
 	/*
 	 * Instantiates new Meme linked to given owner
 	 */
@@ -33,7 +36,7 @@ public class Meme {
 		this(meme.getImageLink(), meme.getPageLink(),
 				meme.getTitle(), meme.getDescription(),
 				meme.getWidth(), meme.getHeight(),
-				meme.getImage());
+				meme.getImage(), meme.getViewType());
 		_owner = owner;
 	}
 	
@@ -44,7 +47,7 @@ public class Meme {
 	public Meme(URL imageUrl, URL pageUrl, 
 			String title, String description, 
 			int width, int heigth,
-			Image image)
+			Image image, EViewType viewType)
 	{
 		_owner = null;
 		_imageLink = imageUrl;
@@ -54,6 +57,7 @@ public class Meme {
 		_width = width;
 		_heigth = heigth;
 		_image = image;
+		_viewType = viewType;
 	}
 	
 	@Override
@@ -134,5 +138,12 @@ public class Meme {
 	 */
 	public void setImage(Image img){
 		_image = img;
+	}
+	
+	/*
+	 * Returns type of view 
+	 */
+	public EViewType getViewType() {
+		return _viewType;
 	}
 }

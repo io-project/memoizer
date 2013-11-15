@@ -12,14 +12,14 @@ import java.util.jar.JarInputStream;
  * Klasa zarzadzajaca pluginami
  * @author pmikos (sokar92)
  */
-public class PluginManager implements IPluginManager {
+public class PluginLoader implements IPluginLoader {
 	private Set<String> _directories;
 	private List<IPluginFactory> _pluginFactories;
 	
 	/*
 	 * Instantiates new Plugin Manager
 	 */
-	public PluginManager(){
+	public PluginLoader(){
 		_directories = new HashSet<String>();
 		_pluginFactories = new ArrayList<IPluginFactory>();
 	}

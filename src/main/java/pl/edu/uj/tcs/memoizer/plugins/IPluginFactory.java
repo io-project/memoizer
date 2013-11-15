@@ -12,7 +12,7 @@ public interface IPluginFactory {
 	/*
 	 * Returns plugin description for ex. DemotywatoryDownloadPlugin
 	 */
-	public String getName();
+	public String getPluginName();
 	
 	/*
 	 * Returns icon related to given plugin 
@@ -23,6 +23,6 @@ public interface IPluginFactory {
 	 * Creates new instance od plugin
 	 * with specified initial state
 	 */
-	public IPlugin newInstance(Map<String, Object> pluginStateMap);
+	public IPlugin newInstance(Map<String, byte[]> pluginStateMap);
 	
 }

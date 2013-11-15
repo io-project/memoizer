@@ -11,7 +11,7 @@ import java.util.Map;
  */
 public class DemotyDownloadPluginFactory implements IPluginFactory {
 	
-	public String getName(){
+	public String getPluginName(){
 		return "Demotywatory download plugin";
 	}
 	
@@ -19,7 +19,7 @@ public class DemotyDownloadPluginFactory implements IPluginFactory {
 		return null;
 	}
 	
-	public IPlugin newInstance(Map<String, Object> pluginStateMap){
+	public IPlugin newInstance(Map<String, byte[]> pluginStateMap){
 		return new DemotyDownloadPlugin(pluginStateMap);
 	}
 	

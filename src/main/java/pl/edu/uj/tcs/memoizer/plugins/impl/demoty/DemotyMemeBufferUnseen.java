@@ -1,12 +1,16 @@
 package pl.edu.uj.tcs.memoizer.plugins.impl.demoty;
 
+import java.util.Map;
+
+import pl.edu.uj.tcs.memoizer.plugins.EViewType;
 import pl.edu.uj.tcs.memoizer.plugins.Meme;
 import pl.edu.uj.tcs.memoizer.plugins.impl.MemeBuffer;
-import java.util.Map;
 
 public class DemotyMemeBufferUnseen extends MemeBuffer {
 	
-	public DemotyMemeBufferUnseen(Map<String, Object> state){
+	private static EViewType viewType = EViewType.UNSEEN;
+
+	public DemotyMemeBufferUnseen(Map<String, byte[]> state){
 		super(state);
 	}
 	

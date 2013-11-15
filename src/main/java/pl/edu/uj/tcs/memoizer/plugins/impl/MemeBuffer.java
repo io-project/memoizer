@@ -6,9 +6,9 @@ import pl.edu.uj.tcs.memoizer.plugins.Meme;
 public abstract class MemeBuffer implements IMemeBuffer {
 	
 	private Queue<Meme> _queue = new LinkedList<Meme>();
-	protected Map<String, Object> _state = null;
+	protected Map<String, byte[]> _state = null;
 	
-	public MemeBuffer(Map<String, Object> state){
+	public MemeBuffer(Map<String, byte[]> state){
 		_state = state;
 	}
 	

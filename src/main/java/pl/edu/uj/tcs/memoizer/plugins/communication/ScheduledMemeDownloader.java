@@ -13,6 +13,7 @@ import pl.edu.uj.tcs.memoizer.events.IEventService;
 import pl.edu.uj.tcs.memoizer.events.exceptions.EventException;
 import pl.edu.uj.tcs.memoizer.plugins.EViewType;
 import pl.edu.uj.tcs.memoizer.plugins.IDownloadPlugin;
+import pl.edu.uj.tcs.memoizer.plugins.Meme;
 
 public class ScheduledMemeDownloader implements IScheduledMemeDownloader {
 	
@@ -85,7 +86,10 @@ public class ScheduledMemeDownloader implements IScheduledMemeDownloader {
 			//Iterable<Meme> memes = ScheduledMemeDownloader.this.plugin.getRecordsSinceLast(); // to change
 			// TODO dumb implementation - fill with proper solution
 			try {
-				eventService.call(new MemeDownloadedEvent(null, plugin, EViewType.CHRONOLOGICAL));
+				if(plugin.hasNext()) {
+					Meme newMeme = plugin.getNext();
+					eventService.call(new MemeDownloadedEvent(newMeme, plugin));
+				}
 			} catch (EventException e) {
 				LOG.error(e.getMessage());
 			} 

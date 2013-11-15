@@ -9,7 +9,7 @@ import pl.edu.uj.tcs.memoizer.plugins.IPluginView;
 import pl.edu.uj.tcs.memoizer.plugins.InvalidPlugin;
 import pl.edu.uj.tcs.memoizer.plugins.Meme;
 
-public interface IPluginConnector {
+public interface IMemeProvider {
 
 	/**
 	 * Sets the new view for every chosen plugin.
@@ -28,24 +28,9 @@ public interface IPluginConnector {
 	 */
 	IPluginView getCurrentView();
 	
-	/**
-	 * @return every view type that is provided by at least one plugin
-	 */
-	List<EViewType> getAvailableViews();
 	
 	/**
-	 * @param viewType
-	 * @return a list of plugins providing given view
+	 * Stops object - cancels all connections and pending downloads
 	 */
-	List<IDownloadPlugin> getPluginsForView(EViewType viewType);
-	
-	/**
-	 * Resets the connector including actual state of plugins and a current view
-	 */
-	void resetState();
-	
-	/**
-	 * Closes class - stops all connections and pending downloads
-	 */
-	void close();
+	void cancel();
 }

@@ -12,6 +12,8 @@ public interface IPlugin {
 	/*
 	 * Returns plugin state
 	 */
-	public Map<String, Object> getState();
+	public Map<String, byte[]> getState();
+	
+	public String getName();
 
 }

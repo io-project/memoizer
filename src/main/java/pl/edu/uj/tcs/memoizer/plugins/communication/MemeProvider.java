@@ -14,24 +14,21 @@ import java.util.concurrent.LinkedBlockingDeque;
 
 import org.apache.log4j.Logger;
 
-import pl.edu.uj.tcs.memoizer.dispatcher.IHandler;
 import pl.edu.uj.tcs.memoizer.events.IEventObserver;
 import pl.edu.uj.tcs.memoizer.events.IEventService;
+import pl.edu.uj.tcs.memoizer.handlers.IHandler;
 import pl.edu.uj.tcs.memoizer.plugins.EViewType;
 import pl.edu.uj.tcs.memoizer.plugins.IDownloadPlugin;
-import pl.edu.uj.tcs.memoizer.plugins.IPlugin;
-import pl.edu.uj.tcs.memoizer.plugins.IPluginManager;
 import pl.edu.uj.tcs.memoizer.plugins.IPluginView;
 import pl.edu.uj.tcs.memoizer.plugins.InvalidPlugin;
 import pl.edu.uj.tcs.memoizer.plugins.Meme;
 
-public class PluginConnector implements IPluginConnector, IEventObserver<MemeDownloadedEvent> {
+public class MemeProvider implements IMemeProvider, IEventObserver<MemeDownloadedEvent> {
 	
-	private static final Logger LOG = Logger.getLogger(PluginConnector.class);
+	private static final Logger LOG = Logger.getLogger(MemeProvider.class);
 	
 	private IPluginView pluginView;
 
-	private IPluginManager pluginManager;
 	private IEventService eventService;
 
 	// relates on references
@@ -40,21 +37,12 @@ public class PluginConnector implements IPluginConnector, IEventObserver<MemeDow
 
 	private IHandler<Meme> guiHandler;
 	
-	public PluginConnector(IPluginManager pluginManager, IEventService eventService, IHandler<Meme> guiHandler) {
+	public MemeProvider(IEventService eventService, IHandler<Meme> guiHandler) {
 
-		this.pluginManager = pluginManager;
 		this.eventService = eventService;
 		this.guiHandler = guiHandler;
 		
 		eventService.attach(this);
-		/*
-		for(IPlugin plugin: pluginManager.getLoadedPlugins()) {
-			if(plugin instanceof IDownloadPlugin) {
-				downloaders.put(
-						(IDownloadPlugin) plugin, 
-						new ScheduledMemeDownloader((IDownloadPlugin) plugin, eventService));
-			}
-		}*/
 		
 		for(EViewType vt: EViewType.values()) {
 			buffers.put(vt, new LinkedBlockingDeque<Meme>());
@@ -65,8 +53,6 @@ public class PluginConnector implements IPluginConnector, IEventObserver<MemeDow
 	@Override
 	public void setView(IPluginView view, List<IDownloadPlugin> plugins) throws InvalidPlugin {
 
-		resetState();
-
 		if(checkPlugins(view.getViewType(), plugins)) {
 
 			
@@ -74,13 +60,13 @@ public class PluginConnector implements IPluginConnector, IEventObserver<MemeDow
 				for(IDownloadPlugin plugin: plugins) {
 
 					plugin.setView(view.getViewType());
-					IScheduledMemeDownloader downloader = downloaders.get(plugin);
-					if(downloader != null) {
-						downloader.setMinRefreshRate(DEFAULT_SELECTED_REFRESH_RATE);
-						downloader.start();
-					} else {
-						//LOG.error("No downloader for this plugin " + plugin.getName() + " - Strange :(");
-					}
+
+					IScheduledMemeDownloader downloader = new ScheduledMemeDownloader(plugin, eventService); 
+
+					downloader.setMinRefreshRate(DEFAULT_SELECTED_REFRESH_RATE);
+					downloader.start();
+					
+					downloaders.put(plugin, downloader);
 					
 					for(Entry<IDownloadPlugin, IScheduledMemeDownloader> entry: downloaders.entrySet()) {
 						if(entry.getValue().isRunning() && !plugins.contains(entry.getKey())) {
@@ -112,54 +98,6 @@ public class PluginConnector implements IPluginConnector, IEventObserver<MemeDow
 		return pluginView;
 	}
 
-	@Override
-	public List<EViewType> getAvailableViews() {
-		
-		List<EViewType> result = new ArrayList<EViewType>();
-
-		/*
-		for(IPlugin plugin: pluginManager.getLoadedPlugins()) {
-
-			if(plugin instanceof IDownloadPlugin) {
-				result.addAll(((IDownloadPlugin) plugin).getAvailableViews());
-			}
-		}*/
-
-		return result;
-	}
-
-	@Override
-	public List<IDownloadPlugin> getPluginsForView(EViewType viewType) {
-
-		List<IDownloadPlugin> result = new ArrayList<IDownloadPlugin>();
-		/*
-		for(IPlugin plugin: pluginManager.getLoadedPlugins()) {
-
-			if(plugin instanceof IDownloadPlugin) {
-				if(((IDownloadPlugin) plugin).getAvailableViews().contains(viewType)) {
-					result.add((IDownloadPlugin) plugin);
-				}
-			}
-		}*/
-		return result;
-	}
-
-
-	@Override
-	public void resetState() {
-		unselectAll();
-		clear();
-		synchronized(pluginView) {
-			pluginView = null;
-		}
-	}
-
-	private void unselectAll() {
-		for(Entry<IDownloadPlugin, IScheduledMemeDownloader> entry: downloaders.entrySet()) {
-			entry.getValue().setMinRefreshRate(DEFAULT_UNSELECTED_REFRESH_RATE);
-		}
-	}
-	
 	private void clear() {
 		for(BlockingQueue<Meme> que: buffers.values()) {
 			que.clear();
@@ -167,12 +105,14 @@ public class PluginConnector implements IPluginConnector, IEventObserver<MemeDow
 	}
 	
 	@Override
-	public void close() {
-		LOG.debug("Closing plugin connector");
+	public void cancel() {
+		LOG.debug("Stopping meme provider");
 
 		for(Entry<IDownloadPlugin, IScheduledMemeDownloader> entry: downloaders.entrySet()) {
 			entry.getValue().stop();
 		}
+		downloaders.clear();
+		
 		clear();
 	}
 

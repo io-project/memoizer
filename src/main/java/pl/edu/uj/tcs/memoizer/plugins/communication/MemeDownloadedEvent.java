@@ -11,11 +11,10 @@ public class MemeDownloadedEvent implements IEvent {
 	private IDownloadPlugin plugin;
 	private EViewType viewType;
 
-	public MemeDownloadedEvent(Meme memeInfo, IDownloadPlugin plugin, EViewType viewType) {
+	public MemeDownloadedEvent(Meme memeInfo, IDownloadPlugin plugin) {
 
 		this.memeInfo = memeInfo;
 		this.plugin = plugin;
-		this.viewType = viewType;
 	}
 	
 	public Meme getMeme() {
@@ -27,7 +26,6 @@ public class MemeDownloadedEvent implements IEvent {
 	}
 
 	public EViewType getViewType() {
-		return viewType;
+		return memeInfo.getViewType();
 	}
-
 }

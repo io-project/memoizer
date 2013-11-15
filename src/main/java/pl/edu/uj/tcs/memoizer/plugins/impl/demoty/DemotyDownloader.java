@@ -21,10 +21,10 @@ class DemotyDownloader {
 	 * Get a page source, parse it,
 	 * extract memes and return
 	 */
-	static List<Meme> downloadMemesFromPage(String url){
+	static List<Meme> downloadMemesFromPage(String url, EViewType viewType){
 		return extractMemesFromNodes(
 				extractMemeNodes(
-				downloadPageSource(url)));
+				downloadPageSource(url)), viewType);
 	}
 	
 	/*
@@ -65,7 +65,7 @@ class DemotyDownloader {
 	 * Parse html meme-linked element and extract meme info
 	 * returns list of parsed memes
 	 */
-	private static List<Meme> extractMemesFromNodes(Elements memeNodes){
+	private static List<Meme> extractMemesFromNodes(Elements memeNodes, EViewType viewType){
 		List<Meme> lst = new ArrayList<Meme>();
 		
 		for(Element meme : memeNodes){
@@ -82,7 +82,7 @@ class DemotyDownloader {
 				int heigth = extractHeightFromImgTag(image);
 				
 				if(imageLink != null)
-					lst.add(new Meme(imageLink, pageLink, title, desc, width, heigth, null));
+					lst.add(new Meme(imageLink, pageLink, title, desc, width, heigth, null, viewType));
 			} catch(Exception e){}
 		}
 		

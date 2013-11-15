@@ -1,4 +1,4 @@
-package pl.edu.uj.tcs.memoizer.dispatcher;
+package pl.edu.uj.tcs.memoizer.handlers;
 
 public interface IHandler <T> {
 
