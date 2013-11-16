@@ -1,6 +1,6 @@
 package pl.edu.uj.tcs.memoizer.plugins.communication;
 
-import static pl.edu.uj.tcs.memoizer.plugins.communication.PluginConnectorSettings.DEFAULT_UNSELECTED_REFRESH_RATE;
+import static pl.edu.uj.tcs.memoizer.plugins.communication.MemeProviderSettings.DEFAULT_UNSELECTED_REFRESH_RATE;
 
 import java.util.Map;
 import java.util.TreeMap;
@@ -28,6 +28,7 @@ public class ScheduledMemeDownloader implements IScheduledMemeDownloader {
 	
 	public ScheduledMemeDownloader(IDownloadPlugin plugin, IEventService eventService) {
 		this.plugin = plugin;
+		this.eventService = eventService;
 	}
 
 	@Override
@@ -83,16 +84,17 @@ public class ScheduledMemeDownloader implements IScheduledMemeDownloader {
 
 		@Override
 		public void run() {
-			//Iterable<Meme> memes = ScheduledMemeDownloader.this.plugin.getRecordsSinceLast(); // to change
-			// TODO dumb implementation - fill with proper solution
 			try {
 				if(plugin.hasNext()) {
 					Meme newMeme = plugin.getNext();
-					eventService.call(new MemeDownloadedEvent(newMeme, plugin));
+					eventService.call(new MemeDownloadedEvent(newMeme));
 				}
 			} catch (EventException e) {
 				LOG.error(e.getMessage());
-			} 
+			} catch(Exception e) {
+				LOG.error("Really bad exception: " + e.getMessage());
+				e.printStackTrace();
+			}
 		}
 	}
 	

@@ -36,7 +36,7 @@ public class Meme {
 		this(meme.getImageLink(), meme.getPageLink(),
 				meme.getTitle(), meme.getDescription(),
 				meme.getWidth(), meme.getHeight(),
-				meme.getImage(), meme.getViewType());
+				meme.getImage(), meme.getViewType(), meme.getOwner());
 		_owner = owner;
 	}
 	
@@ -47,7 +47,7 @@ public class Meme {
 	public Meme(URL imageUrl, URL pageUrl, 
 			String title, String description, 
 			int width, int heigth,
-			Image image, EViewType viewType)
+			Image image, EViewType viewType, IPlugin owner)
 	{
 		_owner = null;
 		_imageLink = imageUrl;
@@ -57,6 +57,7 @@ public class Meme {
 		_width = width;
 		_heigth = heigth;
 		_image = image;
+		_owner = owner;
 		_viewType = viewType;
 	}
 	
@@ -138,6 +139,10 @@ public class Meme {
 	 */
 	public void setImage(Image img){
 		_image = img;
+	}
+	
+	public void setOwner(IPlugin owner) {
+		_owner = owner;
 	}
 	
 	/*

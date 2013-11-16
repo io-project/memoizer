@@ -67,14 +67,20 @@ public final class DemotyDownloadPlugin implements IDownloadPlugin {
 	public Meme getNext(){
 		if(_view == null)
 			return null;
-		return _viewBuffer.get(_view).getNext();
+		Meme m = _viewBuffer.get(_view).getNext();
+		m.setOwner(this);
+		return m;
 	}
 	
 	@Override
 	public Iterable<Meme> getNext(int n){
 		if(_view == null)
 			return null;
-		return _viewBuffer.get(_view).getNext(n);
+		Iterable<Meme> results = _viewBuffer.get(_view).getNext(n);
+		for(Meme m: results) {
+			m.setOwner(this);
+		}
+		return results;
 	}
 
 	@Override

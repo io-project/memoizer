@@ -82,7 +82,7 @@ class DemotyDownloader {
 				int heigth = extractHeightFromImgTag(image);
 				
 				if(imageLink != null)
-					lst.add(new Meme(imageLink, pageLink, title, desc, width, heigth, null, viewType));
+					lst.add(new Meme(imageLink, pageLink, title, desc, width, heigth, null, viewType, null));
 			} catch(Exception e){}
 		}
 		

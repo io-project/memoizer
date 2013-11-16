@@ -8,13 +8,10 @@ import pl.edu.uj.tcs.memoizer.plugins.Meme;
 public class MemeDownloadedEvent implements IEvent {
 	
 	private Meme memeInfo;
-	private IDownloadPlugin plugin;
-	private EViewType viewType;
 
-	public MemeDownloadedEvent(Meme memeInfo, IDownloadPlugin plugin) {
+	public MemeDownloadedEvent(Meme memeInfo) {
 
 		this.memeInfo = memeInfo;
-		this.plugin = plugin;
 	}
 	
 	public Meme getMeme() {
@@ -22,7 +19,7 @@ public class MemeDownloadedEvent implements IEvent {
 	}
 
 	public IDownloadPlugin getPlugin() {
-		return plugin;
+		return (IDownloadPlugin) memeInfo.getOwner();
 	}
 
 	public EViewType getViewType() {

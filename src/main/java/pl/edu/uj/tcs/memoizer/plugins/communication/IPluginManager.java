@@ -10,7 +10,17 @@ import pl.edu.uj.tcs.memoizer.plugins.InvalidPlugin;
 
 public interface IPluginManager {
 
+	/**
+	 *  Sets new factories and a set of loaded plugins at the same time
+	 *  Upon execution of this method getLoadedPlugins should return 
+	 *  a plugin for every factory
+	 */
 	void setPluginFactories(List<IPluginFactory> factories);
+	
+	/**
+	 * @return a list of all plugin instantiations for currently set factories
+	 */
+	List<IPlugin> getLoadedPlugins();
 
 	/**
 	 * @return every view type that is provided by at least one plugin

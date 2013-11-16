@@ -30,10 +30,16 @@ public class PluginManager implements IPluginManager {
 	
 	private TreeMap<String, IPlugin> plugMap = new TreeMap<>();
 	private HashMap<String, IPluginFactory> factMap = new HashMap<>();
+	private IEventService eventService;
 	
 	private Logger LOG = Logger.getLogger(PluginManager.class);
 	
+	public PluginManager(IEventService eventService) {
+		this.eventService = eventService;
+	}
+
 	public PluginManager(List<IPluginFactory> factories, IEventService eventService) {
+		this(eventService);
 		setPluginFactories(factories);
 	}
 
@@ -41,7 +47,6 @@ public class PluginManager implements IPluginManager {
 	public void setPluginFactories(List<IPluginFactory> factories) {
 		
 		factMap.clear();
-
 		TreeMap<String, IPlugin> newPlugs = new TreeMap<>();
 
 		for(IPluginFactory fact: factories) {
@@ -152,6 +157,11 @@ public class PluginManager implements IPluginManager {
 		}
 
 		return result;
+	}
+
+	@Override
+	public List<IPlugin> getLoadedPlugins() {
+		return new ArrayList<IPlugin>(plugMap.values());
 	}
 
 	@Override

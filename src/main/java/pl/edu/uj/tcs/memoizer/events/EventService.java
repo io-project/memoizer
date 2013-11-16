@@ -12,6 +12,8 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.apache.log4j.Logger;
+
 import pl.edu.uj.tcs.memoizer.events.exceptions.EventException;
 import pl.edu.uj.tcs.memoizer.events.exceptions.InvalidObserverException;
 
@@ -22,9 +24,10 @@ import pl.edu.uj.tcs.memoizer.events.exceptions.InvalidObserverException;
  *         dispatched asynchronously using cached thread pool
  */
 public class EventService implements IEventService {
+	
+	private static Logger LOG = Logger.getLogger(EventService.class);
 
     private Map<Class<? extends IEvent>, List<ObserverProxy<IEventObserver<? extends IEvent>>>> eventObservers;
-
     private ExecutorService execService;
 
     public EventService() {
@@ -136,12 +139,29 @@ public class EventService implements IEventService {
         }
     }
 
+    /**
+     * This method implementation assumes that the first parameterized interface
+     * is the proper one
+     * @param observer
+     * @return
+     */
     @SuppressWarnings("unchecked")
     private <T extends IEvent> Class<T> getClassOfEvent(
             IEventObserver<T> observer) {
 
         Type[] interfaces = observer.getClass().getGenericInterfaces();
-        ParameterizedType type = (ParameterizedType) interfaces[0];
+        ParameterizedType type = null;
+        for(int i = 0 ; i < interfaces.length; i++) {
+        	try {
+		        type = (ParameterizedType) interfaces[i];
+		        break;
+        	} catch(ClassCastException cs) {
+        		LOG.debug("First Cast error: " + cs.getMessage());
+        	}
+        }
+        if(type == null) {
+			LOG.error("Type of event could not be found");
+        }
         return (Class<T>) type.getActualTypeArguments()[0];
     }
 

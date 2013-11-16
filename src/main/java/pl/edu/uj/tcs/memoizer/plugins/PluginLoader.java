@@ -135,6 +135,7 @@ public class PluginLoader implements IPluginLoader {
 						try
 						{
 							//System.out.println("Try : " + classname);
+							@SuppressWarnings("unchecked")
 							Class<IPluginFactory> myLoadedClass = (Class<IPluginFactory>)ucl.loadClass(classname);
 							IPluginFactory myClass = (IPluginFactory)myLoadedClass.newInstance();
 							list.add(myClass);
