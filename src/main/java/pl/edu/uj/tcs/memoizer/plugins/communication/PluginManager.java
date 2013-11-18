@@ -30,7 +30,7 @@ public class PluginManager implements IPluginManager {
 	
 	private TreeMap<String, IPlugin> plugMap = new TreeMap<>();
 	private HashMap<String, IPluginFactory> factMap = new HashMap<>();
-	private IEventService eventService;
+	final public IEventService eventService;
 	
 	private Logger LOG = Logger.getLogger(PluginManager.class);
 	

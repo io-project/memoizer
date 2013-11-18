@@ -1,4 +1,4 @@
-package pl.edu.uj.tcs.memoizer.gui;
+package pl.edu.uj.tcs.memoizer.gui.views;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 import javax.swing.BoxLayout;
@@ -12,15 +12,17 @@ import javax.swing.JToggleButton;
 
 import java.awt.image.BufferedImage;
 import java.net.URL;
+import java.net.URLConnection;
 
 import javax.swing.Box;
 
 import java.awt.Component;
 import java.awt.Desktop;
 
-
 import javax.swing.border.EmptyBorder;
 import javax.swing.JTextArea;
+
+import pl.edu.uj.tcs.memoizer.plugins.Meme;
 
 import java.awt.Cursor;
 import java.awt.FlowLayout;
@@ -29,14 +31,14 @@ import java.awt.event.MouseEvent;
 
 
 @SuppressWarnings("serial")
-public class JImagePanel extends JPanel {
+public class JInfinityScrollViewItem extends JPanel {
 
 	/**
 	 * Create the panel.
 	 * 
 	 * TODO sprawdzać czy parametry nie są null'ami
 	 */
-	public JImagePanel(final Content content) {
+	public JInfinityScrollViewItem(final Meme meme) {
 		
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		setBorder(new EmptyBorder(10, 10, 10, 10));
@@ -46,12 +48,13 @@ public class JImagePanel extends JPanel {
 		add(horizontalBox);
 		
 		//Pole z tytułem
-		JLabel title = new JLabel(content.getTitle()==null?"":content.getTitle());
+		JLabel title = new JLabel(meme.getTitle()==null?"":meme.getTitle());
 		horizontalBox.add(title);
 		
 		Component horizontalGlue = Box.createHorizontalGlue();
 		horizontalBox.add(horizontalGlue);
 		
+		//Przycisk lubienia
 		JToggleButton toggleButton = new JToggleButton("★");//star: ★
 		
 		//toggleButton.setBorder(null);
@@ -63,16 +66,18 @@ public class JImagePanel extends JPanel {
 		horizontalBox.add(toggleButton);
 		toggleButton.setFont(new Font("Dialog", Font.BOLD, 20));
 		
-		if(content.isStarred())
-			toggleButton.setSelected(!true);
+		//TODO dodać obsługę gwiazdkowania
+		//if(content.isStarred())
+		//	toggleButton.setSelected(!true);
 		
-		if(content.getDescription()!=null){
+		/* pole z opisem */
+		if(meme.getDescription()!=null){
 			JTextArea description = new JTextArea();
 			description.setWrapStyleWord(true);
 			description.setLineWrap(true);
 			description.setOpaque(false);
 			description.setEditable(false);
-			description.setText(content.getDescription());
+			description.setText(meme.getDescription());
 			add(description);
 		}
 		
@@ -87,7 +92,7 @@ public class JImagePanel extends JPanel {
 		 * TODO Po kliknięciu w obrazek zrobić reload
 		 * TODO Dodać resizowanie w przypadku gdy obrazek jest za duży, /wtedy po kliknięciu w niego powinien się powiększyć/
 		 */
-		if(content.getImageUrl()!=null){
+		if(meme.getImageLink()!=null){
 			JLabel image = new JLabel("");
 			image.setIconTextGap(0);
 			image.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -95,8 +100,12 @@ public class JImagePanel extends JPanel {
 			ImageIcon imageIcon;
 			
 			try{
-				URL url = new URL(content.getImageUrl());
-				BufferedImage icon = ImageIO.read(url);
+				//URL url = new URL(content.getImageUrl());
+				URLConnection c = meme.getImageLink().openConnection();
+				c.setRequestProperty("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2");
+				
+				
+				BufferedImage icon = ImageIO.read(c.getInputStream());
 				imageIcon = new ImageIcon(icon);
 				
 			}catch(Exception e){
@@ -118,7 +127,7 @@ public class JImagePanel extends JPanel {
 		panel.setOpaque(false);
 		add(panel);
 		
-		if(content.getUrl()!=null){
+		if(meme.getPageLink()!=null){
 			JLabel browserLink = new JLabel("<HTML><A HREF=\"\">open in browser</A></HTML>");
 			
 			//Listener otwierający stronę z obrazkiem w domyślej przeglądarce
@@ -128,7 +137,7 @@ public class JImagePanel extends JPanel {
 					Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
 				    if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
 				        try {
-				            desktop.browse(new URL(content.getUrl()).toURI());
+				            desktop.browse(meme.getPageLink().toURI());
 				        } catch (Exception e) {
 				            e.printStackTrace();
 				        }
@@ -139,14 +148,5 @@ public class JImagePanel extends JPanel {
 			browserLink.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 			browserLink.setHorizontalAlignment(SwingConstants.LEFT);
 		}
-	}
-	
-	public JImagePanel(){
-		this(new Content(
-    		"Jeden plakat, MILION wspomnień!", 
-    		"Kot Tip Top, Rożnowa Pantera, Smerfetka, Kosmiczny Duch, Batman, Janet, Scooby Doo, Muttley, Kudłaty, Bałwan, Dinocco, Goryl Magilla, Pan Jinks, Flinston, Willma Flinston, Hong Kong Phooey, Elroy, Joe Jetson, George Jetson, Becky, TOM, Papa Smerf, Astro, Barney, Pebbles, Bart, Gargamel, Bambam, JERRY!, Wredniak, Johnny Quest, Pixie, Miś Yogi, Wally Gator, Boo Boo, Dixie, Judy i Pies Huckleberry", 
-    		"http://retro.pewex.pl/uimages/services/pewex/i18n/pl_PL/201310/1382521263_by_krzys_500.jpg?1382521276", 
-    		"http://retro.pewex.pl/477976/Jeden-plakat-MILION-wspomnien"
-    	));
 	}
 }

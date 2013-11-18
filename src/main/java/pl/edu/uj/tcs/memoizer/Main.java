@@ -1,11 +1,20 @@
 package pl.edu.uj.tcs.memoizer;
 
 import java.awt.EventQueue;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import pl.edu.uj.tcs.memoizer.events.EventService;
+import pl.edu.uj.tcs.memoizer.events.IEventService;
 import pl.edu.uj.tcs.memoizer.gui.MainWindow;
 import pl.edu.uj.tcs.memoizer.gui.OfflineContentProvider;
+import pl.edu.uj.tcs.memoizer.plugins.IPluginFactory;
+import pl.edu.uj.tcs.memoizer.plugins.communication.MemeProvider;
+import pl.edu.uj.tcs.memoizer.plugins.communication.PluginManager;
+import pl.edu.uj.tcs.memoizer.plugins.impl.demoty.DemotyDownloadPluginFactory;
 
 public class Main {
 	
@@ -16,7 +25,11 @@ public class Main {
 			public void run() {
 				try {
 					LOG.info("Starting application");
-					MainWindow window = new MainWindow(new OfflineContentProvider());
+					IEventService eventService = new EventService();
+					IPluginFactory[] pluginFactory = new IPluginFactory[]{new DemotyDownloadPluginFactory()};
+					PluginManager pluginManager = new PluginManager(Arrays.asList(pluginFactory), eventService);
+
+					MainWindow window = new MainWindow(pluginManager);
 					window.setVisible(true);
 				} catch (Exception e) {
 					LOG.error(e.getMessage());
