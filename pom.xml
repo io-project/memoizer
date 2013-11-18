@@ -98,5 +98,10 @@
 			<artifactId>log4j</artifactId>
 			<version>1.2.17</version>
 	</dependency>
+		<dependency>
+			<groupId>org.tcs.memoizer</groupId>
+			<artifactId>memoizer-plugins</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
 </project>
