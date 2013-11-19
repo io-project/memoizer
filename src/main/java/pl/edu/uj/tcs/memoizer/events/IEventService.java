@@ -31,5 +31,10 @@ public interface IEventService {
      *             when no observer for given event is registered
      */
     void call(IEvent event) throws EventException;
+    
+    /**
+     * Stops entire event service. It is not usable any longer.
+     */
+    void stop();
 
 }

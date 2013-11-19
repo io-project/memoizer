@@ -165,4 +165,10 @@ public class EventService implements IEventService {
         return (Class<T>) type.getActualTypeArguments()[0];
     }
 
+	@Override
+	public void stop() {
+
+		execService.shutdown();
+	}
+    
 }
