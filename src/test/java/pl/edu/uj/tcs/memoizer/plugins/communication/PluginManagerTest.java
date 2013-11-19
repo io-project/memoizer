@@ -99,6 +99,34 @@ public class PluginManagerTest {
 		pm.reloadStateOf(new DownloadPluginMock("blablabalafail"));
 	}
 	
+	public void getAllNamesTest() {
+		ArrayList<IPluginFactory> newFacts = new ArrayList<IPluginFactory>();
+		for(int i = 0; i < 30; i++) {
+			newFacts.add(inceptionMock.getAnotherFactory());
+		}
+		pm = new PluginManager(newFacts, es);
+
+		HashSet<String> f = new HashSet<>(pm.getAllPluginNames());
+		for(IPluginFactory fact: newFacts) {
+			Assert.assertTrue(f.contains(fact.getPluginName()));
+		}
+	}
+	
+	public void getPluginForNameTest() {
+		ArrayList<IPluginFactory> newFacts = new ArrayList<IPluginFactory>();
+		for(int i = 0; i < 10; i++) {
+			newFacts.add(inceptionMock.getAnotherFactory());
+		}
+		pm = new PluginManager(newFacts, es);
+		for(IPluginFactory fact: newFacts) {
+			Assert.assertEquals(fact.getPluginName(), 
+					pm.getPluginForName(fact.getPluginName()).getName());
+		}
+		
+		IPluginFactory fact = inceptionMock.getAnotherFactory();
+		Assert.assertNull(pm.getPluginForName(fact.getPluginName()));
+	}
+	
 	@Test
 	public void getAvailableViewsTest() {
 		// it is supposed to return every type since plugin mock provides every one

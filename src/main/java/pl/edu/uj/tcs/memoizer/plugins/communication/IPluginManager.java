@@ -21,6 +21,17 @@ public interface IPluginManager {
 	 * @return a list of all plugin instantiations for currently set factories
 	 */
 	List<IPlugin> getLoadedPlugins();
+	
+	/**
+	 * @return a list of names of every plugin provided by factories given to manager
+	 */
+	List<String> getAllPluginNames();
+	
+	/**
+	 * @param pluginName of desired plugin
+	 * @return IPlugin instance for given name or null if there is no such 
+	 */
+	IPlugin getPluginForName(String pluginName);
 
 	/**
 	 * @return every view type that is provided by at least one plugin

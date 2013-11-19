@@ -179,4 +179,20 @@ public class PluginManager implements IPluginManager {
 
 		return result;
 	}
+
+	@Override
+	public List<String> getAllPluginNames() {
+
+		return new ArrayList<String>(factMap.keySet());
+	}
+
+	@Override
+	public IPlugin getPluginForName(String pluginName) {
+
+		if(!plugMap.containsKey(pluginName)) {
+			return null;
+		}
+		return plugMap.get(pluginName);
+	}
+	
 }

@@ -4,6 +4,7 @@ import static pl.edu.uj.tcs.memoizer.plugins.communication.MemeProviderSettings.
 import static pl.edu.uj.tcs.memoizer.plugins.communication.MemeProviderSettings.DEFAULT_UNSELECTED_REFRESH_RATE;
 
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -14,6 +15,8 @@ import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.LinkedBlockingDeque;
 
 import org.apache.log4j.Logger;
 
@@ -37,20 +40,17 @@ public class MemeProvider implements IMemeProvider, IEventObserver<MemeDownloade
 	// relates on references
 	private Map<String, IScheduledMemeDownloader> downloaders = new TreeMap<>(); 
 	private Set<String> activePlugins = new HashSet<>();
-	private Map<EViewType, LinkedList<Meme>> selectedBuf = new HashMap<>();
+	private Map<EViewType, LinkedBlockingDeque<Meme>> selectedBuf = new HashMap<>();
 	private Map<EViewType, LinkedList<Meme>> idleBuf = new HashMap<>();
 
-	private IHandler<Meme> guiHandler;
-	
-	public MemeProvider(IEventService eventService, IHandler<Meme> guiHandler) {
+	public MemeProvider(IEventService eventService) {
 
 		this.eventService = eventService;
-		this.guiHandler = guiHandler;
 		
 		eventService.attach(this);
 		
 		for(EViewType vt: EViewType.values()) {
-			selectedBuf.put(vt, new LinkedList<Meme>());
+			selectedBuf.put(vt, new LinkedBlockingDeque<Meme>());
 			idleBuf.put(vt, new LinkedList<Meme>());
 		}
 	}
@@ -87,8 +87,6 @@ public class MemeProvider implements IMemeProvider, IEventObserver<MemeDownloade
 				
 				pluginView = view;
 				refillQueues();
-				
-				provideEnqueued();
 			}
 
 		} else {
@@ -99,7 +97,7 @@ public class MemeProvider implements IMemeProvider, IEventObserver<MemeDownloade
 	
 	private void refillQueues() {
 
-		LinkedList<Meme> act = selectedBuf.get(pluginView.getViewType());
+		Deque<Meme> act = selectedBuf.get(pluginView.getViewType());
 		LinkedList<Meme> idle = idleBuf.get(pluginView.getViewType());
 		
 		Iterator<Meme> it = act.iterator();
@@ -107,6 +105,7 @@ public class MemeProvider implements IMemeProvider, IEventObserver<MemeDownloade
 		while(it.hasNext()) {
 			Meme m = it.next();
 			if(!activePlugins.contains(m.getOwner().getName())) {
+				it.remove();
 				idle.add(m);
 				count++;
 			}
@@ -148,7 +147,7 @@ public class MemeProvider implements IMemeProvider, IEventObserver<MemeDownloade
 	}
 	
 	@Override
-	public void cancel() {
+	public void stop() {
 		LOG.debug("Stopping meme provider");
 
 		for(Entry<String, IScheduledMemeDownloader> entry: downloaders.entrySet()) {
@@ -158,20 +157,49 @@ public class MemeProvider implements IMemeProvider, IEventObserver<MemeDownloade
 		
 		clear();
 	}
-
 	
-	private void provideEnqueued() { // in synchronized(this) block
-
-		ArrayList<Meme> results = new ArrayList<Meme>();
+	@Override
+	public boolean hasNext() {
 		Queue<Meme> que = selectedBuf.get(pluginView.getViewType());
-		
-		while(!que.isEmpty()) {
-			results.add(que.poll());
-		}
-		while(!results.isEmpty()) {
-			guiHandler.handle(pluginView.extractNextMeme(results));
-		}
+		return !que.isEmpty();
 	}
+
+	@Override
+	public Meme getNext() {
+
+		List<Meme> res = getNext(1);
+		
+		if(res.isEmpty()) {
+			return null;
+		}
+		return res.get(0);
+	}
+
+	@Override
+	public List<Meme> getNext(int n) {
+
+		ArrayList<Meme> memes = new ArrayList<Meme>();
+		ArrayList<Meme> results = new ArrayList<Meme>();
+
+		LinkedBlockingDeque<Meme> deq = selectedBuf.get(pluginView.getViewType());
+
+		deq.drainTo(memes);
+		
+		for(int i = 0; i < n && !memes.isEmpty(); i++) {
+			results.add(pluginView.extractNextMeme(memes));
+		}
+
+		for(Meme m: memes) {
+			try {
+				deq.putFirst(m);
+			} catch (InterruptedException e) {
+				LOG.error("Could not return Meme to the buffer");
+			}
+		}
+
+		return results;
+	}
+
 	
 	private void enqueue(MemeDownloadedEvent event) {
 		// TODO limit number of elements in queues by stopping all slowing down downloaders
@@ -191,11 +219,6 @@ public class MemeProvider implements IMemeProvider, IEventObserver<MemeDownloade
 		synchronized(this) {
 
 			enqueue(event);
-			if(pluginView != null && pluginView.getViewType() == event.getViewType() 
-					&& activePlugins.contains(event.getPlugin().getName())) 
-			{
-				provideEnqueued();
-			} 
 		}
 	}
 }

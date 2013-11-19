@@ -30,7 +30,24 @@ public interface IMemeProvider {
 	
 	
 	/**
-	 * Stops object - cancels all connections and pending downloads
+	 * 
+	 * @return true if there is queued meme 
 	 */
-	void cancel();
+	boolean hasNext();
+	
+	/**
+	 * @return next meme according to currently set view
+	 */
+	Meme getNext();
+	
+	/**
+	 * @return up to n next memes
+	 */
+	List<Meme> getNext(int n);
+	
+	/**
+	 * Stops object - cancels all connections and pending downloads
+	 * After execution of this method IMemeProvider may be no longer usable and in valid state
+	 */
+	void stop();
 }
