@@ -19,13 +19,13 @@ public class MemeProviderTest {
 	
 	@Test
 	public void constructorTest() {
-		MemeProvider mp = new MemeProvider(es);
+		MemeProvider mp = new MemeProvider();
 		Assert.assertNull(mp.getCurrentView());
 	}
 	
 	@Test
 	public void setViewTest() throws InvalidPlugin {
-		MemeProvider mp = new MemeProvider(es);
+		MemeProvider mp = new MemeProvider();
 		ArrayList<IDownloadPlugin> plugs = new ArrayList<>();
 		plugs.add(new DownloadPluginMock("plug1"));
 		plugs.add(new DownloadPluginMock("plug2"));
@@ -35,7 +35,7 @@ public class MemeProviderTest {
 	
 	@Test
 	public void gettingTestOne() throws InvalidPlugin, InterruptedException {
-		MemeProvider mp = new MemeProvider(es);
+		MemeProvider mp = new MemeProvider();
 		ArrayList<IDownloadPlugin> plugs = new ArrayList<>();
 		plugs.add(new DownloadPluginMock("plug1"));
 		plugs.add(new DownloadPluginMock("plug2"));
@@ -47,7 +47,7 @@ public class MemeProviderTest {
 	
 	@Test
 	public void stopTest() throws InvalidPlugin {
-		MemeProvider mp = new MemeProvider(es);
+		MemeProvider mp = new MemeProvider();
 		ArrayList<IDownloadPlugin> plugs = new ArrayList<>();
 		plugs.add(new DownloadPluginMock("plug1"));
 		plugs.add(new DownloadPluginMock("plug2"));
