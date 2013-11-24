@@ -4,6 +4,8 @@ import javax.swing.JPanel;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
+import javax.swing.JTextPane;
+import javax.swing.UIManager;
 
 import java.awt.Font;
 
@@ -48,7 +50,15 @@ public class JInfinityScrollViewItem extends JPanel {
 		add(horizontalBox);
 		
 		//Pole z tytułem
-		JLabel title = new JLabel(meme.getTitle()==null?"":meme.getTitle());
+		//JLabel title = new JLabel(meme.getTitle()==null?"":meme.getTitle());
+		JTextPane title = new JTextPane();
+		title.setText(meme.getTitle()==null?"":meme.getTitle());
+		title.setBorder(null);
+		title.setAutoscrolls(false);
+		title.setOpaque(false);
+		title.setFont(UIManager.getFont("Label.font"));
+		//TODO dodać pionowe centrowanie tytułu !!!
+		
 		horizontalBox.add(title);
 		
 		Component horizontalGlue = Box.createHorizontalGlue();

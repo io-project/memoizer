@@ -96,7 +96,7 @@ public class JInfinityScrollView extends JMemoizerView {
 		lblSpinner.setVerticalAlignment(SwingConstants.TOP);
 		panelOutter.add(lblSpinner, BorderLayout.SOUTH);
 		lblSpinner.setHorizontalAlignment(SwingConstants.CENTER);
-		lblSpinner.setIcon(new ImageIcon(this.getClass().getResource("/icons/ajax-loader.gif")));
+		lblSpinner.setIcon(new ImageIcon(this.getClass().getResource("/ajax-loader.gif")));
 	
 		this.addComponentListener(new ComponentAdapter() {
 			@Override
