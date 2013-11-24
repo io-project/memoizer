@@ -10,6 +10,7 @@ import java.util.Map;
 import pl.edu.uj.tcs.memoizer.plugins.EViewType;
 import pl.edu.uj.tcs.memoizer.plugins.IDownloadPlugin;
 import pl.edu.uj.tcs.memoizer.plugins.Meme;
+import pl.edu.uj.tcs.memoizer.serialization.StateObject;
 
 public class DownloadPluginMock implements IDownloadPlugin {
 	
@@ -21,8 +22,8 @@ public class DownloadPluginMock implements IDownloadPlugin {
 	}
 
 	@Override
-	public Map<String, byte[]> getState() {
-		return null;
+	public StateObject getState() {
+		return new StateObject();
 	}
 
 	@Override

@@ -16,6 +16,7 @@ import pl.edu.uj.tcs.memoizer.plugins.IDownloadPlugin;
 import pl.edu.uj.tcs.memoizer.plugins.IPlugin;
 import pl.edu.uj.tcs.memoizer.plugins.IPluginFactory;
 import pl.edu.uj.tcs.memoizer.plugins.InvalidPlugin;
+import pl.edu.uj.tcs.memoizer.serialization.StateObject;
 
 
 /**
@@ -55,7 +56,7 @@ public class PluginManager implements IPluginManager {
 			Assert.assertFalse(factMap.containsKey(fact.getPluginName())); 
 			factMap.put(fact.getPluginName(), fact);
 
-			Map<String, byte[]> state;
+			StateObject state;
 			IPlugin plugin = plugMap.get(fact.getPluginName());
 			if(plugin != null) {
 				state = plugin.getState();
@@ -85,7 +86,7 @@ public class PluginManager implements IPluginManager {
 		plugMap = newPlugs;
 	}
 	
-	private Map<String, byte[]> getLatestStateOf(IPlugin plugin) {
+	private StateObject getLatestStateOf(IPlugin plugin) {
 		// TODO get state from appropriate manager
 		return null;
 	}
@@ -122,7 +123,7 @@ public class PluginManager implements IPluginManager {
 		Assert.assertTrue("No factory for plugin: " + plugin.getName() + " in pluginManager: ", 
 				factMap.containsKey(plugin.getName()));
 
-		Map<String, byte[]> state = getLatestStateOf(plugin);
+		StateObject state = getLatestStateOf(plugin);
 
 		IPluginFactory fact = factMap.get(plugin.getName());
 		plugin = fact.newInstance(state);

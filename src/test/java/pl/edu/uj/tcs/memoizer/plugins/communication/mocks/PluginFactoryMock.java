@@ -5,6 +5,7 @@ import java.util.Map;
 
 import pl.edu.uj.tcs.memoizer.plugins.IPlugin;
 import pl.edu.uj.tcs.memoizer.plugins.IPluginFactory;
+import pl.edu.uj.tcs.memoizer.serialization.StateObject;
 
 public class PluginFactoryMock implements IPluginFactory {
 	
@@ -25,7 +26,7 @@ public class PluginFactoryMock implements IPluginFactory {
 	}
 
 	@Override
-	public IPlugin newInstance(Map<String, byte[]> pluginStateMap) {
+	public IPlugin newInstance(StateObject pluginStateMap) {
 		return new DownloadPluginMock(name);
 	}
 
