@@ -1,21 +1,15 @@
 package pl.edu.uj.tcs.memoizer.gui.models;
 
 import java.util.ArrayList;
-import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
-
 import pl.edu.uj.tcs.memoizer.gui.views.JMemoizerView;
 import pl.edu.uj.tcs.memoizer.handlers.IHandler;
-import pl.edu.uj.tcs.memoizer.plugins.EViewType;
-import pl.edu.uj.tcs.memoizer.plugins.IDownloadPlugin;
 import pl.edu.uj.tcs.memoizer.plugins.Meme;
 import pl.edu.uj.tcs.memoizer.plugins.communication.MemeProvider;
-import pl.edu.uj.tcs.memoizer.plugins.communication.PluginManager;
-import pl.edu.uj.tcs.memoizer.plugins.impl.demoty.DemotyDownloadPluginFactory;
 
 
 public class SimpleMemoizerModel implements IMemoizerModel, IHandler<Meme> {
-	private MemeProvider connector;
+	private MemeProvider memeProvider;
 	private ArrayList<Meme> memes = new ArrayList<Meme>();
 	private JMemoizerView view;
 	
@@ -27,24 +21,22 @@ public class SimpleMemoizerModel implements IMemoizerModel, IHandler<Meme> {
 	 * 
 	 * @param connector Data source for this model
 	 */
-	public SimpleMemoizerModel(MemeProvider connector, PluginManager pluginManager){
-		this.connector = connector;
-		
-		final IDownloadPlugin plugin = pluginManager.getPluginsForView(EViewType.CHRONOLOGICAL).get(0);
-		plugin.setView(EViewType.CHRONOLOGICAL);
+	public SimpleMemoizerModel(final MemeProvider memeProvider){
+		this.memeProvider = memeProvider;
+		System.out.println("SimpleMemoizerModel: "+memeProvider.getCurrentView().getViewType());
 		
 		//TODO zabezpieczyć workera przed błędami
 		worker = new Thread(new Runnable(){
 			@Override
 			public void run() {
 				while(true){
-//					System.out.println("Running");
+					//System.out.println("Running");
 					while(completedItems<requestedItems.get()){
-						Meme meme = plugin.getNext();
+						Meme meme = memeProvider.getNext();
 						memes.add(meme);
 						completedItems++;
 						//System.out.println("Loaded next meme: "+completedItems);
-//						System.out.println("Try synchronize");
+						//System.out.println("Try synchronize");
 						synchronized(SimpleMemoizerModel.this){
 							SimpleMemoizerModel.this.notifyAll();
 						}
@@ -53,9 +45,9 @@ public class SimpleMemoizerModel implements IMemoizerModel, IHandler<Meme> {
 							view.notifyUpdate();
 					}
 					try {
-//						System.out.println("Try synchronize2");
+						//System.out.println("Try synchronize2");
 						synchronized(worker){
-//							System.out.println("Sleeping");
+							//System.out.println("Sleeping");
 							worker.wait(10000);
 						}
 //						System.out.println("Done2");
@@ -87,7 +79,7 @@ public class SimpleMemoizerModel implements IMemoizerModel, IHandler<Meme> {
 	
 	@Override
 	public boolean tryGet(int k) {
-//		System.out.println("tryGet: "+k);
+		//System.out.println("tryGet: "+k);
 		if(memes.size()<=k){
 			//TODO inicjalizacja ładowania w tle
 			while(true){
@@ -107,7 +99,7 @@ public class SimpleMemoizerModel implements IMemoizerModel, IHandler<Meme> {
 	
 	@Override
 	public Meme get(int k){
-//		System.out.println("get: "+k);
+		//System.out.println("get: "+k);
 		// set 
 		while(true){
 			int v = requestedItems.get();

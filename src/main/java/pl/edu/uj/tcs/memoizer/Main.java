@@ -1,20 +1,12 @@
 package pl.edu.uj.tcs.memoizer;
 
 import java.awt.EventQueue;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-
 import org.apache.log4j.Logger;
-
 import pl.edu.uj.tcs.memoizer.events.EventService;
 import pl.edu.uj.tcs.memoizer.events.IEventService;
 import pl.edu.uj.tcs.memoizer.gui.MainWindow;
-import pl.edu.uj.tcs.memoizer.gui.OfflineContentProvider;
-import pl.edu.uj.tcs.memoizer.plugins.IPluginFactory;
-import pl.edu.uj.tcs.memoizer.plugins.communication.MemeProvider;
+import pl.edu.uj.tcs.memoizer.plugins.PluginLoader;
 import pl.edu.uj.tcs.memoizer.plugins.communication.PluginManager;
-import pl.edu.uj.tcs.memoizer.plugins.impl.demoty.DemotyDownloadPluginFactory;
 
 public class Main {
 	
@@ -24,13 +16,19 @@ public class Main {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
+					String current = new java.io.File( "." ).getCanonicalPath();
+				    System.out.println("Current dir:"+current);
+				        
 					LOG.info("Starting application");
 					IEventService eventService = new EventService();
-					IPluginFactory[] pluginFactory = new IPluginFactory[]{new DemotyDownloadPluginFactory()};
-					PluginManager pluginManager = new PluginManager(Arrays.asList(pluginFactory), eventService);
-
+					PluginLoader pluginLoader = new PluginLoader();
+					pluginLoader.addPluginDirectory("./plugins/");
+					pluginLoader.loadPlugins();
+					
+					PluginManager pluginManager = new PluginManager(pluginLoader.getLoadedPluginFactories(), eventService);
+					
 					MainWindow window = new MainWindow(pluginManager);
-					window.setVisible(true);
+					//window.setVisible(true);//TODO is it nesessery?
 				} catch (Exception e) {
 					LOG.error(e.getMessage());
 					e.printStackTrace();

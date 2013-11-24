@@ -52,6 +52,11 @@ public class MemeProvider implements IMemeProvider {
 
 		if(checkPlugins(view.getViewType(), newPlugs)) {
 			
+			//change view for plugins
+			for(IDownloadPlugin plugin: newPlugs) {
+				plugin.setView(view.getViewType());
+			}
+			
 			refillExtracted(newPlugs, view.getViewType());
 
 			plugs.clear();
@@ -280,7 +285,7 @@ public class MemeProvider implements IMemeProvider {
 		while(!success) {
 
 			for(IDownloadPlugin plug: plugs) {
-
+				
 				List<Future<Meme>> l = buffers.get(plug.getName());
 				if(l != null) {
 
@@ -331,6 +336,7 @@ public class MemeProvider implements IMemeProvider {
 		int i = 0;
 		while(i < n && !currExtr.isEmpty()) {
 			results.add(pluginView.extractNextMeme(currExtr));
+			i++;
 		}
 		
 		if(currExtr.size() < MIN_LIMIT) {
