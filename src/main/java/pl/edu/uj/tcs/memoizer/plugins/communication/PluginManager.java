@@ -3,9 +3,10 @@ package pl.edu.uj.tcs.memoizer.plugins.communication;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 import org.junit.Assert;
@@ -148,7 +149,7 @@ public class PluginManager implements IPluginManager {
 	@Override
 	public List<EViewType> getAvailableViews() {
 
-		List<EViewType> result = new ArrayList<EViewType>();
+		Set<EViewType> result = new TreeSet<EViewType>();
 
 		for(IPlugin plugin: plugMap.values()) {
 
@@ -157,7 +158,7 @@ public class PluginManager implements IPluginManager {
 			}
 		}
 
-		return result;
+		return new ArrayList<EViewType>(result);
 	}
 
 	@Override
