@@ -1,10 +1,13 @@
 package pl.edu.uj.tcs.memoizer.gui.models;
 
 import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
+
 import pl.edu.uj.tcs.memoizer.gui.views.JMemoizerView;
 import pl.edu.uj.tcs.memoizer.handlers.IHandler;
 import pl.edu.uj.tcs.memoizer.plugins.Meme;
+import pl.edu.uj.tcs.memoizer.plugins.communication.DownloadMemeException;
 import pl.edu.uj.tcs.memoizer.plugins.communication.MemeProvider;
 
 
@@ -32,17 +35,23 @@ public class SimpleMemoizerModel implements IMemoizerModel, IHandler<Meme> {
 				while(true){
 					//System.out.println("Running");
 					while(completedItems<requestedItems.get()){
-						Meme meme = memeProvider.getNext();
-						memes.add(meme);
-						completedItems++;
-						//System.out.println("Loaded next meme: "+completedItems);
-						//System.out.println("Try synchronize");
-						synchronized(SimpleMemoizerModel.this){
-							SimpleMemoizerModel.this.notifyAll();
-						}
-//						System.out.println("Done");
+						Meme meme;
+						try {
+							meme = memeProvider.getNext();
+							memes.add(meme);
+							completedItems++;
+							//System.out.println("Loaded next meme: "+completedItems);
+							//System.out.println("Try synchronize");
+							synchronized(SimpleMemoizerModel.this){
+								SimpleMemoizerModel.this.notifyAll();
+							}
+	//						System.out.println("Done");
 						if(view!=null)
 							view.notifyUpdate();
+						} catch (ExecutionException | DownloadMemeException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 					}
 					try {
 						//System.out.println("Try synchronize2");

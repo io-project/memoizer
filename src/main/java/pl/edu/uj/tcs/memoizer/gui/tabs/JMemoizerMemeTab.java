@@ -68,7 +68,7 @@ public final class JMemoizerMemeTab extends JMemoizerTab {
 	}
 	
 	public JMemoizerMemeTab(EViewType viewType, IDownloadPlugin plugin){
-		this(plugin.getName(), viewType, Arrays.asList(new IDownloadPlugin[]{plugin}));
+		this(plugin.getServiceName(), viewType, Arrays.asList(new IDownloadPlugin[]{plugin}));
 	}
 	
 	@Override

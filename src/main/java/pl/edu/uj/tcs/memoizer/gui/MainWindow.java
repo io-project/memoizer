@@ -1,13 +1,8 @@
 package pl.edu.uj.tcs.memoizer.gui;
 
 
-import java.awt.FlowLayout;
-import javax.swing.JFrame;
-import javax.swing.JMenuBar;
-import javax.swing.JLayeredPane;
 import java.awt.BorderLayout;
-import javax.swing.JLabel;
-import javax.swing.SwingConstants;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -16,19 +11,22 @@ import java.awt.event.ComponentListener;
 
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
-
+import javax.swing.ImageIcon;
 import javax.swing.InputMap;
 import javax.swing.JButton;
 import javax.swing.JComponent;
-import javax.swing.KeyStroke;
-import javax.swing.UIManager;
-import javax.swing.JPanel;
-
-import javax.swing.JTabbedPane;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JLayeredPane;
 import javax.swing.JMenu;
+import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.ImageIcon;
+import javax.swing.JPanel;
 import javax.swing.JSeparator;
+import javax.swing.JTabbedPane;
+import javax.swing.KeyStroke;
+import javax.swing.SwingConstants;
+import javax.swing.UIManager;
 
 import pl.edu.uj.tcs.memoizer.gui.tabs.JMemoizerHTMLTab;
 import pl.edu.uj.tcs.memoizer.gui.tabs.JMemoizerMemeTab;
@@ -77,7 +75,7 @@ public class MainWindow {
 				viewItem.add(new JSeparator());
 				
 				for(IDownloadPlugin plugin: pluginManager.getPluginsForView(viewType)){
-					item = new JMenuItem(plugin.getName());
+					item = new JMenuItem(plugin.getServiceName());
 					//TODO dodawanie ikonek do pluginów
 					//TODO podpiąć actionListenery do zmian pluginów
 					final IDownloadPlugin fplugin = plugin;
@@ -100,8 +98,8 @@ public class MainWindow {
 		if(pluginManager!=null){
 			menu = new JMenu("Sources");
 			
-			for(IPlugin plugin: pluginManager.getLoadedPlugins()){
-				item = new JMenuItem(plugin.getName());
+			for(String pluginName: pluginManager.getAllPluginNames()){
+				item = new JMenuItem(pluginName);
 				//TODO dodawanie ikonek do pluginów
 				//TODO podpiąć actionListenery do zmian pluginów
 				menu.add(item);
