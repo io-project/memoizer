@@ -5,7 +5,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 import pl.edu.uj.tcs.memoizer.plugins.EViewType;
 import pl.edu.uj.tcs.memoizer.plugins.IDownloadPlugin;
@@ -15,10 +14,11 @@ import pl.edu.uj.tcs.memoizer.serialization.StateObject;
 public class DownloadPluginMock implements IDownloadPlugin {
 	
 	private String name;
-	private EViewType curViewType = EViewType.CHRONOLOGICAL;
+	private EViewType curViewType;
 	
-	public DownloadPluginMock(String name) {
+	public DownloadPluginMock(String name, EViewType viewType) {
 		this.name = name;
+		curViewType = viewType;
 	}
 
 	@Override
@@ -27,18 +27,13 @@ public class DownloadPluginMock implements IDownloadPlugin {
 	}
 
 	@Override
-	public String getName() {
+	public String getServiceName() {
 		return name;
 	}
 
 	@Override
-	public List<EViewType> getAvailableViews() {
-		return Arrays.asList(EViewType.values());
-	}
-
-	@Override
-	public void setView(EViewType viewType) {
-		this.curViewType = viewType;
+	public EViewType getView() {
+		return curViewType;
 	}
 
 	@Override
@@ -66,7 +61,9 @@ public class DownloadPluginMock implements IDownloadPlugin {
 
 	@Override
 	public Iterable<Meme> getNext(int n) {
-		return new ArrayList<Meme>();
+		ArrayList<Meme> results = new ArrayList<>();
+		for(int i = 0; i < n; i++) results.add(getNext());
+		return results;
 	}
 
 }

@@ -13,12 +13,13 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
 
 import pl.edu.uj.tcs.memoizer.plugins.EViewType;
 import pl.edu.uj.tcs.memoizer.plugins.IDownloadPlugin;
 import pl.edu.uj.tcs.memoizer.plugins.IPluginView;
-import pl.edu.uj.tcs.memoizer.plugins.InvalidPlugin;
+import pl.edu.uj.tcs.memoizer.plugins.InvalidPluginException;
 import pl.edu.uj.tcs.memoizer.plugins.Meme;
 
 public class MemeProvider implements IMemeProvider {
@@ -33,7 +34,7 @@ public class MemeProvider implements IMemeProvider {
 	private ArrayList<IDownloadPlugin> plugs = new ArrayList<>();
 
 	private HashMap<EViewType, LinkedList<Meme>> extracted = new HashMap<>();
-	private HashMap<EViewType, Map<String, List<Future<Meme>>>> awaiting = new HashMap<>();
+	private HashMap<EViewType, Map<String, List<Future<Iterable<Meme>>>>> awaiting = new HashMap<>();
 	
 	private LinkedList<Meme> currExtr;
 
@@ -43,19 +44,14 @@ public class MemeProvider implements IMemeProvider {
 
 		for(EViewType vt: EViewType.values()) {
 			extracted.put(vt, new LinkedList<Meme>());
-			awaiting.put(vt, new HashMap<String, List<Future<Meme>>>());
+			awaiting.put(vt, new HashMap<String, List<Future<Iterable<Meme>>>>());
 		}
 	}
 
 	@Override
-	public void setView(IPluginView view, List<IDownloadPlugin> newPlugs) throws InvalidPlugin {
+	public void setView(IPluginView view, List<IDownloadPlugin> newPlugs) throws InvalidPluginException {
 
 		if(checkPlugins(view.getViewType(), newPlugs)) {
-			
-			//change view for plugins
-			for(IDownloadPlugin plugin: newPlugs) {
-				plugin.setView(view.getViewType());
-			}
 			
 			refillExtracted(newPlugs, view.getViewType());
 
@@ -69,7 +65,7 @@ public class MemeProvider implements IMemeProvider {
 			}
 			
 		} else {
-			throw new InvalidPlugin("At least on of chosen plugins does not provide view: "
+			throw new InvalidPluginException("At least on of chosen plugins does not provide view: "
                     + view.getViewType().getName());
 		}
 	}
@@ -77,7 +73,7 @@ public class MemeProvider implements IMemeProvider {
 	private static boolean plugInList(List<IDownloadPlugin> list, IDownloadPlugin plug) {
 
 		for(IDownloadPlugin dp: list) {
-			if(plug.getName().equals(dp.getName())) return true;
+			if(plug.getServiceName().equals(dp.getServiceName())) return true;
 		}
 
 		return false;
@@ -122,7 +118,7 @@ public class MemeProvider implements IMemeProvider {
 	private static boolean checkPlugins(EViewType viewType, List<IDownloadPlugin> plugins) {
 		
 		for(IDownloadPlugin plugin: plugins) {
-			if(!plugin.getAvailableViews().contains(viewType)) return false;
+			if(!plugin.getView().equals(viewType)) return false;
 		}
 
 		return true;
@@ -144,25 +140,20 @@ public class MemeProvider implements IMemeProvider {
 	@Override
 	public void stop() {
 
+		clear();
 		execService.shutdown();
 	}
 	
 	private void downloadForPlug(IDownloadPlugin plug, int count) {
 		
-		Map<String, List<Future<Meme>>> buffers = awaiting.get(pluginView.getViewType());
-		List<Future<Meme>> futures = buffers.get(plug.getName());
+		Map<String, List<Future<Iterable<Meme>>>> buffers = awaiting.get(pluginView.getViewType());
+		List<Future<Iterable<Meme>>> futures = buffers.get(plug.getServiceName());
 		if(futures == null) {
-			futures = new LinkedList<Future<Meme>>();
-			buffers.put(plug.getName(), futures);
+			futures = new LinkedList<Future<Iterable<Meme>>>();
+			buffers.put(plug.getServiceName(), futures);
 		}
 
-		for(int i = 0; i < count; i++) {
-			if(plug.hasNext()) {
-				currExtr.add(plug.getNext());
-			} else {
-				futures.add(execService.submit(new MemeDownloader(plug)));
-			}
-		}
+		futures.add(execService.submit(new MemeDownloader(plug, count)));
 	}
 
 	private void downloadNext(int count) {
@@ -173,15 +164,15 @@ public class MemeProvider implements IMemeProvider {
 		}
 	}
 	
-	private void extractFinished() {
+	private void extractFinished() throws ExecutionException {
 
-		Map<String, List<Future<Meme>>> buffers = awaiting.get(pluginView.getViewType());
-		List<Future<Meme>> l;
-		Iterator<Future<Meme>> it;
-		Future<Meme> val;
+		Map<String, List<Future<Iterable<Meme>>>> buffers = awaiting.get(pluginView.getViewType());
+		List<Future<Iterable<Meme>>> l;
+		Iterator<Future<Iterable<Meme>>> it;
+		Future<Iterable<Meme>> val;
 
 		for(IDownloadPlugin plug: plugs) {
-			l = buffers.get(plug.getName());
+			l = buffers.get(plug.getServiceName());
 			if(l == null) continue;
 			
 			it = l.iterator();
@@ -192,31 +183,36 @@ public class MemeProvider implements IMemeProvider {
 
 					it.remove();
 					try {
-						Meme m = val.get();
-						if(m != null) {
-							currExtr.addLast(m);
+						Iterable<Meme> memes = val.get();
+						if(memes != null) {
+							appendExtracted(memes);
 						}
 					} catch (InterruptedException e) {
-						LOG.error("Could not get Meme from plugin: " + plug.getName() + 
+						LOG.error("Could not get Meme from plugin: " + plug.getServiceName() + 
 								" due to an InterruptedException exception: " + e.getMessage());
-					} catch (ExecutionException e) {
-						LOG.error("Could not get Meme from plugin: " + plug.getName() + 
-								" due to an ExecutionException exception: " + e.getMessage());
-					}
+					} 
 				}
 			}
 		}
 	}
 	
-	private void waitExtract(long time) {
+	private void appendExtracted(Iterable<Meme> memes) {
+		for(Meme m: memes) {
+			if(m != null) {
+				currExtr.addLast(m);
+			}
+		}
+	}
+	
+	private void waitExtract(long time) throws ExecutionException {
 
-		Map<String, List<Future<Meme>>> buffers = awaiting.get(pluginView.getViewType());
-		List<Future<Meme>> l;
-		Iterator<Future<Meme>> it;
-		Future<Meme> val;
+		Map<String, List<Future<Iterable<Meme>>>> buffers = awaiting.get(pluginView.getViewType());
+		List<Future<Iterable<Meme>>> l;
+		Iterator<Future<Iterable<Meme>>> it;
+		Future<Iterable<Meme>> val;
 
 		for(IDownloadPlugin plug: plugs) {
-			l = buffers.get(plug.getName());
+			l = buffers.get(plug.getServiceName());
 			if(l == null) continue;
 			
 			it = l.iterator();
@@ -225,93 +221,92 @@ public class MemeProvider implements IMemeProvider {
 				val = it.next();
 
 				try {
-					Meme m;
+					Iterable<Meme> memes;
 					try {
-						m = val.get(AWAIT_TIME, TimeUnit.MILLISECONDS);
+						memes = val.get(AWAIT_TIME, TimeUnit.MILLISECONDS);
 						it.remove();
 					} catch (TimeoutException e) {
 						continue;
 					}
-					if(m != null) {
-						currExtr.addLast(m);
+					if(memes != null) {
+						appendExtracted(memes);
 					}
 				} catch (InterruptedException e) {
-					LOG.error("Could not get Meme from plugin: " + plug.getName() + 
+					LOG.error("Could not get Meme from plugin: " + plug.getServiceName() + 
 							" due to an InterruptedException exception: " + e.getMessage());
-				} catch (ExecutionException e) {
-					LOG.error("Could not get Meme from plugin: " + plug.getName() + 
-							" due to an ExecutionException exception: " + e.getMessage());
-				}
+				} 
 			}
 		}
 	}
 	
 	@Override
 	public boolean hasNext() {
-
+		
+		if(pluginView == null) {
+			return false;
+		}
 		if(!currExtr.isEmpty()) {
 			return true;
 		}
 		
-		extractFinished();
-		if(currExtr.isEmpty()) {
-
-			waitExtract(AWAIT_TIME);
+		try {
+			extractFinished();
 			if(currExtr.isEmpty()) {
-				return false;
+	
+				waitExtract(AWAIT_TIME);
+				if(currExtr.isEmpty()) {
+					return false;
+				} else {
+					return true;
+				}
 			} else {
 				return true;
 			}
-		} else {
-			return true;
+		} catch (ExecutionException e) {
+			LOG.error("Could not check next memes: " + ExceptionUtils.getStackTrace(e));
+			return false;
 		}
 	}
 
-	@Override
-	public Meme getNext() {
-		
-		List<Meme> l = getNext(1);
-		if(l.isEmpty()) {
-			return null;
-		} else {
-			return l.get(0);
-		}
-	}
-	
-	public void waitForOne() {
-		Map<String, List<Future<Meme>>> buffers = awaiting.get(pluginView.getViewType());
-		
-		boolean success = false;
-		while(!success) {
+	public void waitForOne() throws ExecutionException {
 
-			for(IDownloadPlugin plug: plugs) {
-				
-				List<Future<Meme>> l = buffers.get(plug.getName());
-				if(l != null) {
+		Map<String, List<Future<Iterable<Meme>>>> buffers = awaiting.get(pluginView.getViewType());
+		for(IDownloadPlugin plug: plugs) {
+			
+			List<Future<Iterable<Meme>>> l = buffers.get(plug.getServiceName());
+			if(l != null) {
 
-					Iterator<Future<Meme>> it = l.iterator();
-					while(it.hasNext()) {
-						Future<Meme> ft = it.next();
-						it.remove();
-						try {
-							Meme m = ft.get();
-							if(m != null) {
-								currExtr.addLast(m);
-							}
-							success = true;
-							break;
-						} catch (InterruptedException | ExecutionException e) {
-							LOG.error("Could not get Meme: " + e.getMessage());
+				Iterator<Future<Iterable<Meme>>> it = l.iterator();
+				while(it.hasNext()) {
+					Future<Iterable<Meme>> ft = it.next();
+					it.remove();
+					try {
+						Iterable<Meme> memes = ft.get();
+						if(memes != null) {
+							appendExtracted(memes);
+							return;
 						}
+					} catch (InterruptedException e) {
+						LOG.error("Could not get Meme: " + ExceptionUtils.getStackTrace(e));
 					}
-					if(success) break;
 				}
 			}
 		}
 	}
 
 	@Override
-	public List<Meme> getNext(int n) {
+	public Meme getNext() throws ExecutionException, DownloadMemeException {
+		
+		List<Meme> l = getNext(1);
+		if(l.isEmpty()) {
+			throw new DownloadMemeException("No new memes to return");
+		} else {
+			return l.get(0);
+		}
+	}
+
+	@Override
+	public List<Meme> getNext(int n) throws ExecutionException, DownloadMemeException {
 
 		ArrayList<Meme> results = new ArrayList<Meme>();
 		if(currExtr.size() < n) {
@@ -329,10 +324,6 @@ public class MemeProvider implements IMemeProvider {
 			}
 		}
 
-		if(currExtr.isEmpty()) {
-			LOG.debug("Returning empty list");
-		}
-		
 		int i = 0;
 		while(i < n && !currExtr.isEmpty()) {
 			results.add(pluginView.extractNextMeme(currExtr));
@@ -343,6 +334,10 @@ public class MemeProvider implements IMemeProvider {
 			downloadNext(MIN_LIMIT);
 		}
 
+		if(results.isEmpty()) {
+			throw new DownloadMemeException("No new memes to return");
+		}
+		
 		return results;
 	}
 

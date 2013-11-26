@@ -2,11 +2,12 @@ package pl.edu.uj.tcs.memoizer.plugins.communication;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import pl.edu.uj.tcs.memoizer.plugins.EViewType;
 import pl.edu.uj.tcs.memoizer.plugins.IDownloadPlugin;
 import pl.edu.uj.tcs.memoizer.plugins.IPluginView;
-import pl.edu.uj.tcs.memoizer.plugins.InvalidPlugin;
+import pl.edu.uj.tcs.memoizer.plugins.InvalidPluginException;
 import pl.edu.uj.tcs.memoizer.plugins.Meme;
 
 public interface IMemeProvider {
@@ -19,9 +20,9 @@ public interface IMemeProvider {
 	 * 
 	 * @param view
 	 * @param plugins
-	 * @throws InvalidPlugin 
+	 * @throws InvalidPluginException when one of plugins does not provide given view
 	 */
-	void setView(IPluginView view, List<IDownloadPlugin> plugins) throws InvalidPlugin;
+	void setView(IPluginView view, List<IDownloadPlugin> plugins) throws InvalidPluginException;
 	
 	/**
 	 * @return current set view
@@ -37,13 +38,17 @@ public interface IMemeProvider {
 	
 	/**
 	 * @return next meme according to currently set view
+	 * @throws ExecutionException if one of downloading plugins throws such
+	 * @throws DownloadMemeException if there are not memes to return from method
 	 */
-	Meme getNext();
+	Meme getNext() throws ExecutionException, DownloadMemeException;
 	
 	/**
 	 * @return up to n next memes
+	 * @throws ExecutionException if one of downloading plugins throws such
+	 * @throws DownloadMemeException if there are not memes to return from method
 	 */
-	List<Meme> getNext(int n);
+	List<Meme> getNext(int n) throws ExecutionException, DownloadMemeException;
 	
 	/**
 	 * Stops object - cancels all connections and pending downloads

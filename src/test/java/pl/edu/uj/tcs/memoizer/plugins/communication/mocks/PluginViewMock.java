@@ -6,11 +6,17 @@ import pl.edu.uj.tcs.memoizer.plugins.EViewType;
 import pl.edu.uj.tcs.memoizer.plugins.IPluginView;
 import pl.edu.uj.tcs.memoizer.plugins.Meme;
 
-public class PluginViewMockChrono implements IPluginView {
+public class PluginViewMock implements IPluginView {
+
+	private EViewType viewType;
+	
+	public PluginViewMock(EViewType viewType) {
+		this.viewType = viewType;
+	}
 
 	@Override
 	public EViewType getViewType() {
-		return EViewType.CHRONOLOGICAL;
+		return viewType;
 	}
 
 	@Override

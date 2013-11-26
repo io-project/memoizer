@@ -11,11 +11,11 @@ import org.junit.Test;
 import pl.edu.uj.tcs.memoizer.events.EventService;
 import pl.edu.uj.tcs.memoizer.events.IEventService;
 import pl.edu.uj.tcs.memoizer.plugins.EViewType;
-import pl.edu.uj.tcs.memoizer.plugins.IPlugin;
 import pl.edu.uj.tcs.memoizer.plugins.IPluginFactory;
-import pl.edu.uj.tcs.memoizer.plugins.InvalidPlugin;
-import pl.edu.uj.tcs.memoizer.plugins.communication.mocks.DownloadPluginMock;
+import pl.edu.uj.tcs.memoizer.plugins.InvalidPluginException;
+import pl.edu.uj.tcs.memoizer.plugins.InvalidViewException;
 import pl.edu.uj.tcs.memoizer.plugins.communication.mocks.PluginFactoryMockFactory;
+import pl.edu.uj.tcs.memoizer.plugins.communication.mocks.SingleViewPluginFactoryMock;
 
 public class PluginManagerTest {
 	
@@ -48,57 +48,6 @@ public class PluginManagerTest {
 		pm.setPluginFactories(newFacts);
 	}
 	
-	@Test
-	public void getLoadedPluginsTest() {
-		ArrayList<IPluginFactory> newFacts = new ArrayList<IPluginFactory>();
-		for(int i = 0; i < 10; i++) {
-			newFacts.add(inceptionMock.getAnotherFactory());
-		}
-		pm = new PluginManager(newFacts, es);
-		List<IPlugin> plugs = pm.getLoadedPlugins();
-		Assert.assertEquals(10, plugs.size());
-
-		HashSet<String> fset = new HashSet<String>();
-		HashSet<String> pset = new HashSet<String>();
-		for(IPluginFactory ipf: newFacts) {
-			fset.add(ipf.getPluginName());
-		}
-		for(IPlugin pl: plugs) {
-			pset.add(pl.getName());
-		}
-		Assert.assertEquals(pset.size(), fset.size());
-		for(IPlugin pl: plugs) {
-			Assert.assertTrue(fset.contains(pl.getName()));
-		}
-		
-		newFacts = new ArrayList<IPluginFactory>();
-		newFacts.add(inceptionMock.getAnotherFactory());
-		pm.setPluginFactories(newFacts);
-		plugs = pm.getLoadedPlugins();
-		Assert.assertEquals(plugs.size(), newFacts.size());
-		Assert.assertEquals(plugs.get(0).getName(), newFacts.get(0).getPluginName());
-	}
-
-	@Test(expected=InvalidPlugin.class)
-	public void failsSaveStateOfTest() throws InvalidPlugin {
-		ArrayList<IPluginFactory> newFacts = new ArrayList<IPluginFactory>();
-		for(int i = 0; i < 10; i++) {
-			newFacts.add(inceptionMock.getAnotherFactory());
-		}
-		pm = new PluginManager(newFacts, es);
-		pm.saveStateOf(new DownloadPluginMock("blablabalafail"));
-	}
-	
-	@Test(expected=InvalidPlugin.class)
-	public void failsReloadStateOfTest() throws InvalidPlugin {
-		ArrayList<IPluginFactory> newFacts = new ArrayList<IPluginFactory>();
-		for(int i = 0; i < 10; i++) {
-			newFacts.add(inceptionMock.getAnotherFactory());
-		}
-		pm = new PluginManager(newFacts, es);
-		pm.reloadStateOf(new DownloadPluginMock("blablabalafail"));
-	}
-	
 	public void getAllNamesTest() {
 		ArrayList<IPluginFactory> newFacts = new ArrayList<IPluginFactory>();
 		for(int i = 0; i < 30; i++) {
@@ -108,23 +57,73 @@ public class PluginManagerTest {
 
 		HashSet<String> f = new HashSet<>(pm.getAllPluginNames());
 		for(IPluginFactory fact: newFacts) {
-			Assert.assertTrue(f.contains(fact.getPluginName()));
+			Assert.assertTrue(f.contains(fact.getServiceName()));
 		}
 	}
-	
-	public void getPluginForNameTest() {
+
+	public void getPluginForView() throws InvalidPluginException {
 		ArrayList<IPluginFactory> newFacts = new ArrayList<IPluginFactory>();
 		for(int i = 0; i < 10; i++) {
 			newFacts.add(inceptionMock.getAnotherFactory());
 		}
 		pm = new PluginManager(newFacts, es);
 		for(IPluginFactory fact: newFacts) {
-			Assert.assertEquals(fact.getPluginName(), 
-					pm.getPluginForName(fact.getPluginName()).getName());
+			Assert.assertEquals(fact.getServiceName(), 
+					pm.getPluginFor(fact.getServiceName(), EViewType.CHRONOLOGICAL).getServiceName());
 		}
-		
-		IPluginFactory fact = inceptionMock.getAnotherFactory();
-		Assert.assertNull(pm.getPluginForName(fact.getPluginName()));
+	}
+	
+	public void getPluginForTest() throws InvalidPluginException {
+		ArrayList<IPluginFactory> newFacts = new ArrayList<IPluginFactory>();
+		for(int i = 0; i < 10; i++) {
+			newFacts.add(inceptionMock.getAnotherFactory());
+		}
+		pm = new PluginManager(newFacts, es);
+		for(IPluginFactory fact: newFacts) {
+			Assert.assertEquals(fact.getServiceName(), 
+					pm.getPluginFor(fact.getServiceName(), EViewType.CHRONOLOGICAL).getServiceName());
+		}
+	}
+	
+	@Test
+	public void getPluginsForViewTest() {
+		ArrayList<IPluginFactory> newFacts = new ArrayList<IPluginFactory>();
+		IPluginFactory chF = new SingleViewPluginFactoryMock("chF", EViewType.CHRONOLOGICAL);
+		IPluginFactory favF = new SingleViewPluginFactoryMock("favF", EViewType.FAVOURITE);
+		IPluginFactory unF = new SingleViewPluginFactoryMock("unF", EViewType.UNSEEN);
+		IPluginFactory qf = new SingleViewPluginFactoryMock("qF", EViewType.QUEUE);
+		newFacts.add(chF);
+		newFacts.add(favF);
+		newFacts.add(unF);
+		newFacts.add(qf);
+		pm = new PluginManager(es);
+		pm.setPluginFactories(newFacts);
+		Assert.assertEquals(chF.getServiceName(), pm.getPluginsForView(EViewType.CHRONOLOGICAL).get(0).getServiceName());
+		Assert.assertEquals(favF.getServiceName(), pm.getPluginsForView(EViewType.FAVOURITE).get(0).getServiceName());
+		Assert.assertEquals(unF.getServiceName(), pm.getPluginsForView(EViewType.UNSEEN).get(0).getServiceName());
+		Assert.assertEquals(qf.getServiceName(), pm.getPluginsForView(EViewType.QUEUE).get(0).getServiceName());
+	}
+
+	@Test(expected=InvalidPluginException.class)
+	public void getPluginForTestNoName() throws InvalidPluginException {
+		ArrayList<IPluginFactory> newFacts = new ArrayList<IPluginFactory>();
+		String name = "";
+		for(int i = 0; i < 5; i++) {
+			IPluginFactory fact = inceptionMock.getAnotherFactory();
+			newFacts.add(fact);
+			name += fact.getServiceName();
+		}
+		pm = new PluginManager(newFacts, es);
+		pm.getPluginFor(name, EViewType.CHRONOLOGICAL);
+	}
+
+	@Test(expected=InvalidViewException.class)
+	public void getPluginForTestNoView() throws InvalidPluginException {
+		ArrayList<IPluginFactory> newFacts = new ArrayList<IPluginFactory>();
+		IPluginFactory fact = new SingleViewPluginFactoryMock("plugin", EViewType.CHRONOLOGICAL);
+		newFacts.add(fact);
+		pm = new PluginManager(newFacts, es);
+		pm.getPluginFor(fact.getServiceName(), EViewType.FAVOURITE);
 	}
 	
 	@Test

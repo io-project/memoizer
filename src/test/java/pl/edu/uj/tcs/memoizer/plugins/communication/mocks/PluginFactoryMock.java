@@ -1,8 +1,12 @@
 package pl.edu.uj.tcs.memoizer.plugins.communication.mocks;
 
 import java.awt.Image;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
+import pl.edu.uj.tcs.memoizer.plugins.EViewType;
+import pl.edu.uj.tcs.memoizer.plugins.IDownloadPlugin;
 import pl.edu.uj.tcs.memoizer.plugins.IPlugin;
 import pl.edu.uj.tcs.memoizer.plugins.IPluginFactory;
 import pl.edu.uj.tcs.memoizer.serialization.StateObject;
@@ -16,7 +20,7 @@ public class PluginFactoryMock implements IPluginFactory {
 	}
 
 	@Override
-	public String getPluginName() {
+	public String getServiceName() {
 		return name;
 	}
 
@@ -26,8 +30,15 @@ public class PluginFactoryMock implements IPluginFactory {
 	}
 
 	@Override
-	public IPlugin newInstance(StateObject pluginStateMap) {
-		return new DownloadPluginMock(name);
+	public IDownloadPlugin newInstance(StateObject pluginState,
+			EViewType viewType) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<EViewType> getAvailableDownloadViews() {
+		return Arrays.asList(EViewType.values());
 	}
 
 }

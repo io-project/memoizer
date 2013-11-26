@@ -18,7 +18,7 @@ import pl.edu.uj.tcs.memoizer.plugins.EViewType;
 import pl.edu.uj.tcs.memoizer.plugins.IDownloadPlugin;
 import pl.edu.uj.tcs.memoizer.plugins.IPlugin;
 import pl.edu.uj.tcs.memoizer.plugins.IPluginView;
-import pl.edu.uj.tcs.memoizer.plugins.InvalidPlugin;
+import pl.edu.uj.tcs.memoizer.plugins.InvalidPluginException;
 import pl.edu.uj.tcs.memoizer.plugins.Meme;
 import pl.edu.uj.tcs.memoizer.plugins.communication.MemeProvider;
 
@@ -53,7 +53,7 @@ public final class JMemoizerMemeTab extends JMemoizerTab {
 					return null;
 				}
 			}, plugins);
-		} catch (InvalidPlugin e) {
+		} catch (InvalidPluginException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
