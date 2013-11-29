@@ -18,22 +18,22 @@ public class AutoSaveState extends StateObject implements IEventObserver<Shutdow
 
 	private int SAVE_RATE_MS = 6000;
 
-	private OutputStream os;
+	private IStateSink sink;
 	private int lastHash;
 	
 	private ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(1);
 
-	public AutoSaveState(String object, OutputStream os) {
+	public AutoSaveState(String object, IStateSink sink) {
 		super(object);
-		init(os);
+		init(sink);
 	}
 	
-	public AutoSaveState(OutputStream os) {
-		init(os);
+	public AutoSaveState(IStateSink sink) {
+		init(sink);
 	}
 	
-	private void init(OutputStream os) {
-		this.os = os;
+	private void init(IStateSink sink) {
+		this.sink = sink;
 		lastHash = jo.hashCode();
 		
 		executor.scheduleAtFixedRate(new Saver(), 0, SAVE_RATE_MS, TimeUnit.MILLISECONDS);
@@ -60,13 +60,13 @@ public class AutoSaveState extends StateObject implements IEventObserver<Shutdow
 		}
 	}
 	
-	public static AutoSaveState fromStream(InputStream is, OutputStream os) throws IOException {
-		return new AutoSaveState(IOUtils.toString(is), os);
+	public static AutoSaveState fromStream(IStateSource source, IStateSink sink) throws IOException {
+		return new AutoSaveState(source.getData(), sink);
 	}
 
 	public void serialize() throws IOException {
 		lastHash = jo.hashCode();
-		super.serialize(os);
+		super.serialize(sink);
 	}
 
 	@Override

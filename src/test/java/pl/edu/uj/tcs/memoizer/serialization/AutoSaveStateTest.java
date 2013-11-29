@@ -20,17 +20,28 @@ import pl.edu.uj.tcs.memoizer.serialization.AutoSaveState;
 
 public class AutoSaveStateTest {
 	
+	class TestSink implements IStateSink {
+		
+		public String serialized;
+
+		@Override
+		public void saveData(String object) {
+			serialized = object;
+		}
+		
+	}
+
 	@Test
 	public void serializationTest() throws InterruptedException, IOException {
-		OutputStream os = new ByteArrayOutputStream();
 		IEventService es = new EventService();
-		AutoSaveState as = new AutoSaveState(os);
+		TestSink sink = new TestSink();
+		AutoSaveState as = new AutoSaveState(sink);
 		as.changeSaveRate(50);
 		JSONObject jo = as.getJSON();
 		jo.put("Val", "val");
 		Thread.sleep(150);
-		String serialized = os.toString();
-		AutoSaveState as2 = new AutoSaveState(serialized, os);
+		String serialized = sink.serialized;
+		AutoSaveState as2 = new AutoSaveState(serialized, sink);
 		JSONObject jo2 = as2.getJSON();
 		assertEquals(jo.get("Val"), jo2.get("Val"));
 	}
