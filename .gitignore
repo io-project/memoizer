@@ -11,3 +11,4 @@
 *.rar
 *.tar
 !bin/memoizer.jar
+!plugins/*.jar
