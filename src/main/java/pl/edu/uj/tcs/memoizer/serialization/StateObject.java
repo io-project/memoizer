@@ -37,7 +37,7 @@ public class StateObject implements IStateObject {
 		return jo;
 	}
 	
-	public void serialize(IStateSink sink) {
+	public void serialize(IStateSink sink) throws SerializationException {
 		sink.saveData(jo.toString());
 	}
 }

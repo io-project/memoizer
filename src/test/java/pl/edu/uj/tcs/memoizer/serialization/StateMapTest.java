@@ -40,7 +40,7 @@ public class StateMapTest {
 		StateMap sm = new StateMap(new SimpleSink());
 	}
 	
-	private StateMap getPreparedMap(IStateSink sink, String[] names) {
+	private StateMap getPreparedMap(IStateSink sink, String[] names) throws DeserializationException {
 		
 		JSONObject joMather = new JSONObject();
 
@@ -57,7 +57,7 @@ public class StateMapTest {
 	}
 	
 	@Test
-	public void sourceConstructorTest() {
+	public void sourceConstructorTest() throws DeserializationException {
 		
 		StateMap sm = getPreparedMap(new SimpleSink(), new String[]{"jo1", "jo2", "jo3"});
 		IStateObject so;
@@ -73,7 +73,7 @@ public class StateMapTest {
 	}
 	
 	@Test
-	public void saveTest() throws EventException, InterruptedException {
+	public void saveTest() throws EventException, InterruptedException, DeserializationException {
 		IEventService es = new EventService();
 		SimpleSink ss = new SimpleSink();
 		StateMap sm = getPreparedMap(ss, new String[] {"jo1", "jo2", "jo3"});

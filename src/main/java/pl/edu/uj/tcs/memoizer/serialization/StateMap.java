@@ -7,15 +7,20 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.log4j.Logger;
+
 import net.sf.json.JSONObject;
 import pl.edu.uj.tcs.memoizer.events.IEventObserver;
 
 public class StateMap implements IEventObserver<SaveStateEvent>, Map<String, IStateObject> {
 	
+	private Logger LOG = Logger.getLogger(StateMap.class);
+
 	private IStateSink sink;
 	private Map<String, IStateObject> statesMap = new HashMap<String, IStateObject>();
 
-	public StateMap(IStateSource stateSource, IStateSink sink) {
+	public StateMap(IStateSource stateSource, IStateSink sink) throws DeserializationException {
 
 		this.sink = sink;
 		buildMap(stateSource.getData());
@@ -144,11 +149,11 @@ public class StateMap implements IEventObserver<SaveStateEvent>, Map<String, ISt
 		}
 	}
 
-	public void save() {
+	public void save() throws SerializationException {
 		save(sink);
 	}
 	
-	public synchronized void save(IStateSink otherSink) {
+	public synchronized void save(IStateSink otherSink) throws SerializationException {
 
 		synchronized(statesMap) {
 			JSONObject jo = new JSONObject();
@@ -162,6 +167,10 @@ public class StateMap implements IEventObserver<SaveStateEvent>, Map<String, ISt
 
 	@Override
 	public void notify(SaveStateEvent event) {
-		save();
+		try {
+			save();
+		} catch (SerializationException e) {
+			LOG.error("Exceptin caught during deserialization: " + ExceptionUtils.getStackTrace(e));
+		}
 	}
 }
