@@ -56,6 +56,7 @@ public class JInfinityScrollViewItem extends JPanel {
 		title.setBorder(null);
 		title.setAutoscrolls(false);
 		title.setOpaque(false);
+		title.setEditable(false);
 		title.setFont(UIManager.getFont("Label.font"));
 		//TODO dodać pionowe centrowanie tytułu !!!
 		

@@ -1,10 +1,20 @@
 package pl.edu.uj.tcs.memoizer.gui.tabs;
 
+import java.awt.Font;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import org.apache.commons.collections.ListUtils;
@@ -40,12 +50,10 @@ public final class JMemoizerMemeTab extends JMemoizerTab {
 		MemeProvider memeProvider = new MemeProvider();
 		try {
 			memeProvider.setView(new IPluginView() {
-				//TODO brać jakieś sensowne IPluginView
 				@Override
 				public EViewType getViewType() {
 					return viewType;
 				}
-				
 				@Override
 				public Meme extractNextMeme(List<Meme> memes) {
 					if(memes.size()>0)
@@ -58,13 +66,80 @@ public final class JMemoizerMemeTab extends JMemoizerTab {
 			e.printStackTrace();
 		}
 		
+		final JMemoizerView view = new JInfinityScrollView();
 		IMemoizerModel model = new SimpleMemoizerModel(memeProvider);
 		
-		JMemoizerView view = new JInfinityScrollView();
+		JPanel p = new JPanel();
+		p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
+		
+		JPanel bar = new JPanel();
+		bar.setLayout(new BoxLayout(bar, BoxLayout.X_AXIS));
+	
+		//Generate meme view description
+		StringBuilder sb = new StringBuilder();
+		boolean isFirst = true;
+		for(IPlugin plugin: plugins){
+			if(!isFirst)sb.append(", ");
+			
+			isFirst = false;
+			sb.append(plugin.getServiceName());
+		}
+
+		
+		JLabel description = new JLabel(viewType.getName()+": "+sb.toString());
+		bar.add(description);
+		
+		bar.add(Box.createHorizontalGlue());
+		
+		JComboBox comboBox = new JComboBox();
+		comboBox.setModel(new DefaultComboBoxModel(new String[] {"Infinity Scroll", "Simple Infinity Scroll"}));
+		comboBox.setPrototypeDisplayValue("XXXXXXXXX");
+		bar.add(comboBox);
+		
+		bar.add(Box.createHorizontalStrut(4));
+
+		JButton buttonTopMeme = new JButton("↥");//⤒
+        buttonTopMeme.setMargin(new Insets(0, 8, 0, 8));
+        buttonTopMeme.setFont(new Font("Dialog", Font.PLAIN, 20));
+        buttonTopMeme.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				view.scrollTo(0);
+			}
+		});
+		bar.add(buttonTopMeme);
+		
+		
+		bar.add(Box.createHorizontalStrut(4));
+		JButton buttonPrevMeme = new JButton("«");
+        buttonPrevMeme.setMargin(new Insets(0, 8, 0, 8));
+        buttonPrevMeme.setFont(new Font("Dialog", Font.BOLD, 20));
+        buttonPrevMeme.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				view.scrollToPrevious();
+			}
+		});
+		bar.add(buttonPrevMeme);
+		
+		
+		JButton buttonNextMeme = new JButton("»");
+		buttonNextMeme.setMargin(new Insets(0, 8, 0, 8));
+        buttonNextMeme.setFont(new Font("Dialog", Font.BOLD, 20));
+        buttonNextMeme.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				view.scrollToNext();
+			}
+		});
+		bar.add(buttonNextMeme);
+
+		p.add(bar);
+		
 		model.bindView(view);
 		view.attachModel(model);
-		
-		this.panel = view;
+		p.add(view);
+		this.panel = p;
 	}
 	
 	public JMemoizerMemeTab(EViewType viewType, IDownloadPlugin plugin){

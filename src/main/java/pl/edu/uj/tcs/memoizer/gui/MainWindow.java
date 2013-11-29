@@ -8,12 +8,18 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map.Entry;
 
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.InputMap;
 import javax.swing.JButton;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -28,6 +34,9 @@ import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 
+import org.apache.log4j.Logger;
+
+import pl.edu.uj.tcs.memoizer.Main;
 import pl.edu.uj.tcs.memoizer.gui.tabs.JMemoizerHTMLTab;
 import pl.edu.uj.tcs.memoizer.gui.tabs.JMemoizerMemeTab;
 import pl.edu.uj.tcs.memoizer.gui.tabs.JMemoizerTab;
@@ -36,6 +45,10 @@ import pl.edu.uj.tcs.memoizer.plugins.IDownloadPlugin;
 import pl.edu.uj.tcs.memoizer.plugins.IPlugin;
 import pl.edu.uj.tcs.memoizer.plugins.communication.PluginManager;
 
+/**
+ * 
+ * @author pkubiak
+ */
 public class MainWindow {
 	private PluginManager pluginManager;
 	private JFrame frame;
@@ -43,7 +56,27 @@ public class MainWindow {
 	private JTabbedPane tabsPanel;
 	private JPanel introPanel;
 	private JLayeredPane layeredPane;
+	private HashMap<String, JMenuItem> selectedSources = new HashMap<>();
 	
+	private static final Logger LOG = Logger.getLogger(Main.class);
+	
+	private static class IconManager{
+		public static Icon getIconForView(EViewType viewType){
+			switch(viewType){
+				case CHRONOLOGICAL:
+					return new ImageIcon(MainWindow.class.getResource("/icons/clock.gif"));
+				case FAVOURITE:
+					return new ImageIcon(MainWindow.class.getResource("/icons/favourites.gif"));
+				//case QUEUE:
+					
+				//case UNSEEN:
+				default:
+					return new ImageIcon(MainWindow.class.getResource("/icons/alert.gif"));
+				//case LIK
+				//	return new ImageIcon(MainWindow.class.getResource("/icons/bookmark.gif"));
+			}
+		}
+	}
 	/**
 	 * Create the application.
 	 */
@@ -53,6 +86,66 @@ public class MainWindow {
 		this.frame.setVisible(true);
 	}
 
+	/**
+	 * 
+	 * @return List of identifiers of currently selected plugins (in menu).
+	 */
+	private List<String> getSelectedSources(){
+		ArrayList<String> list = new ArrayList<String>(); 
+
+		for(Entry<String, JMenuItem> item: selectedSources.entrySet()){
+			if(item.getValue().isSelected()){
+				LOG.debug("SELECTED PLUGIN: "+item.getKey());
+				list.add(item.getKey());
+			}
+		}
+		return list;
+	}
+	
+	private class SelectedSourcesActionListener implements ActionListener{
+		private EViewType viewType;
+		public SelectedSourcesActionListener(EViewType viewType){
+			this.viewType = viewType;
+		}
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			List<String> pluginsNames = MainWindow.this.getSelectedSources();
+			
+			MainWindow.this.addTab(
+				new JMemoizerMemeTab("Selected sources", viewType, pluginManager.getPluginsInstancesForView(pluginsNames, viewType))
+			);
+		}
+	}
+	
+	private class SingleSourceActionListener implements ActionListener{
+		private EViewType viewType;
+		private String pluginName;
+		public SingleSourceActionListener(String pluginName, EViewType viewType){
+			this.viewType = viewType;
+			this.pluginName = pluginName;
+		}
+		
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			MainWindow.this.addTab(
+				new JMemoizerMemeTab(viewType, pluginManager.getPluginInstanceForView(pluginName, viewType))	
+			);	
+		}
+	}
+	
+	private class SelectionActionListener implements ActionListener{
+		private boolean select;
+		public SelectionActionListener(boolean select){
+			this.select = select;
+		}
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			for(Entry<String, JMenuItem> item: selectedSources.entrySet()){
+				item.getValue().setSelected(this.select);
+			}
+		}
+	}
+	
 	private void generateMenu(){
 		//TODO podpiąć resztę actionListener
 		JMenu menu;
@@ -68,27 +161,30 @@ public class MainWindow {
 				final EViewType fviewType = viewType;
 				
 				JMenu viewItem = new JMenu(viewType.getName());
+				viewItem.setIcon(IconManager.getIconForView(viewType));//set icon
+				
 				//TODO dodawanie ikonek do widoków
 				item = new JMenuItem("Selected Sources");
-				//TODO podpiąć actionListenery do Selected Sources
+				item.addActionListener(new SelectedSourcesActionListener(fviewType));
+				//item.setIcon(IconManager.this.getIconForView(fviewType));
+				
 				viewItem.add(item);
 				viewItem.add(new JSeparator());
 				
-				for(IDownloadPlugin plugin: pluginManager.getPluginsForView(viewType)){
-					item = new JMenuItem(plugin.getServiceName());
-					//TODO dodawanie ikonek do pluginów
-					//TODO podpiąć actionListenery do zmian pluginów
-					final IDownloadPlugin fplugin = plugin;
-					item.addActionListener(new ActionListener() {
-						@Override
-						public void actionPerformed(ActionEvent e) {
-							//MainWindow.this.pluginManager.
-							MainWindow.this.addTab(new JMemoizerMemeTab(fviewType, fplugin));
-						}
-					});
+				for(String pluginName: pluginManager.getPluginsNamesForView(viewType)){
+					item = new JMenuItem(pluginName);
+					item.setIcon(new ImageIcon(pluginManager.getIconForPluginName(pluginName)));
+
+
+					item.addActionListener(new SingleSourceActionListener(pluginName, viewType));
 					viewItem.add(item);
-					
 				}
+				
+				viewItem.add(new JSeparator());
+				
+				item = new JMenuItem("All");
+				viewItem.add(item);
+				
 				menu.add(viewItem);
 			}
 			menuBar.add(menu);//Views
@@ -97,19 +193,25 @@ public class MainWindow {
 		//Sources menu
 		if(pluginManager!=null){
 			menu = new JMenu("Sources");
+			selectedSources.clear();
 			
 			for(String pluginName: pluginManager.getAllPluginNames()){
-				item = new JMenuItem(pluginName);
+				item = new JCheckBoxMenuItem(pluginName);
+				selectedSources.put(pluginName, item);
+
 				//TODO dodawanie ikonek do pluginów
-				//TODO podpiąć actionListenery do zmian pluginów
 				menu.add(item);
 			}
 			menu.add(new JSeparator());
 			
+			//TODO dodać ikonki
 			item = new JMenuItem("Select all");
+			item.addActionListener(new SelectionActionListener(true));
 			menu.add(item);
 		
+			//TODO dodać ikonki
 			item = new JMenuItem("Deselect all");
+			item.addActionListener(new SelectionActionListener(false));
 			menu.add(item);
 			
 			menuBar.add(menu);
@@ -199,7 +301,7 @@ public class MainWindow {
 	    // Add a thin border to keep the image below the top edge of the tab
 	    // when the tab is selected
 	    //TODO dodać jakieś sensowne pole wokoł zamykacza
-	    pnlTab.setBorder(BorderFactory.createEmptyBorder(2, 4, 4, 2));
+	    pnlTab.setBorder(BorderFactory.createEmptyBorder(2, 0, 0, 0));
 	    
 	    tabsPanel.setTabComponentAt(pos, pnlTab);
 	    

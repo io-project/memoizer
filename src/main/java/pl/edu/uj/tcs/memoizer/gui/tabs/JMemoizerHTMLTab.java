@@ -68,6 +68,7 @@ public final class JMemoizerHTMLTab extends JMemoizerTab {
 		this.panel = new JPanel();
 		this.panel.setLayout(new BorderLayout());
 		this.panel.add(scrollPane,BorderLayout.CENTER);
+		//TODO scroll to top on load
 	}
 	
 	@Override

@@ -42,6 +42,7 @@ public class JInfinityScrollView extends JMemoizerView {
 	
 	private int showedItems = 0;
 	private JPanel panelInner;
+	private JScrollPane scrollPane;
 	
 	/**
 	 * TODO utrzymywanie wysokości przy resizowaniu okna
@@ -71,7 +72,7 @@ public class JInfinityScrollView extends JMemoizerView {
 	};
 	
 	public JInfinityScrollView(){
-		final JScrollPane scrollPane = new JScrollPane();
+		scrollPane = new JScrollPane();
 		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		
 		this.setLayout(new BorderLayout());
@@ -106,7 +107,7 @@ public class JInfinityScrollView extends JMemoizerView {
 			}
 		});
 		
-		/* Testowa implementacja infinityScroll'a */
+		/* TODO Testowa implementacja infinityScroll'a */
 		scrollPane.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener(){
 			@Override
 			public void adjustmentValueChanged(AdjustmentEvent ae) {
@@ -140,19 +141,76 @@ public class JInfinityScrollView extends JMemoizerView {
 
 	@Override
 	public void scrollToNext() {
-		// TODO Auto-generated method stub
+		System.out.println("scrollToNext");
+		 /**
+         * TODO add TreeLock more at javadoc 
+         * TODO Dodać jakieś lepsze sprawdzanie IndexOutOfBoundException zamiast try
+         * TODO Rozwiązać problem z tym gdy dochodzimy do konca strony i nie można bardziej zescrollować strony
+         * TODO Sprawdzić w czy "get nth component" nie działa w czasie O(n)
+         */
+        int a = 0, b = panelInner.getComponentCount();
+        int Y = scrollPane.getVerticalScrollBar().getValue();
+        //Szukamy najmniejszego n takiego ze Y(nth component)>Y;
+        while(a<b){
+            int s = (a+b)/2;
+            if(panelInner.getComponent(s).getLocation().y<=Y)
+                    a = s+1;
+            else
+                    b = s;
+            System.out.println(a+" "+b);
+        }
+        
+        try{
+    		int pos = 0;
+    		while(a<panelInner.getComponentCount()&&panelInner.getComponent(a).getClass()!=JInfinityScrollViewItem.class)
+                a++;
+    		
+    		if(a==panelInner.getComponentCount())
+    			pos = panelInner.getHeight();
+    		else
+	            pos = panelInner.getComponent(a).getLocation().y;
+            
+            scrollPane.getVerticalScrollBar().setValue(pos);//scroll to next image
+        }catch(Exception e){
+                e.printStackTrace();
+        }
 	}
 
 	@Override
 	public void scrollToPrevious() {
-		// TODO Auto-generated method stub
-
-	}
+		/** 
+         * TODO add TreeLock more at javadoc
+         * TODO Lepsze sprawdzanie IndexOutOfBoundException zamiast try/catch
+         * TODO Sprawdzić w czy "get nth component" nie działa w czasie O(n) 
+         */
+        int a = -1, b = panelInner.getComponentCount()-1;
+        int Y = scrollPane.getVerticalScrollBar().getValue();
+        //Szukamy największego n takiego ze Y(nth component)<Y;
+        while(a<b){
+                int s = (a+b+1)/2;
+                if(panelInner.getComponent(s).getLocation().y>=Y)
+                        b = s-1;
+                else
+                        a = s;
+                System.out.println(a+" "+b);
+        }
+        
+        try{
+                while(a>=0&&panelInner.getComponent(a).getClass()!=JInfinityScrollViewItem.class)
+                        a--;
+                if(a<0)a=0;
+                
+                System.out.println("BinarySearch result: "+a+" -> "+panelInner.getComponent(a).getClass());
+                //panelInner.getComponent(a).setBackground(Color.BLACK);
+                scrollPane.getVerticalScrollBar().setValue(panelInner.getComponent(a).getLocation().y);//scroll to next image
+        }catch(Exception e){
+                e.printStackTrace();
+        }
+	}	
 
 	@Override
 	public void scrollTo(int k) {
-		// TODO Auto-generated method stub
-
+		this.scrollPane.getVerticalScrollBar().setValue(this.panelInner.getComponent(2*k).getLocation().y);
 	}
 
 	@Override
@@ -175,10 +233,10 @@ public class JInfinityScrollView extends JMemoizerView {
 	        	        showedItems++;
 	        	        SwingUtilities.invokeLater(new Runnable() {
 	        	            public void run() {
-	        	              JInfinityScrollView.this.panelInner.add(imagePanel);
-	        	              JInfinityScrollView.this.panelInner.add(new JSeparator());
-	        	              JInfinityScrollView.this.panelInner.revalidate();
-	        	              backgroundThreadIsRunning.release();
+								JInfinityScrollView.this.panelInner.add(imagePanel);
+								JInfinityScrollView.this.panelInner.add(new JSeparator());
+								JInfinityScrollView.this.panelInner.revalidate();
+								backgroundThreadIsRunning.release();
 	        	            }
 	        	          });
 	        	    }
