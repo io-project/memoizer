@@ -60,7 +60,7 @@ public class AutoSaveState extends StateObject implements IEventObserver<Shutdow
 		}
 	}
 	
-	public static AutoSaveState fromStream(IStateSource source, IStateSink sink) throws IOException {
+	public static AutoSaveState fromStream(IStateSource source, IStateSink sink) {
 		return new AutoSaveState(source.getData(), sink);
 	}
 

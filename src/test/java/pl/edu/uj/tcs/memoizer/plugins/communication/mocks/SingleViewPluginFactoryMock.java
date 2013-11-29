@@ -5,7 +5,7 @@ import java.util.List;
 
 import pl.edu.uj.tcs.memoizer.plugins.EViewType;
 import pl.edu.uj.tcs.memoizer.plugins.IDownloadPlugin;
-import pl.edu.uj.tcs.memoizer.serialization.StateObject;
+import pl.edu.uj.tcs.memoizer.serialization.IStateObject;
 
 public class SingleViewPluginFactoryMock extends PluginFactoryMock {
 	
@@ -22,7 +22,7 @@ public class SingleViewPluginFactoryMock extends PluginFactoryMock {
 	}
 
 	@Override
-	public IDownloadPlugin newInstance(StateObject pluginState, EViewType viewType) throws IllegalArgumentException {
+	public IDownloadPlugin newInstance(IStateObject pluginState, EViewType viewType) throws IllegalArgumentException {
 		if(this.viewType != viewType) {
 			throw new IllegalArgumentException();
 		}

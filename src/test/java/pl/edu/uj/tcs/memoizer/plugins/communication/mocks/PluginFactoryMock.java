@@ -3,13 +3,11 @@ package pl.edu.uj.tcs.memoizer.plugins.communication.mocks;
 import java.awt.Image;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 import pl.edu.uj.tcs.memoizer.plugins.EViewType;
 import pl.edu.uj.tcs.memoizer.plugins.IDownloadPlugin;
-import pl.edu.uj.tcs.memoizer.plugins.IPlugin;
 import pl.edu.uj.tcs.memoizer.plugins.IPluginFactory;
-import pl.edu.uj.tcs.memoizer.serialization.StateObject;
+import pl.edu.uj.tcs.memoizer.serialization.IStateObject;
 
 public class PluginFactoryMock implements IPluginFactory {
 	
@@ -30,7 +28,7 @@ public class PluginFactoryMock implements IPluginFactory {
 	}
 
 	@Override
-	public IDownloadPlugin newInstance(StateObject pluginState,
+	public IDownloadPlugin newInstance(IStateObject pluginState,
 			EViewType viewType) {
 		// TODO Auto-generated method stub
 		return null;
