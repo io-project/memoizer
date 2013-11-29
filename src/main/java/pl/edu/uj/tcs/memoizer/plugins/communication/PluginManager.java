@@ -1,6 +1,8 @@
 package pl.edu.uj.tcs.memoizer.plugins.communication;
 
+import java.awt.Image;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
@@ -22,7 +24,7 @@ import pl.edu.uj.tcs.memoizer.serialization.StateObject;
 
 /**
  * 
- * @author ziemin
+ * @author ziemin, pkubiak
  * 
  * IPluginManager implementation
  * This class is meant to by used only by one thread
@@ -73,38 +75,59 @@ public class PluginManager implements IPluginManager {
 	}
 
 	@Override
-	public List<IDownloadPlugin> getPluginsForView(EViewType viewType) {
-
-		List<IDownloadPlugin> result = new ArrayList<IDownloadPlugin>();
-		for(IPluginFactory f: factMap.values()) {
-
-			if(f.getAvailableDownloadViews().contains(viewType)) {
-				result.add(f.newInstance(
-						getLatestStateOf(f.getServiceName(), viewType), viewType));
-			}
-		}
+	public List<String> getPluginsNamesForView(EViewType viewType) {
+		List<String> result = new ArrayList<>();
+		
+		for(IPluginFactory f: factMap.values())
+			if(f.getAvailableDownloadViews().contains(viewType))
+				result.add(f.getServiceName());
 
 		return result;
 	}
 
+
 	@Override
 	public List<String> getAllPluginNames() {
-
 		return new ArrayList<String>(factMap.keySet());
+	}
+	
+	@Override
+	public Image getIconForPluginName(String pluginName){
+		IPluginFactory f = factMap.get(pluginName);
+		if(f==null)
+			throw new InvalidPluginException("There is no factory for plugin with name: " + pluginName);
+		return f.getIcon();
 	}
 
 	@Override
-	public IDownloadPlugin getPluginFor(String pluginName, EViewType viewType) throws InvalidPluginException, InvalidViewException {
+	public List<IDownloadPlugin> getPluginsInstancesForView(List<String> pluginsNames, EViewType viewType) 
+		throws InvalidPluginException, InvalidViewException {
 
-		IPluginFactory f = factMap.get(pluginName);
-		if(f == null) {
-			throw new InvalidPluginException("There is no factory for plugin with name: " + pluginName);
-		} else if(!f.getAvailableDownloadViews().contains(viewType)) {
-			throw new InvalidViewException("Plugin : " + pluginName + 
-					" does not provide given view type: " + viewType);
+		List<IDownloadPlugin> result = new ArrayList<IDownloadPlugin>();
+		
+		for(String pluginName: pluginsNames){
+			IPluginFactory f = factMap.get(pluginName);
+			if(f == null) {
+				throw new InvalidPluginException("There is no factory for plugin with name: " + pluginName);
+			} else if(!f.getAvailableDownloadViews().contains(viewType)) {
+				throw new InvalidViewException("Plugin : " + pluginName + 
+						" does not provide given view type: " + viewType);
+			}
+	
+			result.add(f.newInstance(getLatestStateOf(f.getServiceName(), viewType), viewType));
 		}
-
-		return f.newInstance(
-				getLatestStateOf(f.getServiceName(), viewType), viewType);
+		
+		return result;
 	}
+	
+	@Override
+	public List<IDownloadPlugin> getPluginsInstancesForView(EViewType viewType){
+		return getPluginsInstancesForView(getPluginsNamesForView(viewType), viewType);
+	}
+	
+	@Override
+	public IDownloadPlugin getPluginInstanceForView(String pluginName, EViewType viewType){
+		List<IDownloadPlugin> list = getPluginsInstancesForView(Arrays.asList(new String[]{pluginName}), viewType);
+		return list.get(0);
+	}	
 }

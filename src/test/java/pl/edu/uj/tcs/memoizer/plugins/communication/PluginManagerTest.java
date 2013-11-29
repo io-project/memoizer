@@ -69,7 +69,7 @@ public class PluginManagerTest {
 		pm = new PluginManager(newFacts, es);
 		for(IPluginFactory fact: newFacts) {
 			Assert.assertEquals(fact.getServiceName(), 
-					pm.getPluginFor(fact.getServiceName(), EViewType.CHRONOLOGICAL).getServiceName());
+					pm.getPluginInstanceForView(fact.getServiceName(), EViewType.CHRONOLOGICAL).getServiceName());
 		}
 	}
 	
@@ -81,7 +81,7 @@ public class PluginManagerTest {
 		pm = new PluginManager(newFacts, es);
 		for(IPluginFactory fact: newFacts) {
 			Assert.assertEquals(fact.getServiceName(), 
-					pm.getPluginFor(fact.getServiceName(), EViewType.CHRONOLOGICAL).getServiceName());
+					pm.getPluginInstanceForView(fact.getServiceName(), EViewType.CHRONOLOGICAL).getServiceName());
 		}
 	}
 	
@@ -98,10 +98,10 @@ public class PluginManagerTest {
 		newFacts.add(qf);
 		pm = new PluginManager(es);
 		pm.setPluginFactories(newFacts);
-		Assert.assertEquals(chF.getServiceName(), pm.getPluginsForView(EViewType.CHRONOLOGICAL).get(0).getServiceName());
-		Assert.assertEquals(favF.getServiceName(), pm.getPluginsForView(EViewType.FAVOURITE).get(0).getServiceName());
-		Assert.assertEquals(unF.getServiceName(), pm.getPluginsForView(EViewType.UNSEEN).get(0).getServiceName());
-		Assert.assertEquals(qf.getServiceName(), pm.getPluginsForView(EViewType.QUEUE).get(0).getServiceName());
+		Assert.assertEquals(chF.getServiceName(), pm.getPluginsInstancesForView(EViewType.CHRONOLOGICAL).get(0).getServiceName());
+		Assert.assertEquals(favF.getServiceName(), pm.getPluginsInstancesForView(EViewType.FAVOURITE).get(0).getServiceName());
+		Assert.assertEquals(unF.getServiceName(), pm.getPluginsInstancesForView(EViewType.UNSEEN).get(0).getServiceName());
+		Assert.assertEquals(qf.getServiceName(), pm.getPluginsInstancesForView(EViewType.QUEUE).get(0).getServiceName());
 	}
 
 	@Test(expected=InvalidPluginException.class)
@@ -114,7 +114,7 @@ public class PluginManagerTest {
 			name += fact.getServiceName();
 		}
 		pm = new PluginManager(newFacts, es);
-		pm.getPluginFor(name, EViewType.CHRONOLOGICAL);
+		pm.getPluginInstanceForView(name, EViewType.CHRONOLOGICAL);
 	}
 
 	@Test(expected=InvalidViewException.class)
@@ -123,7 +123,7 @@ public class PluginManagerTest {
 		IPluginFactory fact = new SingleViewPluginFactoryMock("plugin", EViewType.CHRONOLOGICAL);
 		newFacts.add(fact);
 		pm = new PluginManager(newFacts, es);
-		pm.getPluginFor(fact.getServiceName(), EViewType.FAVOURITE);
+		pm.getPluginInstanceForView(fact.getServiceName(), EViewType.FAVOURITE);
 	}
 	
 	@Test
