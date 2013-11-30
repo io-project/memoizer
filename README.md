@@ -12,7 +12,7 @@ https://github.com/Ziemin/memoizer-plugins
 
 To install a plugin simply copy compiled jar to plugins (create it in case it does not exists) directory in execution path of memoizer.
 
-Some plugins implementation are here:
+Some implementations of plugins are here:
 https://github.com/sokar92/memoizer-plugins-Komixxy
 https://github.com/sokar92/memoizer-plugins-Kwejk
 https://github.com/sokar92/memoizer-plugins-Demoty
