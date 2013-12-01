@@ -41,7 +41,6 @@ import org.apache.log4j.Logger;
 
 import pl.edu.uj.tcs.memoizer.Main;
 import pl.edu.uj.tcs.memoizer.gui.tabs.JMemoizerHTMLTab;
-import pl.edu.uj.tcs.memoizer.gui.tabs.JMemoizerMemeSearchTab;
 import pl.edu.uj.tcs.memoizer.gui.tabs.JMemoizerMemeTab;
 import pl.edu.uj.tcs.memoizer.gui.tabs.JMemoizerTab;
 import pl.edu.uj.tcs.memoizer.plugins.EViewType;
@@ -208,13 +207,6 @@ public class MainWindow {
 		
 		item = new JMenuItem("Settings");
 		item.setIcon(IconManager.getIconForName("settings"));
-		item.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				MainWindow.this.addTab(new JMemoizerMemeSearchTab("Hello World", new ArrayList<IDownloadPlugin>()));
-			}
-		});
 		menu.add(item);
 		
 		item = new JMenuItem("Plugins");
