@@ -1,4 +1,4 @@
-package pl.edu.uj.tcs.memoizer.filemanager;
+package pl.edu.uj.tcs.memoizer.filesystem;
 
 import java.io.*;
 import java.net.URL;
@@ -7,7 +7,7 @@ import java.net.URL;
  * 
  * @author Retax
  */
-public class FileManager implements IFileManager{
+public class ImageSaver implements IImageSaver{
     
     /*
      * Gets image from URL and saves it as file    
