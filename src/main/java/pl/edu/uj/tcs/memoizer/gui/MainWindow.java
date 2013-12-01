@@ -40,6 +40,7 @@ import pl.edu.uj.tcs.memoizer.Main;
 import pl.edu.uj.tcs.memoizer.gui.tabs.JMemoizerHTMLTab;
 import pl.edu.uj.tcs.memoizer.gui.tabs.JMemoizerMemeTab;
 import pl.edu.uj.tcs.memoizer.gui.tabs.JMemoizerTab;
+import pl.edu.uj.tcs.memoizer.gui.tabs.JAccountsTab;
 import pl.edu.uj.tcs.memoizer.plugins.EViewType;
 import pl.edu.uj.tcs.memoizer.plugins.IDownloadPlugin;
 import pl.edu.uj.tcs.memoizer.plugins.IPlugin;
