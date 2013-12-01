@@ -48,8 +48,10 @@ public class SimpleMemoizerModel implements IMemoizerModel, IHandler<Meme> {
 	//						System.out.println("Done");
 						if(view!=null)
 							view.notifyUpdate();
-						} catch (ExecutionException | DownloadMemeException e) {
+						} catch (ExecutionException e) {
 							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (DownloadMemeException e){
 							e.printStackTrace();
 						}
 					}
