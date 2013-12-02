@@ -15,10 +15,13 @@ import java.util.Map.Entry;
 
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.InputMap;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -37,6 +40,7 @@ import javax.swing.UIManager;
 import org.apache.log4j.Logger;
 
 import pl.edu.uj.tcs.memoizer.Main;
+import pl.edu.uj.tcs.memoizer.configuration.Version;
 import pl.edu.uj.tcs.memoizer.gui.tabs.JMemoizerHTMLTab;
 import pl.edu.uj.tcs.memoizer.gui.tabs.JMemoizerMemeTab;
 import pl.edu.uj.tcs.memoizer.gui.tabs.JMemoizerTab;
@@ -60,24 +64,7 @@ public class MainWindow {
 	private HashMap<String, JMenuItem> selectedSources = new HashMap<>();
 	
 	private static final Logger LOG = Logger.getLogger(Main.class);
-	
-	private static class IconManager{
-		public static Icon getIconForView(EViewType viewType){
-			switch(viewType){
-				case CHRONOLOGICAL:
-					return new ImageIcon(MainWindow.class.getResource("/icons/clock.gif"));
-				case FAVOURITE:
-					return new ImageIcon(MainWindow.class.getResource("/icons/favourites.gif"));
-				//case QUEUE:
-					
-				//case UNSEEN:
-				default:
-					return new ImageIcon(MainWindow.class.getResource("/icons/alert.gif"));
-				//case LIK
-				//	return new ImageIcon(MainWindow.class.getResource("/icons/bookmark.gif"));
-			}
-		}
-	}
+
 	/**
 	 * Create the application.
 	 */
@@ -113,7 +100,7 @@ public class MainWindow {
 			List<String> pluginsNames = MainWindow.this.getSelectedSources();
 			
 			MainWindow.this.addTab(
-				new JMemoizerMemeTab("Selected sources", viewType, pluginManager.getPluginsInstancesForView(pluginsNames, viewType))
+				new JMemoizerMemeTab("Selected sources", viewType, pluginsNames, pluginManager)
 			);
 		}
 	}
@@ -128,9 +115,7 @@ public class MainWindow {
 		
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			MainWindow.this.addTab(
-				new JMemoizerMemeTab(viewType, pluginManager.getPluginInstanceForView(pluginName, viewType))	
-			);	
+			MainWindow.this.addTab(new JMemoizerMemeTab(viewType, pluginName, pluginManager));		
 		}
 	}
 	
@@ -162,12 +147,12 @@ public class MainWindow {
 				final EViewType fviewType = viewType;
 				
 				JMenu viewItem = new JMenu(viewType.getName());
-				viewItem.setIcon(IconManager.getIconForView(viewType));//set icon
+				viewItem.setIcon(IconManager.getIconForViewType(viewType));//set icon
 				
 				//TODO dodawanie ikonek do widoków
 				item = new JMenuItem("Selected Sources");
 				item.addActionListener(new SelectedSourcesActionListener(fviewType));
-				//item.setIcon(IconManager.this.getIconForView(fviewType));
+				item.setIcon(IconManager.getIconForName("items-list"));
 				
 				viewItem.add(item);
 				viewItem.add(new JSeparator());
@@ -175,7 +160,6 @@ public class MainWindow {
 				for(String pluginName: pluginManager.getPluginsNamesForView(viewType)){
 					item = new JMenuItem(pluginName);
 					item.setIcon(new ImageIcon(pluginManager.getIconForPluginName(pluginName)));
-
 
 					item.addActionListener(new SingleSourceActionListener(pluginName, viewType));
 					viewItem.add(item);
@@ -198,21 +182,22 @@ public class MainWindow {
 			
 			for(String pluginName: pluginManager.getAllPluginNames()){
 				item = new JCheckBoxMenuItem(pluginName);
-				selectedSources.put(pluginName, item);
 
-				//TODO dodawanie ikonek do pluginów
+				item.setIcon(new ImageIcon(pluginManager.getIconForPluginName(pluginName)));
+		
+				selectedSources.put(pluginName, item);
 				menu.add(item);
 			}
 			menu.add(new JSeparator());
 			
-			//TODO dodać ikonki
 			item = new JMenuItem("Select all");
 			item.addActionListener(new SelectionActionListener(true));
+			item.setIcon(IconManager.getIconForName("select-all"));
 			menu.add(item);
 		
-			//TODO dodać ikonki
-			item = new JMenuItem("Deselect all");
+			item = new JMenuItem("Unselect all");
 			item.addActionListener(new SelectionActionListener(false));
+			item.setIcon(IconManager.getIconForName("unselect-all"));
 			menu.add(item);
 			
 			menuBar.add(menu);
@@ -223,31 +208,31 @@ public class MainWindow {
 		menu = new JMenu("More");
 		
 		item = new JMenuItem("Settings");
-		item.setIcon(new ImageIcon(MainWindow.class.getResource("/icons/settings.gif")));
+		item.setIcon(IconManager.getIconForName("settings"));
 		menu.add(item);
 		
 		item = new JMenuItem("Plugins");
-		item.setIcon(new ImageIcon(MainWindow.class.getResource("/icons/package.gif")));
+		item.setIcon(IconManager.getIconForName("plugin-manager"));
 		menu.add(item);
 		
 		item = new JMenuItem("Help");
-		item.setIcon(new ImageIcon(MainWindow.class.getResource("/icons/help.gif")));
+		item.setIcon(IconManager.getIconForName("help"));
 		item.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				//Show help page
-				MainWindow.this.addTab(new JMemoizerHTMLTab("Help", MainWindow.class.getResource("/html/help/index.html"), new ImageIcon(MainWindow.class.getResource("/icons/help.gif"))));
+				MainWindow.this.addTab(new JMemoizerHTMLTab("Help", MainWindow.class.getResource("/html/help/index.html"), IconManager.getIconForName("about")));
 			}
 		});
 		menu.add(item);
 		
 		item = new JMenuItem("About");
-		item.setIcon(new ImageIcon(MainWindow.class.getResource("/icons/about.gif")));
+		item.setIcon(IconManager.getIconForName("about"));
 		item.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				//Show about page
-				MainWindow.this.addTab(new JMemoizerHTMLTab("About", MainWindow.class.getResource("/html/about/index.html"), new ImageIcon(MainWindow.class.getResource("/icons/about.gif"))));
+				MainWindow.this.addTab(new JMemoizerHTMLTab("About", MainWindow.class.getResource("/html/about/index.html"), IconManager.getIconForName("about")));
 			}
 		});
 		menu.add(item);
@@ -296,9 +281,9 @@ public class MainWindow {
 	    btnClose.setBackground(null);
 
 	    // Configure icon and rollover icon for button
-	    btnClose.setRolloverIcon(new ImageIcon(MainWindow.class.getResource("/icons/tabclosehover.png")));
+	    btnClose.setRolloverIcon(IconManager.getIconForName("tab-close-on"));
 	    btnClose.setRolloverEnabled(true);
-	    btnClose.setIcon(new ImageIcon(MainWindow.class.getResource("/icons/tabclose.png")));
+	    btnClose.setIcon(IconManager.getIconForName("tab-close-off"));
 
 	    // Set border null so the button doesn't make the tab too big
 	    btnClose.setBorder(null);
@@ -408,7 +393,7 @@ public class MainWindow {
 		layeredPane.add(introPanel);
 		introPanel.setLayout(new BorderLayout(0, 0));
 		
-		JLabel introLabel = new JLabel("Memoizer v.0.1");
+		JLabel introLabel = new JLabel("Memoizer v."+Version.VERSION);
 		introPanel.add(introLabel);
 		introLabel.setForeground(UIManager.getColor("Label.disabledForeground"));
 		introLabel.setFont(new Font("Dialog", Font.BOLD, 28));

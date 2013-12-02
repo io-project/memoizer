@@ -7,6 +7,7 @@ import java.util.List;
 import pl.edu.uj.tcs.memoizer.plugins.EViewType;
 import pl.edu.uj.tcs.memoizer.plugins.IDownloadPlugin;
 import pl.edu.uj.tcs.memoizer.plugins.IPluginFactory;
+import pl.edu.uj.tcs.memoizer.plugins.InvalidViewException;
 import pl.edu.uj.tcs.memoizer.serialization.IStateObject;
 
 public class PluginFactoryMock implements IPluginFactory {
@@ -37,6 +38,13 @@ public class PluginFactoryMock implements IPluginFactory {
 	@Override
 	public List<EViewType> getAvailableDownloadViews() {
 		return Arrays.asList(EViewType.values());
+	}
+
+	@Override
+	public IDownloadPlugin newInstance(IStateObject pluginState,
+			EViewType viewType, Object parameters) throws InvalidViewException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

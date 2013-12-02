@@ -18,6 +18,7 @@ import org.apache.log4j.Logger;
 
 import pl.edu.uj.tcs.memoizer.plugins.EViewType;
 import pl.edu.uj.tcs.memoizer.plugins.IDownloadPlugin;
+import pl.edu.uj.tcs.memoizer.plugins.IPluginFactory;
 import pl.edu.uj.tcs.memoizer.plugins.IPluginView;
 import pl.edu.uj.tcs.memoizer.plugins.InvalidPluginException;
 import pl.edu.uj.tcs.memoizer.plugins.Meme;
@@ -70,7 +71,7 @@ public class MemeProvider implements IMemeProvider {
 		}
 	}
 	
-	private static boolean plugInList(List<IDownloadPlugin> list, IDownloadPlugin plug) {
+	private static boolean plugInList(List<IDownloadPlugin> list, IPluginFactory plug) {
 
 		for(IDownloadPlugin dp: list) {
 			if(plug.getServiceName().equals(dp.getServiceName())) return true;
@@ -90,7 +91,7 @@ public class MemeProvider implements IMemeProvider {
 			while(it.hasNext()) {
 	
 				Meme m = it.next();
-				if(!plugInList(newPlugs, (IDownloadPlugin) m.getOwner())) {
+				if(!plugInList(newPlugs, (IPluginFactory) m.getPluginFactory())) {
 					inExtr.addLast(m);
 					it.remove();
 				}
@@ -107,7 +108,7 @@ public class MemeProvider implements IMemeProvider {
 		while(it.hasNext() && i < count) {
 
 			Meme m = it.next();
-			if(plugInList(newPlugs, (IDownloadPlugin) m.getOwner())) {
+			if(plugInList(newPlugs, (IPluginFactory) m.getPluginFactory())) {
 				currExtr.addLast(m);
 				it.remove();
 			}
@@ -317,28 +318,31 @@ public class MemeProvider implements IMemeProvider {
 		}
 
 		// at least one should be downloaded if possible
-		if(currExtr.isEmpty()) {
-			waitForOne();
-			if(!currExtr.isEmpty()) {
-				extractFinished();
+		for(int tries = 0; tries< 3; tries++){
+			if(currExtr.isEmpty()) {
+			
+				waitForOne();
+				if(!currExtr.isEmpty()) {
+					extractFinished();
+				}
 			}
+	
+			int i = 0;
+			while(i < n && !currExtr.isEmpty()) {
+				results.add(pluginView.extractNextMeme(currExtr));
+				i++;
+			}
+			
+			if(currExtr.size() < MIN_LIMIT) {
+				downloadNext(MIN_LIMIT);
+			}
+	
+			if(!results.isEmpty())
+				return results;
+			
+			System.out.println("TRY: "+tries);
 		}
-
-		int i = 0;
-		while(i < n && !currExtr.isEmpty()) {
-			results.add(pluginView.extractNextMeme(currExtr));
-			i++;
-		}
-		
-		if(currExtr.size() < MIN_LIMIT) {
-			downloadNext(MIN_LIMIT);
-		}
-
-		if(results.isEmpty()) {
-			throw new DownloadMemeException("No new memes to return");
-		}
-		
-		return results;
+		throw new DownloadMemeException("No new memes to return");
 	}
 
 }

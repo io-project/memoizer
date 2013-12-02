@@ -1,7 +1,12 @@
 package pl.edu.uj.tcs.memoizer;
 
 import java.awt.EventQueue;
+
+import javax.swing.LookAndFeel;
+import javax.swing.UIManager;
+
 import org.apache.log4j.Logger;
+
 import pl.edu.uj.tcs.memoizer.events.EventService;
 import pl.edu.uj.tcs.memoizer.events.IEventService;
 import pl.edu.uj.tcs.memoizer.gui.MainWindow;
@@ -19,6 +24,12 @@ public class Main {
 					String current = new java.io.File( "." ).getCanonicalPath();
 				    System.out.println("Current dir:"+current);
 				        
+				    /*UIManager.LookAndFeelInfo[] lafInfo = UIManager.getInstalledLookAndFeels();
+				    for(UIManager.LookAndFeelInfo x: lafInfo){
+				    	System.out.println("THEME: "+x);
+				    }
+				    UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");*/
+				    
 					LOG.info("Starting application");
 					IEventService eventService = new EventService();
 					PluginLoader pluginLoader = new PluginLoader();

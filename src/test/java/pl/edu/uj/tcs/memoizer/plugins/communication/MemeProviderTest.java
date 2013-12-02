@@ -28,8 +28,8 @@ public class MemeProviderTest {
 	public void setViewTest() throws InvalidPluginException {
 		MemeProvider mp = new MemeProvider();
 		ArrayList<IDownloadPlugin> plugs = new ArrayList<>();
-		plugs.add(new DownloadPluginMock("plug1", EViewType.CHRONOLOGICAL));
-		plugs.add(new DownloadPluginMock("plug2", EViewType.CHRONOLOGICAL));
+		plugs.add(new DownloadPluginMock("plug1", EViewType.CHRONOLOGICAL, null));
+		plugs.add(new DownloadPluginMock("plug2", EViewType.CHRONOLOGICAL, null));
 		IPluginView pvc = new PluginViewMock(EViewType.CHRONOLOGICAL);
 		mp.setView(pvc, plugs);
 		Assert.assertEquals(pvc, mp.getCurrentView());
@@ -39,8 +39,8 @@ public class MemeProviderTest {
 	public void setViewTestFail() throws InvalidPluginException {
 		MemeProvider mp = new MemeProvider();
 		ArrayList<IDownloadPlugin> plugs = new ArrayList<>();
-		plugs.add(new DownloadPluginMock("plug1", EViewType.UNSEEN));
-		plugs.add(new DownloadPluginMock("plug2", EViewType.FAVOURITE));
+		plugs.add(new DownloadPluginMock("plug1", EViewType.UNSEEN, null));
+		plugs.add(new DownloadPluginMock("plug2", EViewType.FAVOURITE, null));
 		IPluginView pvc = new PluginViewMock(EViewType.CHRONOLOGICAL);
 		mp.setView(pvc, plugs);
 		Assert.assertEquals(pvc, mp.getCurrentView());
@@ -51,9 +51,9 @@ public class MemeProviderTest {
 		MemeProvider mp = new MemeProvider();
 		IPluginView plv = new PluginViewMock(EViewType.CHRONOLOGICAL);
 		ArrayList<IDownloadPlugin> plugs = new ArrayList<>();
-		plugs.add(new DownloadPluginMock("plug1", EViewType.CHRONOLOGICAL));
-		plugs.add(new DownloadPluginMock("plug2", EViewType.CHRONOLOGICAL));
-		plugs.add(new DownloadPluginMock("plug3", EViewType.CHRONOLOGICAL));
+		plugs.add(new DownloadPluginMock("plug1", EViewType.CHRONOLOGICAL, null));
+		plugs.add(new DownloadPluginMock("plug2", EViewType.CHRONOLOGICAL, null));
+		plugs.add(new DownloadPluginMock("plug3", EViewType.CHRONOLOGICAL, null));
 		mp.setView(plv, plugs);
 		Thread.sleep(100);
 		Assert.assertTrue(mp.hasNext());
@@ -70,8 +70,8 @@ public class MemeProviderTest {
 		MemeProvider mp = new MemeProvider();
 		IPluginView plv = new PluginViewMock(EViewType.UNSEEN);
 		ArrayList<IDownloadPlugin> plugs = new ArrayList<>();
-		plugs.add(new DownloadPluginMock("plug1", EViewType.UNSEEN));
-		plugs.add(new DownloadPluginMock("plug2", EViewType.UNSEEN));
+		plugs.add(new DownloadPluginMock("plug1", EViewType.UNSEEN, null));
+		plugs.add(new DownloadPluginMock("plug2", EViewType.UNSEEN, null));
 		mp.setView(plv, plugs);
 		for(int i = 0; i < 5; i++) {
 			Assert.assertNotNull(mp.getNext());
@@ -83,8 +83,8 @@ public class MemeProviderTest {
 		MemeProvider mp = new MemeProvider();
 		IPluginView plv = new PluginViewMock(EViewType.UNSEEN);
 		ArrayList<IDownloadPlugin> plugs = new ArrayList<>();
-		plugs.add(new EmptyDownloadPluginMock("plug1", EViewType.UNSEEN));
-		plugs.add(new EmptyDownloadPluginMock("plug2", EViewType.UNSEEN));
+		plugs.add(new EmptyDownloadPluginMock("plug1", EViewType.UNSEEN, null));
+		plugs.add(new EmptyDownloadPluginMock("plug2", EViewType.UNSEEN, null));
 		mp.setView(plv, plugs);
 		mp.getNext();
 	}
@@ -94,9 +94,9 @@ public class MemeProviderTest {
 		MemeProvider mp = new MemeProvider();
 		IPluginView plv = new PluginViewMock(EViewType.FAVOURITE);
 		ArrayList<IDownloadPlugin> plugs = new ArrayList<>();
-		plugs.add(new DownloadPluginMock("plug1", EViewType.FAVOURITE));
-		plugs.add(new DownloadPluginMock("plug2", EViewType.FAVOURITE));
-		plugs.add(new DownloadPluginMock("plug3", EViewType.FAVOURITE));
+		plugs.add(new DownloadPluginMock("plug1", EViewType.FAVOURITE, null));
+		plugs.add(new DownloadPluginMock("plug2", EViewType.FAVOURITE, null));
+		plugs.add(new DownloadPluginMock("plug3", EViewType.FAVOURITE, null));
 		mp.setView(plv, plugs);
 		List<Meme> results = mp.getNext(10);
 		Assert.assertFalse(results.isEmpty());
@@ -110,9 +110,9 @@ public class MemeProviderTest {
 		MemeProvider mp = new MemeProvider();
 		IPluginView plv = new PluginViewMock(EViewType.FAVOURITE);
 		ArrayList<IDownloadPlugin> plugs = new ArrayList<>();
-		plugs.add(new EmptyDownloadPluginMock("plug1", EViewType.FAVOURITE));
-		plugs.add(new EmptyDownloadPluginMock("plug2", EViewType.FAVOURITE));
-		plugs.add(new EmptyDownloadPluginMock("plug3", EViewType.FAVOURITE));
+		plugs.add(new EmptyDownloadPluginMock("plug1", EViewType.FAVOURITE, null));
+		plugs.add(new EmptyDownloadPluginMock("plug2", EViewType.FAVOURITE, null));
+		plugs.add(new EmptyDownloadPluginMock("plug3", EViewType.FAVOURITE, null));
 		mp.setView(plv, plugs);
 		List<Meme> results = mp.getNext(10);
 	}
@@ -121,9 +121,9 @@ public class MemeProviderTest {
 	public void stopTest() throws InvalidPluginException {
 		MemeProvider mp = new MemeProvider();
 		ArrayList<IDownloadPlugin> plugs = new ArrayList<>();
-		plugs.add(new DownloadPluginMock("plug1", EViewType.CHRONOLOGICAL));
-		plugs.add(new DownloadPluginMock("plug2", EViewType.CHRONOLOGICAL));
-		plugs.add(new DownloadPluginMock("plug3", EViewType.CHRONOLOGICAL));
+		plugs.add(new DownloadPluginMock("plug1", EViewType.CHRONOLOGICAL, null));
+		plugs.add(new DownloadPluginMock("plug2", EViewType.CHRONOLOGICAL, null));
+		plugs.add(new DownloadPluginMock("plug3", EViewType.CHRONOLOGICAL, null));
 		mp.setView(new PluginViewMock(EViewType.CHRONOLOGICAL), plugs);
 		mp.stop();
 	}

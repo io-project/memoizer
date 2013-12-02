@@ -1,5 +1,6 @@
 package pl.edu.uj.tcs.memoizer.gui.views;
 import javax.imageio.ImageIO;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
@@ -24,6 +25,8 @@ import java.awt.Desktop;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JTextArea;
 
+import pl.edu.uj.tcs.memoizer.gui.IconManager;
+import pl.edu.uj.tcs.memoizer.gui.utils.ImageMemeSaver;
 import pl.edu.uj.tcs.memoizer.plugins.Meme;
 
 import java.awt.Cursor;
@@ -68,10 +71,7 @@ public class JInfinityScrollViewItem extends JPanel {
 		//Przycisk lubienia
 		JToggleButton toggleButton = new JToggleButton("★");//star: ★
 		
-		//toggleButton.setBorder(null);
-		//toggleButton.setIcon(new ImageIcon(JImagePanel.class.getResource("/resources/non-starred.png")));
-		//toggleButton.setSelectedIcon(new ImageIcon(JImagePanel.class.getResource("/resources/starred.png")));
-		
+
 		toggleButton.setAlignmentX(Component.RIGHT_ALIGNMENT);
 		toggleButton.setIconTextGap(0);
 		horizontalBox.add(toggleButton);
@@ -120,7 +120,7 @@ public class JInfinityScrollViewItem extends JPanel {
 				imageIcon = new ImageIcon(icon);
 				
 			}catch(Exception e){
-				imageIcon = new ImageIcon(this.getClass().getResource("/icons/garbage.png"));
+				imageIcon = IconManager.getIconForName("broken-image");
 				e.printStackTrace();
 			}
 			
@@ -136,10 +136,12 @@ public class JInfinityScrollViewItem extends JPanel {
 		FlowLayout flowLayout = (FlowLayout) panel.getLayout();
 		flowLayout.setAlignment(FlowLayout.LEADING);
 		panel.setOpaque(false);
-		add(panel);
 		
+		
+		//open in browser
 		if(meme.getPageLink()!=null){
 			JLabel browserLink = new JLabel("<HTML><A HREF=\"\">open in browser</A></HTML>");
+			browserLink.setIcon(IconManager.getIconForName("hyperref"));
 			
 			//Listener otwierający stronę z obrazkiem w domyślej przeglądarce
 			browserLink.addMouseListener(new MouseAdapter() {
@@ -159,5 +161,20 @@ public class JInfinityScrollViewItem extends JPanel {
 			browserLink.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 			browserLink.setHorizontalAlignment(SwingConstants.LEFT);
 		}
+		//save on disk
+		JLabel saveLink = new JLabel("<HTML><A HREF=\"\">Sava on disk</A></HTML>");
+		saveLink.setIcon(IconManager.getIconForName("save-as"));
+		saveLink.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent ev) {
+				ImageMemeSaver.saveImageToDisk(meme);
+				//JOptionPane.showMessageDialog(null, meme.getSuggestedFileName());
+			}
+		});
+		saveLink.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		
+		panel.add(saveLink);
+		
+		add(panel);
 	}
 }

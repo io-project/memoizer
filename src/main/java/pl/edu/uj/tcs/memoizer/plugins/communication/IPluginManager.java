@@ -15,6 +15,8 @@ public interface IPluginManager {
 	 *  Sets new factories and a set of loaded plugins at the same time
 	 *  Upon execution of this method getLoadedPlugins should return 
 	 *  a plugin for every factory
+	 *  
+	 *  @param factories 
 	 */
 	void setPluginFactories(List<IPluginFactory> factories);
 	
@@ -30,7 +32,7 @@ public interface IPluginManager {
 	Image getIconForPluginName(String pluginName);
 	
 	/**
-	 * @param viewType
+	 * @param viewType	view type
 	 * @return a list of names of every plugin supporting given viewType.
 	 */
 	List<String> getPluginsNamesForView(EViewType viewType);
@@ -40,16 +42,47 @@ public interface IPluginManager {
 	 */
 	List<EViewType> getAvailableViews();
 
+	
+	
+	
 	/**
-	 * @param name of desired plugin
-	 * @return new IDownloadPlugin instance for given name and viewType
+	 * @param pluginsNames	names of desired plugins
+	 * @param viewType		view type
+	 * @param parameters	additional parameter for view 
+	 * @return new IDownloadPlugin instances for given names and viewType
+	 * @throws InvalidPluginException if name does not apply to any plugin 
+	 * @throws InvalidViewException if plugin of name pluginName does not provide viewType
+	 */
+	List<IDownloadPlugin> getPluginsInstancesForView(List<String> pluginsName, EViewType viewType, Object parameters) throws InvalidPluginException, InvalidViewException;
+
+	/**
+	 * Simplified version of getPluginsInstancesForView for views which doesn't require additional parameters.
+	 * @param pluginsNames	names of desired plugins
+	 * @param viewType		view type
+	 * @return new IDownloadPlugin instances for given names and viewType
 	 * @throws InvalidPluginException if name does not apply to any plugin 
 	 * @throws InvalidViewException if plugin of name pluginName does not provide viewType
 	 */
 	List<IDownloadPlugin> getPluginsInstancesForView(List<String> pluginsName, EViewType viewType) throws InvalidPluginException, InvalidViewException;
+	
+	
+	
+	
+	
+	/**
+	 * @param pluginName name of desired plugin
+	 * @param viewType	 	view type
+	 * @param parameters 	additional parameter for view
+	 * @return new IDownloadPlugin instance for given name and viewType
+	 * @throws InvalidPluginException if name does not apply to any plugin 
+	 * @throws InvalidViewException if plugin of name pluginName does not provide viewType
+	 */
+	IDownloadPlugin getPluginInstanceForView(String pluginName, EViewType viewType, Object parameters) throws InvalidPluginException, InvalidViewException;
 
 	/**
-	 * @param name of desired plugin
+	 * Simplified version of getPluginInstanceForView for views which doesn't require additional parameters.
+	 * @param pluginName 	name of desired plugin
+	 * @param viewType	 	view type
 	 * @return new IDownloadPlugin instance for given name and viewType
 	 * @throws InvalidPluginException if name does not apply to any plugin 
 	 * @throws InvalidViewException if plugin of name pluginName does not provide viewType
@@ -58,14 +91,18 @@ public interface IPluginManager {
 
 
 	
+	
 	/**
-	 * @param viewType
+	 * @param viewType 		view type
+	 * @param parameters 	additional parameter for view
+	 * @return a list of new instances of plugins providing given view
+	 */
+	List<IDownloadPlugin> getPluginsInstancesForView(EViewType viewType, Object parameters);
+	
+	/**
+	 * Simplified version getPluginsInstancesForView for views which doesn't require additional parameters. 
+	 * @param viewType 		view type
 	 * @return a list of new instances of plugins providing given view
 	 */
 	List<IDownloadPlugin> getPluginsInstancesForView(EViewType viewType);
-	
-
-	
-
-	
 }

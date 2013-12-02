@@ -100,7 +100,7 @@ public class PluginManager implements IPluginManager {
 	}
 
 	@Override
-	public List<IDownloadPlugin> getPluginsInstancesForView(List<String> pluginsNames, EViewType viewType) 
+	public List<IDownloadPlugin> getPluginsInstancesForView(List<String> pluginsNames, EViewType viewType, Object parameters) 
 		throws InvalidPluginException, InvalidViewException {
 
 		List<IDownloadPlugin> result = new ArrayList<IDownloadPlugin>();
@@ -113,21 +113,39 @@ public class PluginManager implements IPluginManager {
 				throw new InvalidViewException("Plugin : " + pluginName + 
 						" does not provide given view type: " + viewType);
 			}
-	
-			result.add(f.newInstance(getLatestStateOf(f.getServiceName(), viewType), viewType));
+			if(parameters==null)
+				result.add(f.newInstance(getLatestStateOf(f.getServiceName(), viewType), viewType));
+			else
+				result.add(f.newInstance(getLatestStateOf(f.getServiceName(), viewType), viewType, parameters));
 		}
 		
 		return result;
 	}
 	
 	@Override
-	public List<IDownloadPlugin> getPluginsInstancesForView(EViewType viewType){
-		return getPluginsInstancesForView(getPluginsNamesForView(viewType), viewType);
+	public List<IDownloadPlugin> getPluginsInstancesForView(List<String> pluginsNames, EViewType viewType) 
+		throws InvalidPluginException, InvalidViewException {
+		return this.getPluginsInstancesForView(pluginsNames, viewType, null);
 	}
 	
 	@Override
-	public IDownloadPlugin getPluginInstanceForView(String pluginName, EViewType viewType){
-		List<IDownloadPlugin> list = getPluginsInstancesForView(Arrays.asList(new String[]{pluginName}), viewType);
+	public List<IDownloadPlugin> getPluginsInstancesForView(EViewType viewType, Object parameters){
+		return getPluginsInstancesForView(getPluginsNamesForView(viewType), viewType, parameters);
+	}
+	
+	@Override
+	public List<IDownloadPlugin> getPluginsInstancesForView(EViewType viewType){
+		return getPluginsInstancesForView(getPluginsNamesForView(viewType), viewType, null);
+	}
+	
+	@Override
+	public IDownloadPlugin getPluginInstanceForView(String pluginName, EViewType viewType, Object parameters){
+		List<IDownloadPlugin> list = getPluginsInstancesForView(Arrays.asList(new String[]{pluginName}), viewType, parameters);
 		return list.get(0);
 	}	
+	
+	@Override
+	public IDownloadPlugin getPluginInstanceForView(String pluginName, EViewType viewType){
+		return getPluginInstanceForView(pluginName, viewType, null);
+	}
 }

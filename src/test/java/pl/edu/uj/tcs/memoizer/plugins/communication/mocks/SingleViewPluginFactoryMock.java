@@ -26,7 +26,7 @@ public class SingleViewPluginFactoryMock extends PluginFactoryMock {
 		if(this.viewType != viewType) {
 			throw new IllegalArgumentException();
 		}
-		return new DownloadPluginMock(getServiceName(), viewType);
+		return new DownloadPluginMock(getServiceName(), viewType, this);
 	}
 
 	

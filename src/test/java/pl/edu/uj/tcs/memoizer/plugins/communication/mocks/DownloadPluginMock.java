@@ -8,6 +8,7 @@ import java.util.List;
 
 import pl.edu.uj.tcs.memoizer.plugins.EViewType;
 import pl.edu.uj.tcs.memoizer.plugins.IDownloadPlugin;
+import pl.edu.uj.tcs.memoizer.plugins.IPluginFactory;
 import pl.edu.uj.tcs.memoizer.plugins.Meme;
 import pl.edu.uj.tcs.memoizer.serialization.StateObject;
 
@@ -15,10 +16,12 @@ public class DownloadPluginMock implements IDownloadPlugin {
 	
 	private String name;
 	private EViewType curViewType;
+	private IPluginFactory parent;
 	
-	public DownloadPluginMock(String name, EViewType viewType) {
+	public DownloadPluginMock(String name, EViewType viewType, IPluginFactory parent) {
 		this.name = name;
 		curViewType = viewType;
+		this.parent = parent;
 	}
 
 	@Override
@@ -52,7 +55,7 @@ public class DownloadPluginMock implements IDownloadPlugin {
 					0, 
 					null, 
 					curViewType,
-					this);
+					parent);
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 			return null;
