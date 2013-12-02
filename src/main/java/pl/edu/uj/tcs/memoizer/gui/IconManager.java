@@ -15,6 +15,7 @@ import pl.edu.uj.tcs.memoizer.plugins.EViewType;
  * @author pkubiak
  */
 public class IconManager {
+	//TODO dodać sprawdzanie w statycznym konstruktorze czy wszystkie ikonki znajdują się na dysku
 	private static final Logger LOG = Logger.getLogger(Main.class);
 	
 	public static ImageIcon getIconForViewType(EViewType viewType){
@@ -65,6 +66,12 @@ public class IconManager {
 					return new ImageIcon(MainWindow.class.getResource("/icons/tabclosehover.png"));
 				case "tab-close-off":
 					return new ImageIcon(MainWindow.class.getResource("/icons/tabclose.png"));
+				case "save-as":
+					return new ImageIcon(MainWindow.class.getResource("/icons/download2.gif"));
+				case "hyperref":
+					return new ImageIcon(MainWindow.class.getResource("/icons/link.gif"));
+				case "broken-image":
+					return new ImageIcon(MainWindow.class.getResource("/icons/broken-image.png"));
 				default:
 					LOG.debug("Missing icon for name: \""+name+"\"");
 					return null;
