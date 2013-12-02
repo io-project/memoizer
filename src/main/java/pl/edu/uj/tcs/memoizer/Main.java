@@ -116,7 +116,7 @@ public class Main {
 					
 					PluginManager pluginManager = new PluginManager(pluginLoader.getLoadedPluginFactories(), eventService);
 					
-					MainWindow window = new MainWindow(pluginManager, stateMap);
+					MainWindow window = new MainWindow(pluginManager, eventService, stateMap);
 					//window.setVisible(true);//TODO is it nesessery?
 				} catch (Exception e) {
 					LOG.error(e.getMessage());

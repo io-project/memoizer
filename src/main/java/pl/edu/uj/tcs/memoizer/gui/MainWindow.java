@@ -8,6 +8,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -37,10 +40,15 @@ import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+
 import org.apache.log4j.Logger;
 
 import pl.edu.uj.tcs.memoizer.Main;
 import pl.edu.uj.tcs.memoizer.configuration.Version;
+import pl.edu.uj.tcs.memoizer.events.IEventService;
+import pl.edu.uj.tcs.memoizer.events.exceptions.EventException;
 import pl.edu.uj.tcs.memoizer.gui.tabs.JMemoizerHTMLTab;
 import pl.edu.uj.tcs.memoizer.gui.tabs.JMemoizerMemeTab;
 import pl.edu.uj.tcs.memoizer.gui.tabs.JMemoizerTab;
@@ -48,6 +56,8 @@ import pl.edu.uj.tcs.memoizer.plugins.EViewType;
 import pl.edu.uj.tcs.memoizer.plugins.IDownloadPlugin;
 import pl.edu.uj.tcs.memoizer.plugins.IPlugin;
 import pl.edu.uj.tcs.memoizer.plugins.communication.PluginManager;
+import pl.edu.uj.tcs.memoizer.runtime.ShutdownEvent;
+import pl.edu.uj.tcs.memoizer.serialization.SerializationException;
 import pl.edu.uj.tcs.memoizer.serialization.StateMap;
 
 /**
@@ -65,13 +75,14 @@ public class MainWindow {
 	
 	private static final Logger LOG = Logger.getLogger(Main.class);
 	private StateMap config;
-	
+	private IEventService eventService;
 	/**
 	 * Create the application.
 	 */
-	public MainWindow(PluginManager pluginManager, StateMap config) {
+	public MainWindow(PluginManager pluginManager, IEventService eventService, StateMap config) {
 		this.pluginManager = pluginManager;
 		this.config = config;
+		this.eventService = eventService;
 		
 		initialize();
 		this.frame.setVisible(true);
@@ -183,11 +194,23 @@ public class MainWindow {
 			menu = new JMenu("Sources");
 			selectedSources.clear();
 			
+			//Load selected-plugins from config files
+			JSONObject obj = config.get("gui-config").getJSON();
+			JSONArray arr = null;//array of selected plugins
+			try{
+				arr = obj.getJSONArray("selected-plugins");
+			}catch(net.sf.json.JSONException e){}
+			
+			if(arr==null)
+				arr = new JSONArray();
+			
+			
 			for(String pluginName: pluginManager.getAllPluginNames()){
 				item = new JCheckBoxMenuItem(pluginName);
 
 				item.setIcon(new ImageIcon(pluginManager.getIconForPluginName(pluginName)));
-		
+				item.setSelected(arr.contains(pluginName));
+
 				selectedSources.put(pluginName, item);
 				menu.add(item);
 			}
@@ -341,6 +364,27 @@ public class MainWindow {
 		frame = new JFrame();
 		frame.setBounds(100, 100, 586, 449);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.addWindowListener(new WindowAdapter() {
+			public void windowClosing(WindowEvent e)
+		    {
+		        JFrame frame = (JFrame)e.getSource();
+		        JSONObject x = MainWindow.this.config.get("gui-config").getJSON();
+		        JSONArray a = new JSONArray();
+		        for(String plugin: getSelectedSources())
+		        	a.add(plugin);
+		        
+		        x.put("selected-plugins", a);
+		        LOG.debug("JSON: "+x.toString());
+		        
+		        try {
+		        	//TODO problem z kolejnością eventów => event powinien killować app
+					MainWindow.this.eventService.call(new ShutdownEvent());
+					
+				} catch (EventException e1) {
+					e1.printStackTrace();
+				}
+		    }
+		});
 
 		menuBar = new JMenuBar();
 		frame.setJMenuBar(menuBar);

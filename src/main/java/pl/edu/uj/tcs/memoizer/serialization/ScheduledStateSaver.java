@@ -59,6 +59,12 @@ public class ScheduledStateSaver implements IEventObserver<ShutdownEvent> {
 
 	@Override
 	public void notify(ShutdownEvent event) {
+		try {
+			es.call(new SaveStateEvent());
+		} catch (EventException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		executor.shutdownNow();
 	}
 }
