@@ -1,4 +1,4 @@
-package pl.edu.uj.tcs.memoizer.serialization;
+package pl.edu.uj.tcs.memoizer.serializationTest;
 
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;

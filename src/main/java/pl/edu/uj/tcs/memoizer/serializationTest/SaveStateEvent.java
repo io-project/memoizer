@@ -1,4 +1,4 @@
-package pl.edu.uj.tcs.memoizer.serialization;
+package pl.edu.uj.tcs.memoizer.serializationTest;
 
 import pl.edu.uj.tcs.memoizer.events.IEvent;
 

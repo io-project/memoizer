@@ -17,7 +17,6 @@ import java.util.Locale;
 import java.util.Properties;
 
 import javax.swing.BoxLayout;
-import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
@@ -40,7 +39,6 @@ import com.dropbox.core.DbxException;
 import com.dropbox.core.DbxRequestConfig;
 import com.dropbox.core.DbxWebAuthNoRedirect;
 import com.dropbox.core.DbxWriteMode;
-import com.google.common.collect.Sets.SetView;
 
 /**
  * Implementation of accounts for Dropbox service
@@ -217,18 +215,18 @@ public class DropboxAccount implements IAccount {
 
 		final Container loggedContainer = new Container();
 		loggedContainer.setLayout(new BoxLayout(loggedContainer, BoxLayout.Y_AXIS));
-		
+
 		final Container notLoggedContainer = new Container();
 		notLoggedContainer.setLayout(new BoxLayout(notLoggedContainer, BoxLayout.Y_AXIS));
-		
+
 		final Container firsStepContainer = new Container();
 		firsStepContainer.setLayout(new BoxLayout(firsStepContainer, BoxLayout.Y_AXIS));
-		
+
 		final Container secondStepContainer = new Container();
 		secondStepContainer.setLayout(new BoxLayout(secondStepContainer, BoxLayout.Y_AXIS));
-		
+
 		final JLabel labelPlaceholder = new JLabel();
-		
+
 		final JTextField authTokenPlaceholder = new JTextField();
 		authTokenPlaceholder.setMaximumSize(new Dimension(1000, 20));
 
@@ -246,7 +244,7 @@ public class DropboxAccount implements IAccount {
 				JAccountButton button = (JAccountButton) e.getSource();
 				IAccount account = button.getAssociatedAccount();
 
-				// TODO wyślij event, że trzeba zapisać plik z konfigiem
+				// TODO
 			}
 		});
 
@@ -257,6 +255,8 @@ public class DropboxAccount implements IAccount {
 			public void actionPerformed(ActionEvent e) {
 				JAccountButton button = (JAccountButton) e.getSource();
 				IAccount account = button.getAssociatedAccount();
+
+				// TODO
 
 			}
 		});
@@ -272,8 +272,8 @@ public class DropboxAccount implements IAccount {
 				try {
 					account.logOut();
 				} catch (ConnectionException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
+					JOptionPane.showMessageDialog(tab, "Not available to connect to Dropbox cloud.", "Connection error", JOptionPane.ERROR_MESSAGE);
+					LOG.error("Connection Exception while trying to Log Out from Dropbox.", e1);
 				}
 
 				resetVisability(statusLabel, loggedContainer, notLoggedContainer, secondStepContainer, labelPlaceholder, authTokenPlaceholder);
@@ -284,7 +284,7 @@ public class DropboxAccount implements IAccount {
 		loggedContainer.add(saveButton);
 		loggedContainer.add(loadButton);
 		loggedContainer.add(logoutButton);
-		
+
 		/* CONFIRM BUTTON ACTION */
 		confirmButton.addActionListener(new ActionListener() {
 
@@ -308,12 +308,13 @@ public class DropboxAccount implements IAccount {
 					statusLabel.setVisible(true);
 					loggedContainer.setVisible(true);
 				} catch (ConnectionException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
+					JOptionPane.showMessageDialog(tab, "Not available to connect to Dropbox cloud.", "Connection error", JOptionPane.ERROR_MESSAGE);
+					LOG.error("Connection Exception while trying to Log In to Dropbox.", e1);
 				} catch (NotAvailableToLogin e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
+					JOptionPane.showMessageDialog(tab, "Not available to log in to Dropbox cloud.", "Logging error", JOptionPane.ERROR_MESSAGE);
+					LOG.error("Not available to log in while trying to Log In to Dropbox.", e1);
 				} catch (NotLoggedException e1) {
+					JOptionPane.showMessageDialog(tab, "Internal error.", "Internal error", JOptionPane.ERROR_MESSAGE);
 					LOG.error("Problem while truing to get login of recently logged to Dropbox.", e1);
 				}
 
@@ -352,11 +353,11 @@ public class DropboxAccount implements IAccount {
 					JOptionPane.showMessageDialog(tab, "Not available to log in to Dropbox cloud.", "Logging error", JOptionPane.ERROR_MESSAGE);
 					LOG.error("Not available to log in while trying to Log In to Dropbox.", e1);
 				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
+					JOptionPane.showMessageDialog(tab, "Internal error.", "Internal error", JOptionPane.ERROR_MESSAGE);
+					LOG.error("IOException while trying to Log In to Dropbox.", e1);
 				} catch (URISyntaxException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
+					JOptionPane.showMessageDialog(tab, "Internal error.", "Internal error", JOptionPane.ERROR_MESSAGE);
+					LOG.error("URISyntaxException while trying to Log In to Dropbox.", e1);
 				}
 
 			}
@@ -375,12 +376,14 @@ public class DropboxAccount implements IAccount {
 		loggedContainer.setVisible(this.isLogged());
 		notLoggedContainer.setVisible(!this.isLogged());
 
-		resetVisability(statusLabel, loggedContainer, notLoggedContainer, secondStepContainer, labelPlaceholder, authTokenPlaceholder);;
-		
+		resetVisability(statusLabel, loggedContainer, notLoggedContainer, secondStepContainer, labelPlaceholder, authTokenPlaceholder);
+		;
+
 		return ret;
 	}
-	
-	public void resetVisability(JLabel statusLabel, Container loggedContainer, Container notLoggedContainer, Container secondStepContainer, JLabel labelPlaceholder, JTextField authTokenPlaceholder){
+
+	private void resetVisability(JLabel statusLabel, Container loggedContainer, Container notLoggedContainer, Container secondStepContainer,
+			JLabel labelPlaceholder, JTextField authTokenPlaceholder) {
 		statusLabel.setVisible(false);
 		loggedContainer.setVisible(false);
 		notLoggedContainer.setVisible(true);
