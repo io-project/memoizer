@@ -27,13 +27,13 @@ public class AccountState implements IStateSource, IStateSink {
 		try {
 			associatedAccount.saveBytes(bytes, "appState.st");
 		} catch (ConnectionException e) {
-			// TODO Auto-generated catch block
+			LOG.error("Connection excpetion", e);
 			throw new SerializationException(e);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			LOG.error("IOEexcpetion", e);
 			throw new SerializationException(e);
 		} catch (NotLoggedException e) {
-			// TODO Auto-generated catch block
+			LOG.error("Not Logged excpetion", e);
 			throw new SerializationException(e);
 		}
 	}
