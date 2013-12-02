@@ -4,6 +4,7 @@ import java.util.concurrent.Future;
 
 import pl.edu.uj.tcs.memoizer.gui.views.JMemoizerView;
 import pl.edu.uj.tcs.memoizer.plugins.Meme;
+import pl.edu.uj.tcs.memoizer.plugins.communication.DownloadMemeException;
 
 /**
  * @author pkubiak
@@ -28,5 +29,5 @@ public interface IMemoizerModel{
 	 * @param k
 	 * @return k'th element of model
 	 */
-	public Meme get(int k);
+	public Meme get(int k) throws DownloadMemeException;
 }

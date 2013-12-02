@@ -318,28 +318,31 @@ public class MemeProvider implements IMemeProvider {
 		}
 
 		// at least one should be downloaded if possible
-		if(currExtr.isEmpty()) {
-			waitForOne();
-			if(!currExtr.isEmpty()) {
-				extractFinished();
+		for(int tries = 0; tries< 3; tries++){
+			if(currExtr.isEmpty()) {
+			
+				waitForOne();
+				if(!currExtr.isEmpty()) {
+					extractFinished();
+				}
 			}
+	
+			int i = 0;
+			while(i < n && !currExtr.isEmpty()) {
+				results.add(pluginView.extractNextMeme(currExtr));
+				i++;
+			}
+			
+			if(currExtr.size() < MIN_LIMIT) {
+				downloadNext(MIN_LIMIT);
+			}
+	
+			if(!results.isEmpty())
+				return results;
+			
+			System.out.println("TRY: "+tries);
 		}
-
-		int i = 0;
-		while(i < n && !currExtr.isEmpty()) {
-			results.add(pluginView.extractNextMeme(currExtr));
-			i++;
-		}
-		
-		if(currExtr.size() < MIN_LIMIT) {
-			downloadNext(MIN_LIMIT);
-		}
-
-		if(results.isEmpty()) {
-			throw new DownloadMemeException("No new memes to return");
-		}
-		
-		return results;
+		throw new DownloadMemeException("No new memes to return");
 	}
 
 }

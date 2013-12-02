@@ -10,13 +10,19 @@ import pl.edu.uj.tcs.memoizer.plugins.Meme;
 
 public class ImageMemeSaver {
 
-	public static void saveImageToDisk(Meme meme) throws IOException {
-		
-		JFileChooser saveFile = new JFileChooser();
-		saveFile.setSelectedFile(new File(meme.getSuggestedFileName()));
-		if(saveFile.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
-			MemeImageSaver.saveMemeImage(meme, 
-					saveFile.getSelectedFile());
+	public static void saveImageToDisk(Meme meme){
+		while(true){
+			try{
+				JFileChooser saveFile = new JFileChooser();
+				saveFile.setSelectedFile(new File(meme.getSuggestedFileName()));
+				if(saveFile.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
+					MemeImageSaver.saveMemeImage(meme, saveFile.getSelectedFile());
+					return ;
+				}else
+					return ;
+			}catch(IOException e){
+				e.printStackTrace();
+			}
 		}
 	}
 }

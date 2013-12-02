@@ -38,8 +38,9 @@ import pl.edu.uj.tcs.memoizer.plugins.communication.PluginManager;
 
 public final class JMemoizerMemeTab extends JMemoizerTab {
 	private JPanel panel;
+	private IMemoizerModel model;
 	
-	public JMemoizerMemeTab(String title,final EViewType viewType, List<String> pluginsNames, PluginManager pluginManager){
+	public JMemoizerMemeTab(String title,final EViewType viewType, final List<String> pluginsNames, final PluginManager pluginManager){
 		this.icon = IconManager.getIconForViewType(viewType);		
 		this.title = title;
 		
@@ -141,7 +142,7 @@ public final class JMemoizerMemeTab extends JMemoizerTab {
 		if(viewType==EViewType.SEARCH){
 			bar = new JPanel();
 			bar.setLayout(new BoxLayout(bar, BoxLayout.X_AXIS));
-			JTextField textField = new JTextField("");
+			final JTextField textField = new JTextField("");
 			x = new Dimension(Integer.MAX_VALUE, height);
 			textField.setMaximumSize(x);
 			
@@ -152,6 +153,39 @@ public final class JMemoizerMemeTab extends JMemoizerTab {
 			buttonSearch.setMaximumSize(x);
 			bar.add(buttonSearch);
 			p.add(bar);
+			
+			buttonSearch.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent event) {
+					String searchKey = textField.getText();
+					MemeProvider memeProvider = new MemeProvider();
+					List<IDownloadPlugin> plugins = pluginManager.getPluginsInstancesForView(pluginsNames, viewType, searchKey);
+					try {
+						memeProvider.setView(new IPluginView() {
+							@Override
+							public EViewType getViewType() {
+								return viewType;
+							}
+							@Override
+							public Meme extractNextMeme(List<Meme> memes) {
+								if(memes.size()>0)
+									return memes.remove(0);
+								return null;
+							}
+						}, plugins);
+					} catch (InvalidPluginException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					//unbind previous model
+					if(model!=null)
+						model.bindView(null);
+					model = new SimpleMemoizerModel(memeProvider);
+					model.bindView(view);
+					view.attachModel(model);
+					view.refresh();
+				}
+			});
 		}else{
 			MemeProvider memeProvider = new MemeProvider();
 			List<IDownloadPlugin> plugins = pluginManager.getPluginsInstancesForView(pluginsNames, viewType);
@@ -172,7 +206,7 @@ public final class JMemoizerMemeTab extends JMemoizerTab {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			IMemoizerModel model = new SimpleMemoizerModel(memeProvider);
+			model = new SimpleMemoizerModel(memeProvider);
 			
 			model.bindView(view);
 			view.attachModel(model);

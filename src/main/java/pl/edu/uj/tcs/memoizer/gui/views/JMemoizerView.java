@@ -17,6 +17,7 @@ public abstract class JMemoizerView extends JPanel{
 	public abstract void scrollTo(int k);
 	
 	public abstract void notifyUpdate();
+	public abstract void notifyStreamEnd();
 	
 	/**
 	 * Zresetuj widok i zczytaj model od nowa

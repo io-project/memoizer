@@ -40,6 +40,7 @@ import javax.swing.UIManager;
 import org.apache.log4j.Logger;
 
 import pl.edu.uj.tcs.memoizer.Main;
+import pl.edu.uj.tcs.memoizer.configuration.Version;
 import pl.edu.uj.tcs.memoizer.gui.tabs.JMemoizerHTMLTab;
 import pl.edu.uj.tcs.memoizer.gui.tabs.JMemoizerMemeTab;
 import pl.edu.uj.tcs.memoizer.gui.tabs.JMemoizerTab;
@@ -378,7 +379,7 @@ public class MainWindow {
 		layeredPane.add(introPanel);
 		introPanel.setLayout(new BorderLayout(0, 0));
 		
-		JLabel introLabel = new JLabel("Memoizer v.0.1");
+		JLabel introLabel = new JLabel("Memoizer v."+Version.VERSION);
 		introPanel.add(introLabel);
 		introLabel.setForeground(UIManager.getColor("Label.disabledForeground"));
 		introLabel.setFont(new Font("Dialog", Font.BOLD, 28));
