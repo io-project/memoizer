@@ -49,6 +49,7 @@ import pl.edu.uj.tcs.memoizer.plugins.EViewType;
 import pl.edu.uj.tcs.memoizer.plugins.IDownloadPlugin;
 import pl.edu.uj.tcs.memoizer.plugins.IPlugin;
 import pl.edu.uj.tcs.memoizer.plugins.communication.PluginManager;
+import pl.edu.uj.tcs.memoizer.serialization.StateMap;
 
 /**
  * 
@@ -64,12 +65,15 @@ public class MainWindow {
 	private HashMap<String, JMenuItem> selectedSources = new HashMap<>();
 	
 	private static final Logger LOG = Logger.getLogger(Main.class);
-
+	private StateMap config;
+	
 	/**
 	 * Create the application.
 	 */
-	public MainWindow(PluginManager pluginManager) {
+	public MainWindow(PluginManager pluginManager, StateMap config) {
 		this.pluginManager = pluginManager;
+		this.config = config;
+		
 		initialize();
 		this.frame.setVisible(true);
 	}
@@ -351,7 +355,7 @@ public class MainWindow {
 		frame = new JFrame();
 		frame.setBounds(100, 100, 586, 449);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
+
 		menuBar = new JMenuBar();
 		frame.setJMenuBar(menuBar);
 		

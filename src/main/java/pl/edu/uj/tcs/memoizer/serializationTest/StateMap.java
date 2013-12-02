@@ -31,8 +31,12 @@ public class StateMap implements IEventObserver<SaveStateEvent>, Map<String, ISt
 	}
 	
 	private void buildMap(String object) {
-		
-		JSONObject jo = JSONObject.fromObject(object);
+		JSONObject jo;
+		try{
+			jo = JSONObject.fromObject(object);
+		}catch(net.sf.json.JSONException e){
+			jo = JSONObject.fromObject("{}");
+		}
 
 		@SuppressWarnings("unchecked")
 		Iterator<String> it = (Iterator<String>) jo.keys();
@@ -167,6 +171,7 @@ public class StateMap implements IEventObserver<SaveStateEvent>, Map<String, ISt
 
 	@Override
 	public void notify(SaveStateEvent event) {
+		LOG.info("Fired save event");
 		try {
 			save();
 		} catch (SerializationException e) {
