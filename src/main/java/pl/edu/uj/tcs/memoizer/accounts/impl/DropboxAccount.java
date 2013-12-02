@@ -40,6 +40,7 @@ import com.dropbox.core.DbxException;
 import com.dropbox.core.DbxRequestConfig;
 import com.dropbox.core.DbxWebAuthNoRedirect;
 import com.dropbox.core.DbxWriteMode;
+import com.google.common.collect.Sets.SetView;
 
 /**
  * Implementation of accounts for Dropbox service
@@ -212,17 +213,30 @@ public class DropboxAccount implements IAccount {
 		ret.add(titleLabel);
 
 		final JLabel statusLabel = new JLabel();
-		statusLabel.setVisible(false);
 		ret.add(statusLabel);
 
 		final Container loggedContainer = new Container();
 		loggedContainer.setLayout(new BoxLayout(loggedContainer, BoxLayout.Y_AXIS));
+		
 		final Container notLoggedContainer = new Container();
 		notLoggedContainer.setLayout(new BoxLayout(notLoggedContainer, BoxLayout.Y_AXIS));
+		
+		final Container firsStepContainer = new Container();
+		firsStepContainer.setLayout(new BoxLayout(firsStepContainer, BoxLayout.Y_AXIS));
+		
+		final Container secondStepContainer = new Container();
+		secondStepContainer.setLayout(new BoxLayout(secondStepContainer, BoxLayout.Y_AXIS));
+		
+		final JLabel labelPlaceholder = new JLabel();
+		
+		final JTextField authTokenPlaceholder = new JTextField();
+		authTokenPlaceholder.setMaximumSize(new Dimension(1000, 20));
 
-		JAccountButton saveButton = new JAccountButton("Save Settings", this);
-		JAccountButton loadButton = new JAccountButton("Load Settings", this);
-		JAccountButton logoutButton = new JAccountButton("Log Out", this);
+		final JAccountButton confirmButton = new JAccountButton("Confirm", this);
+		final JAccountButton loginButton = new JAccountButton("Log In", this);
+		final JAccountButton saveButton = new JAccountButton("Save Settings", this);
+		final JAccountButton loadButton = new JAccountButton("Load Settings", this);
+		final JAccountButton logoutButton = new JAccountButton("Log Out", this);
 
 		/* SAVE BUTTON ACTIONS */
 		saveButton.addActionListener(new ActionListener() {
@@ -255,7 +269,14 @@ public class DropboxAccount implements IAccount {
 				JAccountButton button = (JAccountButton) e.getSource();
 				IAccount account = button.getAssociatedAccount();
 
-				// TODO wyślij event, że trzeba się wylogować z chmury
+				try {
+					account.logOut();
+				} catch (ConnectionException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+
+				resetVisability(statusLabel, loggedContainer, notLoggedContainer, secondStepContainer, labelPlaceholder, authTokenPlaceholder);
 
 			}
 		});
@@ -263,21 +284,6 @@ public class DropboxAccount implements IAccount {
 		loggedContainer.add(saveButton);
 		loggedContainer.add(loadButton);
 		loggedContainer.add(logoutButton);
-
-		final Container firsStepContainer = new Container();
-		firsStepContainer.setLayout(new BoxLayout(firsStepContainer, BoxLayout.Y_AXIS));
-
-		final Container secondStepContainer = new Container();
-		secondStepContainer.setLayout(new BoxLayout(secondStepContainer, BoxLayout.Y_AXIS));
-		secondStepContainer.setVisible(false);
-
-		final JLabel labelPlaceholder = new JLabel();
-
-		final JTextField authTokenPlaceholder = new JTextField();
-		authTokenPlaceholder.setMaximumSize(new Dimension(1000, 20));
-		authTokenPlaceholder.setText("");
-
-		final JAccountButton confirmButton = new JAccountButton("Confirm", this);
 		
 		/* CONFIRM BUTTON ACTION */
 		confirmButton.addActionListener(new ActionListener() {
@@ -317,8 +323,6 @@ public class DropboxAccount implements IAccount {
 		secondStepContainer.add(labelPlaceholder);
 		secondStepContainer.add(authTokenPlaceholder);
 		secondStepContainer.add(confirmButton);
-
-		JAccountButton loginButton = new JAccountButton("Log In", this);
 
 		/* LOGIN BUTTON ACTION */
 		loginButton.addActionListener(new ActionListener() {
@@ -371,7 +375,18 @@ public class DropboxAccount implements IAccount {
 		loggedContainer.setVisible(this.isLogged());
 		notLoggedContainer.setVisible(!this.isLogged());
 
+		resetVisability(statusLabel, loggedContainer, notLoggedContainer, secondStepContainer, labelPlaceholder, authTokenPlaceholder);;
+		
 		return ret;
+	}
+	
+	public void resetVisability(JLabel statusLabel, Container loggedContainer, Container notLoggedContainer, Container secondStepContainer, JLabel labelPlaceholder, JTextField authTokenPlaceholder){
+		statusLabel.setVisible(false);
+		loggedContainer.setVisible(false);
+		notLoggedContainer.setVisible(true);
+		secondStepContainer.setVisible(false);
+		labelPlaceholder.setText("");
+		authTokenPlaceholder.setText("");
 	}
 
 }
