@@ -26,11 +26,14 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.JTextArea;
 
 import pl.edu.uj.tcs.memoizer.gui.IconManager;
+import pl.edu.uj.tcs.memoizer.gui.MetadataHandler;
 import pl.edu.uj.tcs.memoizer.gui.utils.ImageMemeSaver;
 import pl.edu.uj.tcs.memoizer.plugins.Meme;
 
 import java.awt.Cursor;
 import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -43,11 +46,12 @@ public class JInfinityScrollViewItem extends JPanel {
 	 * 
 	 * TODO sprawdzać czy parametry nie są null'ami
 	 */
-	public JInfinityScrollViewItem(final Meme meme) {
+	public JInfinityScrollViewItem(final Meme meme, final MetadataHandler metadata) {
 		
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		setBorder(new EmptyBorder(10, 10, 10, 10));
 		
+		metadata.setSeened(meme, true);
 		
 		Box horizontalBox = Box.createHorizontalBox();
 		add(horizontalBox);
@@ -69,13 +73,21 @@ public class JInfinityScrollViewItem extends JPanel {
 		horizontalBox.add(horizontalGlue);
 		
 		//Przycisk lubienia
-		JToggleButton toggleButton = new JToggleButton("★");//star: ★
+		final JToggleButton toggleButton = new JToggleButton("★");//star: ★
 		
 
 		toggleButton.setAlignmentX(Component.RIGHT_ALIGNMENT);
 		toggleButton.setIconTextGap(0);
 		horizontalBox.add(toggleButton);
 		toggleButton.setFont(new Font("Dialog", Font.BOLD, 20));
+		toggleButton.setSelected(metadata.isBookmarked(meme));
+		toggleButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				metadata.setBookmarked(meme,toggleButton.isSelected());
+				
+			}
+		});
 		
 		//TODO dodać obsługę gwiazdkowania
 		//if(content.isStarred())
