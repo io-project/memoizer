@@ -31,6 +31,7 @@ import org.apache.log4j.Logger;
 import pl.edu.uj.tcs.memoizer.gui.MainWindow;
 import pl.edu.uj.tcs.memoizer.gui.models.IMemoizerModel;
 import pl.edu.uj.tcs.memoizer.plugins.Meme;
+import pl.edu.uj.tcs.memoizer.plugins.communication.DownloadMemeException;
 
 public class JInfinityScrollView extends JMemoizerView {
 	private IMemoizerModel model;
@@ -43,6 +44,8 @@ public class JInfinityScrollView extends JMemoizerView {
 	private int showedItems = 0;
 	private JPanel panelInner;
 	private JScrollPane scrollPane;
+	private JLabel lblSpinner;
+	private JLabel lblEnd;
 	
 	/**
 	 * TODO utrzymywanie wysokości przy resizowaniu okna
@@ -87,7 +90,8 @@ public class JInfinityScrollView extends JMemoizerView {
 		panelOutter.add(panelInner);
 		panelInner.setLayout(new BoxLayout(panelInner, BoxLayout.Y_AXIS));
 		
-		final JLabel lblSpinner = new JLabel("");
+		
+		lblSpinner = new JLabel("");
 		lblSpinner.setPreferredSize(new Dimension(100, 600));
 		lblSpinner.setBackground(Color.BLACK);
 		lblSpinner.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -95,10 +99,22 @@ public class JInfinityScrollView extends JMemoizerView {
 		lblSpinner.setBorder(new EmptyBorder(10, 0, 10, 0));
 		lblSpinner.setHorizontalTextPosition(SwingConstants.CENTER);
 		lblSpinner.setVerticalAlignment(SwingConstants.TOP);
-		panelOutter.add(lblSpinner, BorderLayout.SOUTH);
+		
 		lblSpinner.setHorizontalAlignment(SwingConstants.CENTER);
 		lblSpinner.setIcon(new ImageIcon(this.getClass().getResource("/ajax-loader.gif")));
-	
+		lblSpinner.setVisible(false);//create but dont show
+		
+		
+		lblEnd = new JLabel("There is no more memes. Click to try again !");
+		lblEnd.setVisible(true);
+		
+		JPanel notificationsPanel = new JPanel();
+		notificationsPanel.setLayout(new BoxLayout(notificationsPanel, BoxLayout.Y_AXIS));
+		
+		notificationsPanel.add(lblSpinner);
+		notificationsPanel.add(lblEnd);
+		panelOutter.add(notificationsPanel, BorderLayout.SOUTH);
+		
 		this.addComponentListener(new ComponentAdapter() {
 			@Override
 			public void componentResized(ComponentEvent e) {
@@ -113,30 +129,40 @@ public class JInfinityScrollView extends JMemoizerView {
 			public void adjustmentValueChanged(AdjustmentEvent ae) {
 		        int extent = scrollPane.getVerticalScrollBar().getModel().getExtent();
 		        
-		        if(scrollPane.getVerticalScrollBar().getValue()+extent+lblSpinner.getHeight()>scrollPane.getVerticalScrollBar().getMaximum()){
-		        	
-		        	/**
-		        	 * TODO zabezpieczyć na wypadek sigfaulta w workerze
-		        	 */
-		        	if(backgroundThreadIsRunning.tryAcquire()){
-		        		LOG.debug("Added AsyncTask");
-		        		
-		        		if(model!=null){
-		        			if(model.tryGet(showedItems)){
-		        				notifyUpdate();
-		        			}
-		        		}else
-		        			backgroundThreadIsRunning.release();
-		        	}
+		        if(model!=null&&scrollPane.getVerticalScrollBar().getValue()+extent+lblSpinner.getHeight()>scrollPane.getVerticalScrollBar().getMaximum()){
+		        	requestNext();
 		        }
 		    }
 		});
 	}
 	
+	private void requestNext(){
+		/**
+    	 * TODO zabezpieczyć na wypadek sigfaulta w workerze
+    	 * TODO synchronizacja
+    	 */
+		lblSpinner.setVisible(true);
+		lblEnd.setVisible(false);
+		
+		if(model!=null&&backgroundThreadIsRunning.tryAcquire()){
+    		LOG.debug("Added AsyncTask");
+    			
+			if(model.tryGet(showedItems)){
+				notifyUpdate();
+			}
+    	}
+	}
+	
 	@Override
 	public void attachModel(IMemoizerModel model) {
+		//unbind old model
+		if(this.model!=null)
+			this.model.bindView(null);
 		this.model = model;
-		model.bindView(this);
+		
+		if(model!=null)
+			model.bindView(this);
+		thereIsNoModel();
 	}
 
 	@Override
@@ -215,40 +241,62 @@ public class JInfinityScrollView extends JMemoizerView {
 
 	@Override
 	public synchronized void notifyUpdate() {
-		System.out.println("NotifyUpdates()");
 		if(model.tryGet(showedItems)){
-			final Meme meme = model.get(showedItems);
-			System.out.println(meme);
-			if(meme == null){
-				//TODO dodać obłsugę gdy nastąpi koniec danych
-				LOG.debug("No more data here");
-				
-			}else{
-				executorService.execute(new Runnable() {
-	        	    public void run() {
-		        		LOG.debug("Asynchronous task");
- 
-	        	        // TODO Dodać ładowanie więcej niż jednego obrazka
-	        	        final JInfinityScrollViewItem imagePanel = new JInfinityScrollViewItem(meme);
-	        	        showedItems++;
-	        	        SwingUtilities.invokeLater(new Runnable() {
-	        	            public void run() {
-								JInfinityScrollView.this.panelInner.add(imagePanel);
-								JInfinityScrollView.this.panelInner.add(new JSeparator());
-								JInfinityScrollView.this.panelInner.revalidate();
-								backgroundThreadIsRunning.release();
-	        	            }
-	        	          });
-	        	    }
-	        	});
+			try{
+				final Meme meme = model.get(showedItems);
+
+				if(meme == null){
+					//TODO dodać obłsugę gdy nastąpi koniec danych
+					LOG.debug("No more data here");
+					
+				}else{
+					showedItems++;
+					executorService.execute(new Runnable() {
+		        	    public void run() {
+			        		LOG.debug("Asynchronous task");
+	 
+		        	        // TODO Dodać ładowanie więcej niż jednego obrazka
+		        	        final JInfinityScrollViewItem imagePanel = new JInfinityScrollViewItem(meme);
+		        	        
+		        	        SwingUtilities.invokeLater(new Runnable() {
+		        	            public void run() {
+									JInfinityScrollView.this.panelInner.add(imagePanel);
+									JInfinityScrollView.this.panelInner.add(new JSeparator());
+									JInfinityScrollView.this.panelInner.revalidate();
+									backgroundThreadIsRunning.release();
+		        	            }
+		        	          });
+		        	    }
+		        	});
+				}
+			}catch(DownloadMemeException e){
+				this.notifyStreamEnd();
+				return;
 			}
 		}
 	}
 
 	@Override
-	public void refresh() {
-		// TODO Auto-generated method stub
+	public synchronized void refresh() {
+		showedItems = 0;
 		
+		panelInner.removeAll();
+		
+		if(model.tryGet(showedItems)){
+			notifyUpdate();
+		}
 	}
 
+	@Override
+	public synchronized void notifyStreamEnd(){
+		System.out.println("NotifyStreamEnd");
+		lblSpinner.setVisible(false);
+		lblEnd.setVisible(true);
+	}
+	
+	private void thereIsNoModel(){
+		if(model!=null)
+			lblSpinner.setVisible(true);
+		else lblSpinner.setVisible(false);
+	}
 }
