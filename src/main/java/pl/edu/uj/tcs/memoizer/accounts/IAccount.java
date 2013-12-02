@@ -1,10 +1,13 @@
 package pl.edu.uj.tcs.memoizer.accounts;
 
+import java.awt.Container;
 import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
 
 import pl.edu.uj.tcs.memoizer.accounts.exceptions.*;
+import pl.edu.uj.tcs.memoizer.events.IEventService;
+import pl.edu.uj.tcs.memoizer.gui.tabs.JAccountsTab;
 
 /**
  * Interfejs definiujący API które musi udostępniać klasa umożliwiająca zapis konta w jakimś, implementowanym przez tą klasę, serwisie.
@@ -79,4 +82,14 @@ public interface IAccount {
 	 * @throws NoFileException This exception is thrown when path to file on Cloud service accound is not proper.
 	 */
 	public void getFile(String pathInCloud, File fileOnLocal) throws ConnectionException, IOException, NotLoggedException, NoFileException;
+
+	/**
+	 * Returns Container which contains proper GUI Component for each IAccount implementation.
+	 * @param accountsManager
+	 * @param accountsTab 
+	 * @param string
+	 * @return
+	 */
+	public Container prepareGUIContainer(AccountsManager accountsManager, JAccountsTab accountsTab, String string)  throws ConnectionException ;
+	//TODO odpowiednie wyjątki
 }

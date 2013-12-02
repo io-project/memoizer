@@ -18,8 +18,8 @@ import pl.edu.uj.tcs.memoizer.accounts.exceptions.ConnectionException;
 public class AccountsManager {
 	
 	private List<IAccount> listOfAccounts = new ArrayList<>();
-    private static Logger LOG = Logger.getLogger(AccountsManager.class);
     private static AccountsManager instance = null;
+    private static Logger LOG = Logger.getLogger(AccountsManager.class);
     
     /**
      * Constructs instance od AccountsManager, where recognizes by reflection available implementations of IAccount interface (only in pl.edu.uj.tcs.memoizer.account.impl package). 
@@ -34,9 +34,9 @@ public class AccountsManager {
 				} catch (InstantiationException | IllegalAccessException e) {
 					LOG.error("Problem with constructing instance of IAccount.", e);
 				}
-		}	
+		}
 	}
-	
+
 	/**
 	 * Class uses singleton design pattern. This method return existing instance of AccountsManager.
 	 * @return existing instance of AccountsManager.
@@ -47,7 +47,7 @@ public class AccountsManager {
 	}
 	
 	/**
-	 * Return list of available services.
+	 * Returns list of available services.
 	 * @return List of available services.
 	 */
 	public List<IAccount> getAvailableServices(){
