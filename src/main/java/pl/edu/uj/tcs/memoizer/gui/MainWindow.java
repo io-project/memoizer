@@ -49,6 +49,7 @@ import pl.edu.uj.tcs.memoizer.Main;
 import pl.edu.uj.tcs.memoizer.configuration.Version;
 import pl.edu.uj.tcs.memoizer.events.IEventService;
 import pl.edu.uj.tcs.memoizer.events.exceptions.EventException;
+import pl.edu.uj.tcs.memoizer.gui.tabs.JAccountsTab;
 import pl.edu.uj.tcs.memoizer.gui.tabs.JMemoizerHTMLTab;
 import pl.edu.uj.tcs.memoizer.gui.tabs.JMemoizerMemeTab;
 import pl.edu.uj.tcs.memoizer.gui.tabs.JMemoizerTab;
