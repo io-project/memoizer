@@ -19,20 +19,23 @@ import org.apache.log4j.Logger;
 import pl.edu.uj.tcs.memoizer.accounts.AccountsManager;
 import pl.edu.uj.tcs.memoizer.accounts.IAccount;
 import pl.edu.uj.tcs.memoizer.accounts.exceptions.ConnectionException;
+import pl.edu.uj.tcs.memoizer.serialization.StateMap;
 
 public class JAccountsTab extends JMemoizerTab {
 
 	private JPanel panel = null;
 	private AccountsManager accountsManager;
 	private Map<IAccount, Container> displayedAccountContainers;
+	private StateMap config;
 
 	private static Logger LOG = Logger.getLogger(JAccountsTab.class);
 
-	public JAccountsTab(String title, Icon icon) {
+	public JAccountsTab(String title, Icon icon, StateMap config) {
 		this.title = title;
 		this.icon = icon;
 		this.accountsManager = AccountsManager.getInstance();
 		this.displayedAccountContainers = new HashMap<IAccount, Container>();
+		this.config = config;
 		setPreferredSize(new Dimension(100, 100));
 	}
 

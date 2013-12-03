@@ -111,6 +111,6 @@ public interface IAccount {
 	 * @param string
 	 * @return
 	 */
-	public Container prepareGUIContainer(AccountsManager accountsManager, JAccountsTab accountsTab, String string)  throws ConnectionException ;
-	//TODO odpowiednie wyjątki
+	public Container prepareGUIContainer(AccountsManager accountsManager, JAccountsTab accountsTab, String string) throws ConnectionException ;
+	
 }

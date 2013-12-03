@@ -12,6 +12,11 @@ import pl.edu.uj.tcs.memoizer.serialization.IStateSink;
 import pl.edu.uj.tcs.memoizer.serialization.IStateSource;
 import pl.edu.uj.tcs.memoizer.serialization.SerializationException;
 
+/**
+ * Implementation of {@link IStateSource}, oraz {@link IStateSink} interfaces using cloud interface
+ * @author mkowalik
+ *
+ */
 public class AccountState implements IStateSource, IStateSink {
 
 	private IAccount associatedAccount;

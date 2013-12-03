@@ -264,19 +264,19 @@ public class MainWindow {
                 });
                 menu.add(item);   
 
-		item = new JMenuItem("Account");
-		item.setIcon(new ImageIcon(MainWindow.class.getResource("/icons/accounts.gif")));
-		item.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				MainWindow.this.addTab(new JAccountsTab("AccountsSettings", new ImageIcon(MainWindow.class.getResource("/icons/accounts.gif"))));
-				
-			}
-		});
-		menu.add(item);
-
-                menuBar.add(menu);
+				item = new JMenuItem("Account");
+				item.setIcon(new ImageIcon(MainWindow.class.getResource("/icons/accounts.gif")));
+				item.addActionListener(new ActionListener() {
+					
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						MainWindow.this.addTab(new JAccountsTab("AccountsSettings", new ImageIcon(MainWindow.class.getResource("/icons/accounts.gif")), config));
+						
+					}
+				});
+				menu.add(item);
+		
+		        menuBar.add(menu);
         }
         
         /**

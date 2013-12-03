@@ -420,11 +420,12 @@ public class DropboxAccount implements IAccount {
 
 		ret.add(loggedContainer);
 		ret.add(notLoggedContainer);
+		
+		resetVisability(statusLabel, loggedContainer, notLoggedContainer, secondStepContainer, labelPlaceholder, authTokenPlaceholder);
 
 		loggedContainer.setVisible(this.isLogged());
 		notLoggedContainer.setVisible(!this.isLogged());
 
-		resetVisability(statusLabel, loggedContainer, notLoggedContainer, secondStepContainer, labelPlaceholder, authTokenPlaceholder);
 
 		return ret;
 	}
