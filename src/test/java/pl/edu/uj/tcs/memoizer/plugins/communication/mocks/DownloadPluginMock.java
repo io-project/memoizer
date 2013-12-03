@@ -54,7 +54,6 @@ public class DownloadPluginMock implements IDownloadPlugin {
 					0, 
 					0, 
 					null, 
-					curViewType,
 					parent);
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
