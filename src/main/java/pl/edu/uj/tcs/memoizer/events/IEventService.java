@@ -5,6 +5,10 @@ import java.util.List;
 import pl.edu.uj.tcs.memoizer.events.exceptions.EventException;
 import pl.edu.uj.tcs.memoizer.events.exceptions.InvalidObserverException;
 
+/**
+ * Event Service
+ *
+ */
 public interface IEventService {
 
     /**

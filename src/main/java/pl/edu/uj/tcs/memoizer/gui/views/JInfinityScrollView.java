@@ -29,6 +29,7 @@ import javax.swing.border.EmptyBorder;
 import org.apache.log4j.Logger;
 
 import pl.edu.uj.tcs.memoizer.gui.MainWindow;
+import pl.edu.uj.tcs.memoizer.gui.MetadataHandler;
 import pl.edu.uj.tcs.memoizer.gui.models.IMemoizerModel;
 import pl.edu.uj.tcs.memoizer.plugins.Meme;
 import pl.edu.uj.tcs.memoizer.plugins.communication.DownloadMemeException;
@@ -46,6 +47,7 @@ public class JInfinityScrollView extends JMemoizerView {
 	private JScrollPane scrollPane;
 	private JLabel lblSpinner;
 	private JLabel lblEnd;
+	private MetadataHandler metadata;
 	
 	/**
 	 * TODO utrzymywanie wysokości przy resizowaniu okna
@@ -74,7 +76,8 @@ public class JInfinityScrollView extends JMemoizerView {
 	    }
 	};
 	
-	public JInfinityScrollView(){
+	public JInfinityScrollView(MetadataHandler metadata){
+		this.metadata = metadata;
 		scrollPane = new JScrollPane();
 		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		
@@ -256,7 +259,7 @@ public class JInfinityScrollView extends JMemoizerView {
 			        		LOG.debug("Asynchronous task");
 	 
 		        	        // TODO Dodać ładowanie więcej niż jednego obrazka
-		        	        final JInfinityScrollViewItem imagePanel = new JInfinityScrollViewItem(meme);
+		        	        final JInfinityScrollViewItem imagePanel = new JInfinityScrollViewItem(meme, metadata);
 		        	        
 		        	        SwingUtilities.invokeLater(new Runnable() {
 		        	            public void run() {

@@ -8,11 +8,12 @@ import pl.edu.uj.tcs.memoizer.gui.views.JMemoizerView;
 import pl.edu.uj.tcs.memoizer.handlers.IHandler;
 import pl.edu.uj.tcs.memoizer.plugins.Meme;
 import pl.edu.uj.tcs.memoizer.plugins.communication.DownloadMemeException;
+import pl.edu.uj.tcs.memoizer.plugins.communication.IMemeProvider;
 import pl.edu.uj.tcs.memoizer.plugins.communication.MemeProvider;
 
 
 public class SimpleMemoizerModel implements IMemoizerModel, IHandler<Meme> {
-	private MemeProvider memeProvider;
+	private IMemeProvider memeProvider;
 	
 	//Change to synchronizedd version
 	private ArrayList<Meme> memes = new ArrayList<Meme>();
@@ -28,7 +29,7 @@ public class SimpleMemoizerModel implements IMemoizerModel, IHandler<Meme> {
 	 * 
 	 * @param connector Data source for this model
 	 */
-	public SimpleMemoizerModel(final MemeProvider memeProvider){
+	public SimpleMemoizerModel(final IMemeProvider memeProvider){
 		this.memeProvider = memeProvider;
 		System.out.println("SimpleMemoizerModel: "+memeProvider.getCurrentView().getViewType());
 		

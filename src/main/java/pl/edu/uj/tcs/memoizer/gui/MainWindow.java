@@ -77,6 +77,8 @@ public class MainWindow {
         private static final Logger LOG = Logger.getLogger(Main.class);
         private StateMap config;
         private IEventService eventService;
+        private MetadataHandler metadataHandler;
+        
         /**
          * Create the application.
          */
@@ -84,6 +86,7 @@ public class MainWindow {
                 this.pluginManager = pluginManager;
                 this.config = config;
                 this.eventService = eventService;
+                this.metadataHandler = new MetadataHandler(config);
                 
                 initialize();
                 this.frame.setVisible(true);
@@ -115,7 +118,7 @@ public class MainWindow {
                         List<String> pluginsNames = MainWindow.this.getSelectedSources();
                         
                         MainWindow.this.addTab(
-                                new JMemoizerMemeTab("Selected sources", viewType, pluginsNames, pluginManager)
+                                new JMemoizerMemeTab("Selected sources", viewType, pluginsNames, pluginManager, metadataHandler)
                         );
                 }
         }
@@ -130,7 +133,7 @@ public class MainWindow {
                 
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                        MainWindow.this.addTab(new JMemoizerMemeTab(viewType, pluginName, pluginManager));                
+                        MainWindow.this.addTab(new JMemoizerMemeTab(viewType, pluginName, pluginManager, metadataHandler));                
                 }
         }
         
@@ -262,7 +265,7 @@ public class MainWindow {
                                 MainWindow.this.addTab(new JMemoizerHTMLTab("About", MainWindow.class.getResource("/html/about/index.html"), IconManager.getIconForName("about")));
                         }
                 });
-                menu.add(item);   
+                menu.add(item);        
 
 				item = new JMenuItem("Account");
 				item.setIcon(new ImageIcon(MainWindow.class.getResource("/icons/accounts.gif")));
@@ -275,8 +278,8 @@ public class MainWindow {
 					}
 				});
 				menu.add(item);
-		
-		        menuBar.add(menu);
+				
+                menuBar.add(menu);
         }
         
         /**

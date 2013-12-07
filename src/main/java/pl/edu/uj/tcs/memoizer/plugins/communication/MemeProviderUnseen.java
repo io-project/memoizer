@@ -16,6 +16,7 @@ import java.util.concurrent.TimeoutException;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
 
+import pl.edu.uj.tcs.memoizer.gui.MetadataHandler;
 import pl.edu.uj.tcs.memoizer.plugins.EViewType;
 import pl.edu.uj.tcs.memoizer.plugins.IDownloadPlugin;
 import pl.edu.uj.tcs.memoizer.plugins.IPluginFactory;
@@ -23,7 +24,7 @@ import pl.edu.uj.tcs.memoizer.plugins.IPluginView;
 import pl.edu.uj.tcs.memoizer.plugins.InvalidPluginException;
 import pl.edu.uj.tcs.memoizer.plugins.Meme;
 
-public class MemeProvider implements IMemeProvider {
+public class MemeProviderUnseen implements IMemeProvider {
 	
 	private static final Logger LOG = Logger.getLogger(MemeProvider.class);
 	private static final int MIN_LIMIT = 10;
@@ -38,8 +39,11 @@ public class MemeProvider implements IMemeProvider {
 	private HashMap<EViewType, Map<String, List<Future<Iterable<Meme>>>>> awaiting = new HashMap<>();
 	
 	private LinkedList<Meme> currExtr;
-
-	public MemeProvider() {
+	private MetadataHandler metadataHandler = null;
+	
+	public MemeProviderUnseen(MetadataHandler metadataHandler) {
+		
+		this.metadataHandler = metadataHandler;
 		
 		currExtr = new LinkedList<Meme>();
 
@@ -197,12 +201,15 @@ public class MemeProvider implements IMemeProvider {
 		}
 	}
 	
-	private void appendExtracted(Iterable<Meme> memes) {
+	private boolean appendExtracted(Iterable<Meme> memes) {
+		boolean cos = false;
 		for(Meme m: memes) {
-			if(m != null) {
+			if(m != null&&!metadataHandler.isSeened(m)) {
+				cos = true;
 				currExtr.addLast(m);
 			}
 		}
+		return cos;
 	}
 	
 	private void waitExtract(long time) throws ExecutionException {
@@ -283,9 +290,10 @@ public class MemeProvider implements IMemeProvider {
 					it.remove();
 					try {
 						Iterable<Meme> memes = ft.get();
+						
 						if(memes != null) {
-							appendExtracted(memes);
-							return;
+							if(appendExtracted(memes))
+								return;
 						}
 					} catch (InterruptedException e) {
 						LOG.error("Could not get Meme: " + ExceptionUtils.getStackTrace(e));

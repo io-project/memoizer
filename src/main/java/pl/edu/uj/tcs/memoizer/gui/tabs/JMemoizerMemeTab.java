@@ -23,6 +23,7 @@ import org.apache.commons.collections.ListUtils;
 
 import pl.edu.uj.tcs.memoizer.gui.IconManager;
 import pl.edu.uj.tcs.memoizer.gui.MainWindow;
+import pl.edu.uj.tcs.memoizer.gui.MetadataHandler;
 import pl.edu.uj.tcs.memoizer.gui.models.IMemoizerModel;
 import pl.edu.uj.tcs.memoizer.gui.models.SimpleMemoizerModel;
 import pl.edu.uj.tcs.memoizer.gui.views.JInfinityScrollView;
@@ -33,18 +34,21 @@ import pl.edu.uj.tcs.memoizer.plugins.IPlugin;
 import pl.edu.uj.tcs.memoizer.plugins.IPluginView;
 import pl.edu.uj.tcs.memoizer.plugins.InvalidPluginException;
 import pl.edu.uj.tcs.memoizer.plugins.Meme;
+import pl.edu.uj.tcs.memoizer.plugins.communication.IMemeProvider;
 import pl.edu.uj.tcs.memoizer.plugins.communication.MemeProvider;
+import pl.edu.uj.tcs.memoizer.plugins.communication.MemeProviderUnseen;
 import pl.edu.uj.tcs.memoizer.plugins.communication.PluginManager;
 
 public final class JMemoizerMemeTab extends JMemoizerTab {
 	private JPanel panel;
 	private IMemoizerModel model;
 	
-	public JMemoizerMemeTab(String title,final EViewType viewType, final List<String> pluginsNames, final PluginManager pluginManager){
+	public JMemoizerMemeTab(String title,final EViewType viewType, final List<String> pluginsNames, final PluginManager pluginManager, final MetadataHandler metadataHandler){
 		this.icon = IconManager.getIconForViewType(viewType);		
 		this.title = title;
 		
-		final JMemoizerView view = new JInfinityScrollView();
+		
+		final JMemoizerView view = new JInfinityScrollView(metadataHandler);
 		
 		JPanel p = new JPanel();
 		p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
@@ -138,7 +142,7 @@ public final class JMemoizerMemeTab extends JMemoizerTab {
 		p.add(bar);
 		p.add(Box.createVerticalStrut(4));
 		bar.invalidate();
-		
+
 		if(viewType==EViewType.SEARCH){
 			bar = new JPanel();
 			bar.setLayout(new BoxLayout(bar, BoxLayout.X_AXIS));
@@ -158,7 +162,7 @@ public final class JMemoizerMemeTab extends JMemoizerTab {
 				@Override
 				public void actionPerformed(ActionEvent event) {
 					String searchKey = textField.getText();
-					MemeProvider memeProvider = new MemeProvider();
+					IMemeProvider memeProvider = new MemeProvider();
 					List<IDownloadPlugin> plugins = pluginManager.getPluginsInstancesForView(pluginsNames, viewType, searchKey);
 					try {
 						memeProvider.setView(new IPluginView() {
@@ -183,12 +187,17 @@ public final class JMemoizerMemeTab extends JMemoizerTab {
 					model = new SimpleMemoizerModel(memeProvider);
 					model.bindView(view);
 					view.attachModel(model);
-					view.refresh();
+					view.refresh();//TODO to fix
 				}
 			});
 		}else{
-			MemeProvider memeProvider = new MemeProvider();
+			IMemeProvider memeProvider = null;
+			if(viewType==EViewType.UNSEEN)
+				memeProvider = new MemeProviderUnseen(metadataHandler);
+			else memeProvider = new MemeProvider();
+			
 			List<IDownloadPlugin> plugins = pluginManager.getPluginsInstancesForView(pluginsNames, viewType);
+			
 			try {
 				memeProvider.setView(new IPluginView() {
 					@Override
@@ -217,8 +226,8 @@ public final class JMemoizerMemeTab extends JMemoizerTab {
 		this.panel = p;
 	}
 	
-	public JMemoizerMemeTab(EViewType viewType, String pluginName, PluginManager pluginManager){
-		this(pluginName, viewType, Arrays.asList(new String[]{pluginName}), pluginManager);
+	public JMemoizerMemeTab(EViewType viewType, String pluginName, PluginManager pluginManager, MetadataHandler metadataHandler){
+		this(pluginName, viewType, Arrays.asList(new String[]{pluginName}), pluginManager, metadataHandler);
 	}
 	
 	@Override
