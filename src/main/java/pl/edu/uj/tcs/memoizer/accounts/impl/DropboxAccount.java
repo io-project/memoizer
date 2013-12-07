@@ -282,32 +282,7 @@ public class DropboxAccount implements IAccount {
 
 		final JAccountButton confirmButton = new JAccountButton("Confirm", this);
 		final JAccountButton loginButton = new JAccountButton("Log In", this);
-		final JAccountButton saveButton = new JAccountButton("Save Settings", this);
-		final JAccountButton loadButton = new JAccountButton("Load Settings", this);
 		final JAccountButton logoutButton = new JAccountButton("Log Out", this);
-
-		/* SAVE BUTTON ACTIONS */
-		saveButton.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				JAccountButton button = (JAccountButton) e.getSource();
-				IAccount account = button.getAssociatedAccount();
-
-				// TODO
-			}
-		});
-
-		/* LOAD BUTTON ACTIONS */
-		loadButton.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				JAccountButton button = (JAccountButton) e.getSource();
-				IAccount account = button.getAssociatedAccount();
-				// TODO
-			}
-		});
 
 		/* LOGOUT BUTTON ACTIONS */
 		logoutButton.addActionListener(new ActionListener() {
@@ -329,8 +304,6 @@ public class DropboxAccount implements IAccount {
 			}
 		});
 
-		loggedContainer.add(saveButton);
-		loggedContainer.add(loadButton);
 		loggedContainer.add(logoutButton);
 
 		/* CONFIRM BUTTON ACTION */
