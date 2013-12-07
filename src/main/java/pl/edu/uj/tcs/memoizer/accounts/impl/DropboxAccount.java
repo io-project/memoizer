@@ -260,11 +260,11 @@ public class DropboxAccount implements IAccount {
 		JLabel titleLabel = new JLabel(this.getServiceName() + " " + sufixLabel);
 		ret.add(titleLabel);
 
-		final JLabel statusLabel = new JLabel();
-		ret.add(statusLabel);
-
 		final Container loggedContainer = new Container();
 		loggedContainer.setLayout(new BoxLayout(loggedContainer, BoxLayout.Y_AXIS));
+
+		final JLabel statusLabel = new JLabel();
+		loggedContainer.add(statusLabel);
 
 		final Container notLoggedContainer = new Container();
 		notLoggedContainer.setLayout(new BoxLayout(notLoggedContainer, BoxLayout.Y_AXIS));
