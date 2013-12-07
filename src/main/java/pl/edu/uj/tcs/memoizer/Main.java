@@ -18,6 +18,8 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 
+import pl.edu.uj.tcs.memoizer.accounts.AccountsManager;
+import pl.edu.uj.tcs.memoizer.accounts.AccountsStateManager;
 import pl.edu.uj.tcs.memoizer.events.EventService;
 import pl.edu.uj.tcs.memoizer.events.IEventService;
 import pl.edu.uj.tcs.memoizer.gui.MainWindow;
@@ -100,7 +102,10 @@ public class Main {
 							break;
 						}
 						case "dropbox":{
+							AccountsStateManager manager = new AccountsStateManager();
 							
+							stateSource = manager;
+							stateSink = manager;
 						}
 						default:{
 							System.out.println("Config file unknown scheme!");

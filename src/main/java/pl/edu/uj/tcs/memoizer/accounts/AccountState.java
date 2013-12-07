@@ -13,7 +13,7 @@ import pl.edu.uj.tcs.memoizer.serialization.IStateSource;
 import pl.edu.uj.tcs.memoizer.serialization.SerializationException;
 
 /**
- * Implementation of {@link IStateSource}, oraz {@link IStateSink} interfaces using cloud interface
+ * Implementation of {@link IStateSource}, oraz {@link IStateSink} interfaces using cloud interface: ( {@link IAccount} class
  * @author mkowalik
  *
  */
@@ -30,7 +30,7 @@ public class AccountState implements IStateSource, IStateSink {
 	public void saveData(String object) throws SerializationException {
 		byte[] bytes = object.getBytes();
 		try {
-			associatedAccount.saveBytes(bytes, "appState.st");
+			getAssociatedAccount().saveBytes(bytes, "appState.st");
 		} catch (ConnectionException e) {
 			LOG.error("Connection excpetion", e);
 			throw new SerializationException(e);
@@ -46,7 +46,7 @@ public class AccountState implements IStateSource, IStateSink {
 	@Override
 	public String getData() throws DeserializationException {
 		try {
-			byte[] bytes = associatedAccount.getBytes("appState.st");
+			byte[] bytes = getAssociatedAccount().getBytes("appState.st");
 			String ret = new String(bytes);
 			return ret;
 		} catch (ConnectionException e) {
@@ -61,6 +61,10 @@ public class AccountState implements IStateSource, IStateSink {
 		} catch (NoFileException e) {
 			return "";
 		}
+	}
+
+	public IAccount getAssociatedAccount() {
+		return associatedAccount;
 	}
 
 }
