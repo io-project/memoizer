@@ -384,7 +384,7 @@ public class DropboxAccount implements IAccount {
 			}
 		});
 
-		ret.add(loginButton);
+		notLoggedContainer.add(loginButton);
 
 		firsStepContainer.add(loginButton);
 
@@ -396,8 +396,19 @@ public class DropboxAccount implements IAccount {
 		
 		resetVisability(statusLabel, loggedContainer, notLoggedContainer, secondStepContainer, labelPlaceholder, authTokenPlaceholder);
 
-		loggedContainer.setVisible(this.isLogged());
-		notLoggedContainer.setVisible(!this.isLogged());
+			try {
+				if (this.isLogged()){
+					loggedContainer.setVisible(true);
+					notLoggedContainer.setVisible(false);
+					statusLabel.setText("Logged as: " + this.getLogin());
+				} else {
+					loggedContainer.setVisible(false);
+					notLoggedContainer.setVisible(true);					
+				}
+			} catch (NotLoggedException e1) {
+				JOptionPane.showMessageDialog(tab, "Internal error.", "Error", JOptionPane.ERROR_MESSAGE);
+				LOG.error("Problem while truing to get login of recently logged to Dropbox.", e1);
+			}
 
 
 		return ret;
@@ -405,7 +416,7 @@ public class DropboxAccount implements IAccount {
 
 	public void resetVisability(JLabel statusLabel, Container loggedContainer, Container notLoggedContainer, Container secondStepContainer,
 			JLabel labelPlaceholder, JTextField authTokenPlaceholder) {
-		statusLabel.setVisible(false);
+		statusLabel.setVisible(true);
 		loggedContainer.setVisible(false);
 		notLoggedContainer.setVisible(true);
 		secondStepContainer.setVisible(false);
