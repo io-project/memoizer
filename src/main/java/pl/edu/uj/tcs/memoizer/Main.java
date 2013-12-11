@@ -10,15 +10,10 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 
-import javax.swing.LookAndFeel;
-import javax.swing.UIManager;
-
-import org.apache.commons.io.FileSystemUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 
-import pl.edu.uj.tcs.memoizer.accounts.AccountsManager;
 import pl.edu.uj.tcs.memoizer.accounts.AccountsStateManager;
 import pl.edu.uj.tcs.memoizer.events.EventService;
 import pl.edu.uj.tcs.memoizer.events.IEventService;
@@ -53,7 +48,7 @@ public class Main {
 					IEventService eventService = new EventService();
 					PluginLoader pluginLoader = new PluginLoader();
 					pluginLoader.addPluginDirectory("./plugins/");
-					pluginLoader.loadPlugins();
+					pluginLoader.loadPlugins(new File("."));
 					
 					
 					/** Loading config */
