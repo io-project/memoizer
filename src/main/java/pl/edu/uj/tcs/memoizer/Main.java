@@ -17,6 +17,12 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 
+/**
+ * @author Marcin Ziemiński
+ * @author Paweł Kubiak
+ * @author Michał Kowalik
+ * @author Maciej Poleski
+ */
 public class Main {
 
     private static final Logger LOG = Logger.getLogger(Main.class);
@@ -29,17 +35,12 @@ public class Main {
                     LOG.debug("Current dir:" + current);
 
 				    /*UIManager.LookAndFeelInfo[] lafInfo = UIManager.getInstalledLookAndFeels();
-				    for(UIManager.LookAndFeelInfo x: lafInfo){
+                    for(UIManager.LookAndFeelInfo x: lafInfo){
 				    	System.out.println("THEME: "+x);
 				    }
 				    UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");*/
 
                     LOG.info("Starting application");
-                    IEventService eventService = new EventService();
-                    PluginLoader pluginLoader = new PluginLoader();
-                    pluginLoader.addPluginDirectory("./plugins/");
-                    pluginLoader.loadPlugins(new File("."));
-
 
                     /** Loading config */
                     String configPath = "file://" + System.getProperty("user.home") + "/.memoizer.json";
@@ -68,11 +69,8 @@ public class Main {
                         System.exit(1);
                     }
                     StateMap stateMap = getStateMap(configURI);
-                    eventService.attach(stateMap);
-                    ScheduledStateSaver sss = new ScheduledStateSaver(eventService, 5 * 60 * 1000);//auto save every 5min
-                    eventService.attach(sss);
-
-                    PluginManager pluginManager = new PluginManager(pluginLoader.getLoadedPluginFactories(), eventService);
+                    IEventService eventService = getEventService(stateMap);
+                    PluginManager pluginManager = getPluginManager(eventService);
 
                     MainWindow window = new MainWindow(pluginManager, eventService, stateMap);
                     //window.setVisible(true);//TODO is it nesessery?
@@ -82,6 +80,37 @@ public class Main {
                 }
             }
         });
+    }
+
+    /**
+     * Tworzy obiekt {@link PluginManager}. Oznacza to załadowanie pluginów w sposób określony przez pierwotnych twórców
+     * aplikacji i wykorzystanie instancji {@link IEventService} uzyskanej za pomocą funkcji
+     * {@link Main#getEventService(pl.edu.uj.tcs.memoizer.serialization.StateMap)}.
+     *
+     * @param eventService Obiekt uzyskany za pomocą funkcji
+     *                     {@link Main#getEventService(pl.edu.uj.tcs.memoizer.serialization.StateMap)}.
+     * @return {@link PluginManager} z podłączonym {@code eventService} i listą fabryk pluginów w sposób określony przez
+     *         pierwotnych twrców aplikacji.
+     */
+    private static PluginManager getPluginManager(IEventService eventService) {
+        PluginLoader pluginLoader = new PluginLoader();
+        pluginLoader.addPluginDirectory("./plugins/");
+        pluginLoader.loadPlugins(new File("."));
+        return new PluginManager(pluginLoader.getLoadedPluginFactories(), eventService);
+    }
+
+    /**
+     * Tworzy obiekt {@link IEventService}, podłącza do niego {@code stateMap} oraz {@link ScheduledStateSaver}.
+     *
+     * @param stateMap Obiekt przygotowany za pomocą funkcji {@link Main#getStateMap(java.net.URI)}
+     * @return {@link IEventService} z podłączonym {@code stateMap} i nowym {@link ScheduledStateSaver}
+     */
+    private static IEventService getEventService(StateMap stateMap) {
+        IEventService eventService = new EventService();
+        eventService.attach(stateMap);
+        ScheduledStateSaver sss = new ScheduledStateSaver(eventService, 5 * 60 * 1000);//auto save every 5min
+        eventService.attach(sss);
+        return eventService;
     }
 
     /**
