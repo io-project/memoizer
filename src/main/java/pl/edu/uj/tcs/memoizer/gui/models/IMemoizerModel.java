@@ -1,20 +1,19 @@
 package pl.edu.uj.tcs.memoizer.gui.models;
 
-import java.util.concurrent.Future;
-
-import pl.edu.uj.tcs.memoizer.gui.views.JMemoizerView;
+import pl.edu.uj.tcs.memoizer.gui.views.IMemoizerView;
 import pl.edu.uj.tcs.memoizer.plugins.Meme;
 import pl.edu.uj.tcs.memoizer.plugins.communication.DownloadMemeException;
 
 /**
  * @author pkubiak
+ * @author Maciej Poleski
  */
 public interface IMemoizerModel{
 	/**
 	 * Bind view for future notification.
 	 * @param view
 	 */
-	public void bindView(JMemoizerView view);
+	public void bindView(IMemoizerView view);
 
 	/**
 	 * Check if k'th element of models is available, if not acquire it and notify view
