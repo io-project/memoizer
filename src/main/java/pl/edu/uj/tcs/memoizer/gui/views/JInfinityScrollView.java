@@ -34,6 +34,10 @@ import pl.edu.uj.tcs.memoizer.gui.models.IMemoizerModel;
 import pl.edu.uj.tcs.memoizer.plugins.Meme;
 import pl.edu.uj.tcs.memoizer.plugins.communication.DownloadMemeException;
 
+/**
+ * @author Paweł Kubiak
+ * @author Maciej Poleski
+ */
 public class JInfinityScrollView extends JMemoizerView {
 	private IMemoizerModel model;
 	
@@ -248,7 +252,7 @@ public class JInfinityScrollView extends JMemoizerView {
 			try{
 				final Meme meme = model.get(showedItems);
 
-				if(meme == null){
+				if(meme == null){     // FIXME: to jest prawdopodobnie nieosiągalna ścieżka wykonania
 					//TODO dodać obłsugę gdy nastąpi koniec danych
 					LOG.debug("No more data here");
 					

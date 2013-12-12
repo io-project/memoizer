@@ -7,6 +7,7 @@ import pl.edu.uj.tcs.memoizer.gui.models.IMemoizerModel;
 /**
  * 
  * @author pkubiak
+ * @author Maciej Poleski
  */
 public abstract class JMemoizerView extends JPanel implements IMemoizerView {
 	//abstract public JMemoizerViewPanel(IMemoizerModel model);

@@ -11,6 +11,11 @@ import pl.edu.uj.tcs.memoizer.plugins.communication.DownloadMemeException;
 import pl.edu.uj.tcs.memoizer.plugins.communication.IMemeProvider;
 
 
+/**
+ * @author Paweł Kubiak
+ * @author Marcin Ziemiński
+ * @author Maciej Poleski
+ */
 public class SimpleMemoizerModel implements IMemoizerModel, IHandler<Meme> {
 	private IMemeProvider memeProvider;
 	
@@ -126,7 +131,7 @@ public class SimpleMemoizerModel implements IMemoizerModel, IHandler<Meme> {
 		
 		while(completedItems<k&&!isSinkDry)
 			try {
-				synchronized(this){wait();}
+				synchronized(this){wait();}   // FIXME: Prawdopodobnie race condition, w razie deadlock-a szukać tutaj
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
