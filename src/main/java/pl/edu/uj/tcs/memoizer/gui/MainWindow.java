@@ -10,7 +10,6 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,13 +17,9 @@ import java.util.Map.Entry;
 
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.InputMap;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -54,11 +49,8 @@ import pl.edu.uj.tcs.memoizer.gui.tabs.JMemoizerMemeTab;
 import pl.edu.uj.tcs.memoizer.gui.tabs.JMemoizerTab;
 import pl.edu.uj.tcs.memoizer.gui.tabs.JAccountsTab;
 import pl.edu.uj.tcs.memoizer.plugins.EViewType;
-import pl.edu.uj.tcs.memoizer.plugins.IDownloadPlugin;
-import pl.edu.uj.tcs.memoizer.plugins.IPlugin;
-import pl.edu.uj.tcs.memoizer.plugins.communication.PluginManager;
+import pl.edu.uj.tcs.memoizer.plugins.communication.IPluginManager;
 import pl.edu.uj.tcs.memoizer.runtime.ShutdownEvent;
-import pl.edu.uj.tcs.memoizer.serialization.SerializationException;
 import pl.edu.uj.tcs.memoizer.serialization.StateMap;
 
 /**
@@ -66,7 +58,7 @@ import pl.edu.uj.tcs.memoizer.serialization.StateMap;
  * @author pkubiak
  */
 public class MainWindow {
-        private PluginManager pluginManager;
+        private IPluginManager pluginManager;
         private JFrame frame;
         private JMenuBar menuBar;
         private JTabbedPane tabsPanel;
@@ -76,13 +68,13 @@ public class MainWindow {
         
         private static final Logger LOG = Logger.getLogger(Main.class);
         private StateMap config;
-        private IEventService eventService;
+        private IEventService eventService; // Tylko do emisji ShutdownEvent
         private MetadataHandler metadataHandler;
         
         /**
          * Create the application.
          */
-        public MainWindow(PluginManager pluginManager, IEventService eventService, StateMap config) {
+        public MainWindow(IPluginManager pluginManager, IEventService eventService, StateMap config) {
                 this.pluginManager = pluginManager;
                 this.config = config;
                 this.eventService = eventService;

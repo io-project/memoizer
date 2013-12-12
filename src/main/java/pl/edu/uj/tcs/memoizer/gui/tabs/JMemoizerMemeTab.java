@@ -5,24 +5,19 @@ import java.awt.Font;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import org.apache.commons.collections.ListUtils;
-
 import pl.edu.uj.tcs.memoizer.gui.IconManager;
-import pl.edu.uj.tcs.memoizer.gui.MainWindow;
 import pl.edu.uj.tcs.memoizer.gui.MetadataHandler;
 import pl.edu.uj.tcs.memoizer.gui.models.IMemoizerModel;
 import pl.edu.uj.tcs.memoizer.gui.models.SimpleMemoizerModel;
@@ -30,20 +25,16 @@ import pl.edu.uj.tcs.memoizer.gui.views.JInfinityScrollView;
 import pl.edu.uj.tcs.memoizer.gui.views.JMemoizerView;
 import pl.edu.uj.tcs.memoizer.plugins.EViewType;
 import pl.edu.uj.tcs.memoizer.plugins.IDownloadPlugin;
-import pl.edu.uj.tcs.memoizer.plugins.IPlugin;
 import pl.edu.uj.tcs.memoizer.plugins.IPluginView;
 import pl.edu.uj.tcs.memoizer.plugins.InvalidPluginException;
 import pl.edu.uj.tcs.memoizer.plugins.Meme;
-import pl.edu.uj.tcs.memoizer.plugins.communication.IMemeProvider;
-import pl.edu.uj.tcs.memoizer.plugins.communication.MemeProvider;
-import pl.edu.uj.tcs.memoizer.plugins.communication.MemeProviderUnseen;
-import pl.edu.uj.tcs.memoizer.plugins.communication.PluginManager;
+import pl.edu.uj.tcs.memoizer.plugins.communication.*;
 
 public final class JMemoizerMemeTab extends JMemoizerTab {
 	private JPanel panel;
 	private IMemoizerModel model;
 	
-	public JMemoizerMemeTab(String title,final EViewType viewType, final List<String> pluginsNames, final PluginManager pluginManager, final MetadataHandler metadataHandler){
+	public JMemoizerMemeTab(String title,final EViewType viewType, final List<String> pluginsNames, final IPluginManager pluginManager, final MetadataHandler metadataHandler){
 		this.icon = IconManager.getIconForViewType(viewType);		
 		this.title = title;
 		
@@ -226,7 +217,7 @@ public final class JMemoizerMemeTab extends JMemoizerTab {
 		this.panel = p;
 	}
 	
-	public JMemoizerMemeTab(EViewType viewType, String pluginName, PluginManager pluginManager, MetadataHandler metadataHandler){
+	public JMemoizerMemeTab(EViewType viewType, String pluginName, IPluginManager pluginManager, MetadataHandler metadataHandler){
 		this(pluginName, viewType, Arrays.asList(new String[]{pluginName}), pluginManager, metadataHandler);
 	}
 	
