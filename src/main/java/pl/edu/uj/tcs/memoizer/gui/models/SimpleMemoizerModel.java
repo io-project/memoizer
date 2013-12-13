@@ -118,7 +118,7 @@ public class SimpleMemoizerModel implements ILegacyMemoizerModel, IHandler<Meme>
 
 	
 	@Override
-	public Meme get(int k){
+    public Meme get(int k) {
 		while(true){
 			int v = requestedItems.get();
 			if(v>=k||requestedItems.compareAndSet(v, k))

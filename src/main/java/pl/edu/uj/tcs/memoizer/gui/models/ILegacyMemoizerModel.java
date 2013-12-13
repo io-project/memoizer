@@ -30,10 +30,11 @@ public interface ILegacyMemoizerModel {
     public boolean tryGet(int k);
 
 	/**
-	 * Blocking request for k'th element of model, if it is already available
+     * Blocking request for k'th element of model, if it is already available
 	 * it will be returned immediately otherwise thread will block until it
-	 * @param k
-	 * @return k'th element of model
+	 *
+     * @param k
+     * @return k'th element of model
 	 */
-	public Meme get(int k) throws DownloadMemeException;
+	public Meme get(int k);
 }

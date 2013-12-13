@@ -31,7 +31,6 @@ import pl.edu.uj.tcs.memoizer.gui.MainWindow;
 import pl.edu.uj.tcs.memoizer.gui.MetadataHandler;
 import pl.edu.uj.tcs.memoizer.gui.models.ILegacyMemoizerModel;
 import pl.edu.uj.tcs.memoizer.plugins.Meme;
-import pl.edu.uj.tcs.memoizer.plugins.communication.DownloadMemeException;
 
 /**
  * @author Paweł Kubiak
@@ -248,38 +247,33 @@ public class JInfinityScrollView extends JMemoizerView {
 	@Override
 	public synchronized void notifyUpdate() {
 		if(model.tryGet(showedItems)){
-			try{
-				final Meme meme = model.get(showedItems);
+            final Meme meme = model.get(showedItems);
 
-				if(meme == null){     // FIXME: to jest prawdopodobnie nieosiągalna ścieżka wykonania
-					//TODO dodać obłsugę gdy nastąpi koniec danych
-					LOG.debug("No more data here");
-					
-				}else{
-					showedItems++;
-					executorService.execute(new Runnable() {
-		        	    public void run() {
-			        		LOG.debug("Asynchronous task");
-	 
-		        	        // TODO Dodać ładowanie więcej niż jednego obrazka
-		        	        final JInfinityScrollViewItem imagePanel = new JInfinityScrollViewItem(meme, metadata);
-		        	        
-		        	        SwingUtilities.invokeLater(new Runnable() {
-		        	            public void run() {
-									JInfinityScrollView.this.panelInner.add(imagePanel);
-									JInfinityScrollView.this.panelInner.add(new JSeparator());
-									JInfinityScrollView.this.panelInner.revalidate();
-									backgroundThreadIsRunning.release();
-		        	            }
-		        	          });
-		        	    }
-		        	});
-				}
-			}catch(DownloadMemeException e){
-				this.notifyStreamEnd();
-				return;
-			}
-		}
+            if(meme == null){     // FIXME: to jest prawdopodobnie nieosiągalna ścieżka wykonania
+                //TODO dodać obłsugę gdy nastąpi koniec danych
+                LOG.debug("No more data here");
+
+            }else{
+                showedItems++;
+                executorService.execute(new Runnable() {
+public void run() {
+                        LOG.debug("Asynchronous task");
+
+// TODO Dodać ładowanie więcej niż jednego obrazka
+final JInfinityScrollViewItem imagePanel = new JInfinityScrollViewItem(meme, metadata);
+
+SwingUtilities.invokeLater(new Runnable() {
+public void run() {
+                                JInfinityScrollView.this.panelInner.add(imagePanel);
+                                JInfinityScrollView.this.panelInner.add(new JSeparator());
+                                JInfinityScrollView.this.panelInner.revalidate();
+                                backgroundThreadIsRunning.release();
+}
+});
+}
+});
+            }
+        }
 	}
 
 	@Override

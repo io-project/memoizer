@@ -1,7 +1,6 @@
 package pl.edu.uj.tcs.memoizer.gui.models;
 
 import pl.edu.uj.tcs.memoizer.plugins.Meme;
-import pl.edu.uj.tcs.memoizer.plugins.communication.DownloadMemeException;
 
 /**
  * Pozwala "kontrolować" model. Zleca zadania (wydobycia Mem-ów).
@@ -29,7 +28,6 @@ public interface IMemoizerModelController {
      *
      * @param id Identyfikator Mem-a do natychmiastowego wydobycia.
      * @return Mem o identyfikatorze {code id}. Być może w niektórych przypadkach {@code null}.
-     * @throws DownloadMemeException Jeżeli pobieranie Mem-a z jakiegoś powodu nie powiodło się.
      */
-    Meme get(int id) throws DownloadMemeException;
+    Meme get(int id);
 }
