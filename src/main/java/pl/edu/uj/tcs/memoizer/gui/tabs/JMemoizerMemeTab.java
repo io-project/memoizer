@@ -19,7 +19,7 @@ import javax.swing.JTextField;
 
 import pl.edu.uj.tcs.memoizer.gui.IconManager;
 import pl.edu.uj.tcs.memoizer.gui.MetadataHandler;
-import pl.edu.uj.tcs.memoizer.gui.models.IMemoizerModel;
+import pl.edu.uj.tcs.memoizer.gui.models.ILegacyMemoizerModel;
 import pl.edu.uj.tcs.memoizer.gui.models.SimpleMemoizerModel;
 import pl.edu.uj.tcs.memoizer.gui.views.JInfinityScrollView;
 import pl.edu.uj.tcs.memoizer.gui.views.JMemoizerView;
@@ -32,7 +32,7 @@ import pl.edu.uj.tcs.memoizer.plugins.communication.*;
 
 public final class JMemoizerMemeTab extends JMemoizerTab {
 	private JPanel panel;
-	private IMemoizerModel model;
+	private ILegacyMemoizerModel model;
 	
 	public JMemoizerMemeTab(String title,final EViewType viewType, final List<String> pluginsNames, final IPluginManager pluginManager, final MetadataHandler metadataHandler){
 		this.icon = IconManager.getIconForViewType(viewType);		
@@ -64,7 +64,7 @@ public final class JMemoizerMemeTab extends JMemoizerTab {
 		bar.add(Box.createHorizontalGlue());
 		
 		JComboBox<String> comboBox = new JComboBox<>();
-		comboBox.setModel(new DefaultComboBoxModel<String>(new String[] {"Infinity Scroll", "Simple Infinity Scroll"}));
+		comboBox.setModel(new DefaultComboBoxModel<>(new String[] {"Infinity Scroll", "Simple Infinity Scroll"}));
 		comboBox.setPrototypeDisplayValue("XXXXXXXXXXX");
 		
 		//TODO fix hack bellow, to provent becoming combobox to huge
@@ -152,61 +152,18 @@ public final class JMemoizerMemeTab extends JMemoizerTab {
 			buttonSearch.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent event) {
-					String searchKey = textField.getText();
-					IMemeProvider memeProvider = new MemeProvider();
-					List<IDownloadPlugin> plugins = pluginManager.getPluginsInstancesForView(pluginsNames, viewType, searchKey);
-					try {
-						memeProvider.setView(new IPluginView() {
-							@Override
-							public EViewType getViewType() {
-								return viewType;
-							}
-							@Override
-							public Meme extractNextMeme(List<Meme> memes) {
-								if(memes.size()>0)
-									return memes.remove(0);
-								return null;
-							}
-						}, plugins);
-					} catch (InvalidPluginException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					//unbind previous model
-					if(model!=null)
-						model.bindView(null);
-					model = new SimpleMemoizerModel(memeProvider);
-					model.bindView(view);
-					view.attachModel(model);
+                    String searchKey = textField.getText();
+                    //unbind previous model
+                    if (model != null)
+                        model.bindView(null);
+                    model = getSearchLegacyMemoizerModel(searchKey, pluginManager, pluginsNames);
+                    model.bindView(view);
+                    view.attachModel(model);
 					view.refresh();//TODO to fix
 				}
 			});
 		}else{
-			IMemeProvider memeProvider = null;
-			if(viewType==EViewType.UNSEEN)
-				memeProvider = new MemeProviderUnseen(metadataHandler);
-			else memeProvider = new MemeProvider();
-			
-			List<IDownloadPlugin> plugins = pluginManager.getPluginsInstancesForView(pluginsNames, viewType);
-			
-			try {
-				memeProvider.setView(new IPluginView() {
-					@Override
-					public EViewType getViewType() {
-						return viewType;
-					}
-					@Override
-					public Meme extractNextMeme(List<Meme> memes) {
-						if(memes.size()>0)
-							return memes.remove(0);
-						return null;
-					}
-				}, plugins);
-			} catch (InvalidPluginException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			model = new SimpleMemoizerModel(memeProvider);
+			model = getLegacyMemoizerModel(viewType, pluginsNames, pluginManager, metadataHandler);
 			
 			model.bindView(view);
 			view.attachModel(model);
@@ -216,8 +173,80 @@ public final class JMemoizerMemeTab extends JMemoizerTab {
 		p.add(view);
 		this.panel = p;
 	}
-	
-	public JMemoizerMemeTab(EViewType viewType, String pluginName, IPluginManager pluginManager, MetadataHandler metadataHandler){
+
+    /**
+     * Tworzy model w sposób określony w pierwotnej implementacji.
+     *
+     * @param viewType        Typ widoku obsługiwany przez ten model.
+     * @param pluginsNames    Nazwy plugin-ów z których będą czerpane dane (Mem-y).
+     * @param pluginManager   Jakiś {@link IPluginManager}.
+     * @param metadataHandler Jakiś {@link MetadataHandler}
+     * @return Model obsługujący dany typ widoku i dany dobór plugin-ów (oraz wykorzystujący dany
+     *         {@link MetadataHandler}).
+     */
+    static ILegacyMemoizerModel getLegacyMemoizerModel(final EViewType viewType, List<String> pluginsNames, IPluginManager pluginManager, MetadataHandler metadataHandler) {
+        IMemeProvider memeProvider;
+        if (viewType == EViewType.UNSEEN)
+            memeProvider = new MemeProviderUnseen(metadataHandler);
+        else memeProvider = new MemeProvider();
+
+        List<IDownloadPlugin> plugins = pluginManager.getPluginsInstancesForView(pluginsNames, viewType);
+
+        try {
+            memeProvider.setView(new IPluginView() {
+                @Override
+                public EViewType getViewType() {
+                    return viewType;
+                }
+
+                @Override
+                public Meme extractNextMeme(List<Meme> memes) {
+                    if (memes.size() > 0)
+                        return memes.remove(0);
+                    return null;
+                }
+            }, plugins);
+        } catch (InvalidPluginException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        return new SimpleMemoizerModel(memeProvider);
+    }
+
+    /**
+     * Tworzy model w sposób określony w pierwotnej implementacji w celu obsługi wyszukiwania danego hasła.
+     *
+     * @param searchKey     Prawdopodobnie fraza do wyszukania przez implementacje pluginów.
+     * @param pluginManager Jakiś {@link pl.edu.uj.tcs.memoizer.plugins.communication.IPluginManager}.
+     * @param pluginsNames  Nazwy plugin-ów z których będą czerpane dane (Mem-y).
+     * @return Model obsługujący dane wyszukiwanie.
+     */
+    static ILegacyMemoizerModel getSearchLegacyMemoizerModel(String searchKey, IPluginManager pluginManager, List<String> pluginsNames) {
+        IMemeProvider memeProvider = new MemeProvider();
+        List<IDownloadPlugin> plugins = pluginManager.getPluginsInstancesForView(pluginsNames, EViewType.SEARCH, searchKey);
+        try {
+            memeProvider.setView(new IPluginView() {
+                @Override
+                public EViewType getViewType() {
+                    return EViewType.SEARCH;
+                }
+
+                @Override
+                public Meme extractNextMeme(List<Meme> memes) {
+                    if (memes.size() > 0)
+                        return memes.remove(0);
+                    return null;
+                }
+            }, plugins);
+        } catch (InvalidPluginException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return new SimpleMemoizerModel(memeProvider);
+    }
+
+    public JMemoizerMemeTab(EViewType viewType, String pluginName, IPluginManager pluginManager, MetadataHandler metadataHandler){
 		this(pluginName, viewType, Arrays.asList(new String[]{pluginName}), pluginManager, metadataHandler);
 	}
 	

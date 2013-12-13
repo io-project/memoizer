@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import pl.edu.uj.tcs.memoizer.gui.views.IMemoizerView;
+import pl.edu.uj.tcs.memoizer.gui.views.ILegacyMemoizerView;
 import pl.edu.uj.tcs.memoizer.handlers.IHandler;
 import pl.edu.uj.tcs.memoizer.plugins.Meme;
 import pl.edu.uj.tcs.memoizer.plugins.communication.DownloadMemeException;
@@ -16,13 +16,13 @@ import pl.edu.uj.tcs.memoizer.plugins.communication.IMemeProvider;
  * @author Marcin Ziemiński
  * @author Maciej Poleski
  */
-public class SimpleMemoizerModel implements IMemoizerModel, IHandler<Meme> {
+public class SimpleMemoizerModel implements ILegacyMemoizerModel, IHandler<Meme> {
 	private IMemeProvider memeProvider;
 	
 	//Change to synchronizedd version
 	private ArrayList<Meme> memes = new ArrayList<Meme>();
 	
-	private IMemoizerView view;
+	private ILegacyMemoizerView view;
 	
 	private AtomicInteger requestedItems = new AtomicInteger(-1);//Greatest k, requested in tryGet/get 
 	private int completedItems = -1;
@@ -89,7 +89,7 @@ public class SimpleMemoizerModel implements IMemoizerModel, IHandler<Meme> {
 	}
 	
 	@Override
-	public void bindView(IMemoizerView view){
+	public void bindView(ILegacyMemoizerView view){
 		this.view = view;
 	}
 

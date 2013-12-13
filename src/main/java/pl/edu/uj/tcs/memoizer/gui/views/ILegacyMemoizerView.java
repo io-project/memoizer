@@ -8,7 +8,7 @@ package pl.edu.uj.tcs.memoizer.gui.views;
  *
  * @author Maciej Poleski
  */
-public interface IMemoizerView {
+public interface ILegacyMemoizerView {
     /**
      * Implementacja pierwotna próbuje wyświetlić kolejnego Mem-a. Jeżeli jest niedostępny - worker wywoła tą metodę
      * później - gdy będzie.

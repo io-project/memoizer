@@ -2,16 +2,16 @@ package pl.edu.uj.tcs.memoizer.gui.views;
 
 import javax.swing.JPanel;
 
-import pl.edu.uj.tcs.memoizer.gui.models.IMemoizerModel;
+import pl.edu.uj.tcs.memoizer.gui.models.ILegacyMemoizerModel;
 
 /**
  * 
  * @author pkubiak
  * @author Maciej Poleski
  */
-public abstract class JMemoizerView extends JPanel implements IMemoizerView {
-	//abstract public JMemoizerViewPanel(IMemoizerModel model);
-	public abstract void attachModel(IMemoizerModel model);
+public abstract class JMemoizerView extends JPanel implements ILegacyMemoizerView {
+	//abstract public JMemoizerViewPanel(ILegacyMemoizerModel model);
+	public abstract void attachModel(ILegacyMemoizerModel model);
 	
 	public abstract void scrollToNext();
 	public abstract void scrollToPrevious();

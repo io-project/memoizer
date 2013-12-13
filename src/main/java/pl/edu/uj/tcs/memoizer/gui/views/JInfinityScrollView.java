@@ -9,7 +9,6 @@ import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
@@ -30,7 +29,7 @@ import org.apache.log4j.Logger;
 
 import pl.edu.uj.tcs.memoizer.gui.MainWindow;
 import pl.edu.uj.tcs.memoizer.gui.MetadataHandler;
-import pl.edu.uj.tcs.memoizer.gui.models.IMemoizerModel;
+import pl.edu.uj.tcs.memoizer.gui.models.ILegacyMemoizerModel;
 import pl.edu.uj.tcs.memoizer.plugins.Meme;
 import pl.edu.uj.tcs.memoizer.plugins.communication.DownloadMemeException;
 
@@ -39,7 +38,7 @@ import pl.edu.uj.tcs.memoizer.plugins.communication.DownloadMemeException;
  * @author Maciej Poleski
  */
 public class JInfinityScrollView extends JMemoizerView {
-	private IMemoizerModel model;
+	private ILegacyMemoizerModel model;
 	
 	private static final Logger LOG = Logger.getLogger(MainWindow.class);
 
@@ -161,7 +160,7 @@ public class JInfinityScrollView extends JMemoizerView {
 	}
 	
 	@Override
-	public void attachModel(IMemoizerModel model) {
+	public void attachModel(ILegacyMemoizerModel model) {
 		//unbind old model
 		if(this.model!=null)
 			this.model.bindView(null);
