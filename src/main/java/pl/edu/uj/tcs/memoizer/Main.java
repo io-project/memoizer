@@ -71,7 +71,7 @@ public class Main {
                     }
                     StateMap stateMap = getStateMap(configURI);
                     IEventService eventService = getEventService(stateMap);
-                    IPluginManagerClient pluginManager = getPluginManager(eventService);
+                    IPluginManagerClient pluginManager = getPluginManager(".", eventService);
 
                     MainWindow window = new MainWindow(pluginManager, eventService, stateMap);
                     //window.setVisible(true);//TODO is it nesessery?
@@ -88,15 +88,17 @@ public class Main {
      * aplikacji i wykorzystanie instancji {@link IEventService} uzyskanej za pomocą funkcji
      * {@link Main#getEventService(pl.edu.uj.tcs.memoizer.serialization.StateMap)}.
      *
-     * @param eventService Obiekt uzyskany za pomocą funkcji
-     *                     {@link Main#getEventService(pl.edu.uj.tcs.memoizer.serialization.StateMap)}.
+     * @param applicationRootDirectory Główny katalog aplikacji (zgodnie z
+     *                                 <a href="https://github.com/io-project/memoizer/wiki">Layout</a>-em).
+     * @param eventService             Obiekt uzyskany za pomocą funkcji
+     *                                 {@link pl.edu.uj.tcs.memoizer.Main#getEventService(pl.edu.uj.tcs.memoizer.serialization.StateMap)}.
      * @return {@link PluginManager} z podłączonym {@code eventService} i listą fabryk pluginów w sposób określony przez
      *         pierwotnych twrców aplikacji.
      */
-    private static IPluginManagerClient getPluginManager(IEventService eventService) {
+    private static IPluginManagerClient getPluginManager(String applicationRootDirectory, IEventService eventService) {
         PluginLoader pluginLoader = new PluginLoader();
         pluginLoader.addPluginDirectory("./plugins/");
-        pluginLoader.loadPlugins(new File("."));
+        pluginLoader.loadPlugins(new File(applicationRootDirectory));
         return new PluginManager(pluginLoader.getLoadedPluginFactories(), eventService);
     }
 
