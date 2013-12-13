@@ -1,4 +1,4 @@
-package pl.edu.uj.tcs.memoizer.gui.views;
+package pl.edu.uj.tcs.memoizer.gui.models;
 
 import pl.edu.uj.tcs.memoizer.plugins.Meme;
 

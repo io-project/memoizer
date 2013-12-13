@@ -2,7 +2,6 @@ package pl.edu.uj.tcs.memoizer.gui.models;
 
 import pl.edu.uj.tcs.memoizer.gui.MetadataHandler;
 import pl.edu.uj.tcs.memoizer.gui.views.ILegacyMemoizerView;
-import pl.edu.uj.tcs.memoizer.gui.views.IMemoizerModelHandler;
 import pl.edu.uj.tcs.memoizer.plugins.*;
 import pl.edu.uj.tcs.memoizer.plugins.communication.*;
 

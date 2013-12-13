@@ -56,6 +56,7 @@ import pl.edu.uj.tcs.memoizer.serialization.StateMap;
 /**
  * 
  * @author pkubiak
+ * @author Maciej Poleski
  */
 public class MainWindow {
         private IPluginManager pluginManager;
