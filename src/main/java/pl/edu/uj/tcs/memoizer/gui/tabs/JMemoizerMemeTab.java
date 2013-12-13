@@ -30,7 +30,7 @@ public final class JMemoizerMemeTab extends JMemoizerTab {
 	private JPanel panel;
 	private ILegacyMemoizerModel model;
 	
-	public JMemoizerMemeTab(String title,final EViewType viewType, final List<String> pluginsNames, final IPluginManager pluginManager, final MetadataHandler metadataHandler){
+	public JMemoizerMemeTab(String title,final EViewType viewType, final List<String> pluginsNames, final IPluginManagerClient pluginManager, final MetadataHandler metadataHandler){
 		this.icon = IconManager.getIconForViewType(viewType);		
 		this.title = title;
 		
@@ -170,7 +170,7 @@ public final class JMemoizerMemeTab extends JMemoizerTab {
 		this.panel = p;
 	}
 
-    public JMemoizerMemeTab(EViewType viewType, String pluginName, IPluginManager pluginManager, MetadataHandler metadataHandler){
+    public JMemoizerMemeTab(EViewType viewType, String pluginName, IPluginManagerClient pluginManager, MetadataHandler metadataHandler){
 		this(pluginName, viewType, Arrays.asList(new String[]{pluginName}), pluginManager, metadataHandler);
 	}
 	

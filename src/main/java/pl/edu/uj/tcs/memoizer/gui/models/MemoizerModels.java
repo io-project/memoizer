@@ -32,7 +32,7 @@ public class MemoizerModels {
      */
     public static IMemoizerModelController newMemoizerModel(EViewType viewType,
                                                             List<String> pluginsNames,
-                                                            IPluginManager pluginManager,
+                                                            IPluginManagerClient pluginManager,
                                                             MetadataHandler metadataHandler,
                                                             IMemoizerModelHandler modelHandler) {
         return new MemoizerModel(
@@ -53,7 +53,7 @@ public class MemoizerModels {
      *         {@link IMemoizerModelController}.
      */
     public static IMemoizerModelController newMemoizerSearchModel(String searchKey,
-                                                                  IPluginManager pluginManager,
+                                                                  IPluginManagerClient pluginManager,
                                                                   List<String> pluginsNames,
                                                                   IMemoizerModelHandler modelHandler) {
         return new MemoizerModel(getLegacyMemoizerSearchModel(searchKey, pluginManager, pluginsNames), modelHandler);
@@ -69,7 +69,7 @@ public class MemoizerModels {
      * @return Model obsługujący dany typ widoku i dany dobór plugin-ów (oraz wykorzystujący dany
      *         {@link pl.edu.uj.tcs.memoizer.gui.MetadataHandler}).
      */
-    public static ILegacyMemoizerModel getLegacyMemoizerModel(final EViewType viewType, List<String> pluginsNames, IPluginManager pluginManager, MetadataHandler metadataHandler) {
+    public static ILegacyMemoizerModel getLegacyMemoizerModel(final EViewType viewType, List<String> pluginsNames, IPluginManagerClient pluginManager, MetadataHandler metadataHandler) {
         IMemeProvider memeProvider;
         if (viewType == EViewType.UNSEEN)
             memeProvider = new MemeProviderUnseen(metadataHandler);
@@ -107,7 +107,7 @@ public class MemoizerModels {
      * @param pluginsNames  Nazwy plugin-ów z których będą czerpane dane (Mem-y).
      * @return Model obsługujący dane wyszukiwanie.
      */
-    public static ILegacyMemoizerModel getLegacyMemoizerSearchModel(String searchKey, IPluginManager pluginManager, List<String> pluginsNames) {
+    public static ILegacyMemoizerModel getLegacyMemoizerSearchModel(String searchKey, IPluginManagerClient pluginManager, List<String> pluginsNames) {
         IMemeProvider memeProvider = new MemeProvider();
         List<IDownloadPlugin> plugins = pluginManager.getPluginsInstancesForView(pluginsNames, EViewType.SEARCH, searchKey);
         try {

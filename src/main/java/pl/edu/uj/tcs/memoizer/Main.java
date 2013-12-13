@@ -8,7 +8,7 @@ import pl.edu.uj.tcs.memoizer.events.EventService;
 import pl.edu.uj.tcs.memoizer.events.IEventService;
 import pl.edu.uj.tcs.memoizer.gui.MainWindow;
 import pl.edu.uj.tcs.memoizer.plugins.PluginLoader;
-import pl.edu.uj.tcs.memoizer.plugins.communication.IPluginManager;
+import pl.edu.uj.tcs.memoizer.plugins.communication.IPluginManagerClient;
 import pl.edu.uj.tcs.memoizer.plugins.communication.PluginManager;
 import pl.edu.uj.tcs.memoizer.serialization.*;
 
@@ -71,7 +71,7 @@ public class Main {
                     }
                     StateMap stateMap = getStateMap(configURI);
                     IEventService eventService = getEventService(stateMap);
-                    IPluginManager pluginManager = getPluginManager(eventService);
+                    IPluginManagerClient pluginManager = getPluginManager(eventService);
 
                     MainWindow window = new MainWindow(pluginManager, eventService, stateMap);
                     //window.setVisible(true);//TODO is it nesessery?
@@ -93,7 +93,7 @@ public class Main {
      * @return {@link PluginManager} z podłączonym {@code eventService} i listą fabryk pluginów w sposób określony przez
      *         pierwotnych twrców aplikacji.
      */
-    private static IPluginManager getPluginManager(IEventService eventService) {
+    private static IPluginManagerClient getPluginManager(IEventService eventService) {
         PluginLoader pluginLoader = new PluginLoader();
         pluginLoader.addPluginDirectory("./plugins/");
         pluginLoader.loadPlugins(new File("."));

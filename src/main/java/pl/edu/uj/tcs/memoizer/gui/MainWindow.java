@@ -49,7 +49,7 @@ import pl.edu.uj.tcs.memoizer.gui.tabs.JMemoizerMemeTab;
 import pl.edu.uj.tcs.memoizer.gui.tabs.JMemoizerTab;
 import pl.edu.uj.tcs.memoizer.gui.tabs.JAccountsTab;
 import pl.edu.uj.tcs.memoizer.plugins.EViewType;
-import pl.edu.uj.tcs.memoizer.plugins.communication.IPluginManager;
+import pl.edu.uj.tcs.memoizer.plugins.communication.IPluginManagerClient;
 import pl.edu.uj.tcs.memoizer.runtime.ShutdownEvent;
 import pl.edu.uj.tcs.memoizer.serialization.StateMap;
 
@@ -59,7 +59,7 @@ import pl.edu.uj.tcs.memoizer.serialization.StateMap;
  * @author Maciej Poleski
  */
 public class MainWindow {
-        private IPluginManager pluginManager;
+        private IPluginManagerClient pluginManager;
         private JFrame frame;
         private JMenuBar menuBar;
         private JTabbedPane tabsPanel;
@@ -75,7 +75,7 @@ public class MainWindow {
         /**
          * Create the application.
          */
-        public MainWindow(IPluginManager pluginManager, IEventService eventService, StateMap config) {
+        public MainWindow(IPluginManagerClient pluginManager, IEventService eventService, StateMap config) {
                 this.pluginManager = pluginManager;
                 this.config = config;
                 this.eventService = eventService;
