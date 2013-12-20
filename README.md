@@ -3,9 +3,9 @@ memoizer
 
 To compile and execute:
 
-mvn clean compile assembly:single - it produces executable jar with dependencies inside<br/>
+`mvn clean compile assembly:single` - it produces executable jar with dependencies inside<br/>
 or<br/>
-mvn clean package - produces executable jar and folder lib with dependencies
+`mvn clean package` - produces executable jar and folder lib with dependencies
 
 Compilation requires memoizer-plugins project as dependency, which can be found here:<br/>
 https://github.com/io-project/memoizer-plugins
