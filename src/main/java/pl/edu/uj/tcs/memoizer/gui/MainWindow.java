@@ -190,19 +190,10 @@ public class MainWindow {
                 if(pluginManager!=null){
                         menu = new JMenu("Sources");
                         selectedSources.clear();
-                        
-                        //Load selected-plugins from config files
-                        JSONObject obj = config.get("gui-config").getJSON();
-                        JSONArray arr = null;//array of selected plugins
-                        try{
-                                arr = obj.getJSONArray("selected-plugins");
-                        }catch(net.sf.json.JSONException e){}
-                        
-                        if(arr==null)
-                                arr = new JSONArray();
-                        
-                        
-                        for(String pluginName: pluginManager.getAllPluginNames()){
+                    JSONArray arr = getJsonArray(config);
+
+
+                    for(String pluginName: pluginManager.getAllPluginNames()){
                                 item = new JCheckBoxMenuItem(pluginName);
 
                                 item.setIcon(new ImageIcon(pluginManager.getIconForPluginName(pluginName)));
@@ -274,8 +265,28 @@ public class MainWindow {
 				
                 menuBar.add(menu);
         }
-        
-        /**
+
+    /**
+     * Odczytuje liste zaznaczonych pluginów jako źródła w głównym oknie aplikacji.
+     *
+     * @param config Instancja {@link StateMap}.
+     * @return Tablica w stylu JSON
+     */
+    public static JSONArray getJsonArray(StateMap config) {
+        //Load selected-plugins from config files
+        JSONObject obj = config.get("gui-config").getJSON();
+        JSONArray arr = null;//array of selected plugins
+        try {
+            arr = obj.getJSONArray("selected-plugins");
+        } catch (net.sf.json.JSONException e) {
+        }
+
+        if (arr == null)
+            arr = new JSONArray();
+        return arr;
+    }
+
+    /**
          * Tab close button generation based on: http://paperjammed.com/2012/11/22/adding-tab-close-buttons-to-a-jtabbedpane-in-java-swing/
          * @param tab
          */

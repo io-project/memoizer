@@ -15,9 +15,9 @@ public interface IMemoizerModelHandler {
      * {@link pl.edu.uj.tcs.memoizer.plugins.Meme}.
      *
      * @param meme Mem który został wydobyty.
-     * @param k    Identyfikator wydobytego Mem-a. Powinny być one kolejnymi liczbami naturalnymi.
+     * @param id   Identyfikator wydobytego Mem-a. Powinny być one kolejnymi liczbami naturalnymi.
      */
-    void notifyUpdate(Meme meme, int k);
+    void notifyUpdate(Meme meme, int id);
 
     /**
      * Źródło danych zostało wyczerpane - już nic więcej nie uda się uzyskać z danego modelu. Ta funkcja jest wywoływana
