@@ -389,12 +389,7 @@ public class MainWindow {
                         public void windowClosing(WindowEvent e)
                     {
                         JFrame frame = (JFrame)e.getSource();
-                        JSONObject x = MainWindow.this.config.get("gui-config").getJSON();
-                        JSONArray a = new JSONArray();
-                        for(String plugin: getSelectedSources())
-                                a.add(plugin);
-                        
-                        x.put("selected-plugins", a);
+                        JSONObject x = storeSelectedPluginsList(MainWindow.this.config, MainWindow.this.getSelectedSources());
                         LOG.debug("JSON: "+x.toString());
                         
                         try {
@@ -465,4 +460,21 @@ public class MainWindow {
                 
                 //Add test tabs
         }
+
+    /**
+     * Zapisuje liste zaznaczonych pluginów jako źródła w głównym oknie aplikacji.
+     *
+     * @param stateMap        Instancja {@link StateMap} do której będzie zapisana lista
+     * @param selectedSources Lista wybranych pluginów
+     * @return Śmieć (JSONObject do którego zapisano).
+     */
+    public static JSONObject storeSelectedPluginsList(StateMap stateMap, List<String> selectedSources) {
+        JSONObject x = stateMap.get("gui-config").getJSON();
+        JSONArray a = new JSONArray();
+        for (String plugin : selectedSources)
+            a.add(plugin);
+
+        x.put("selected-plugins", a);
+        return x;
+    }
 }
