@@ -9,16 +9,22 @@ import java.net.URL;
  */
 
 public class FacebookSharer implements ISharer{
-
+	
+	private static final String name = "Share on Facebook!";
+	private static final String facebookSharer = "https://www.facebook.com/sharer.php?u=";
+	private final IBrowser browser = new StandardBrowser();
+	
 	@Override
 	public String getName() {
-		// TODO Auto-generated method stub
-		return null;
+		
+		return name;
+		
 	}
 
 	@Override
 	public void share(URL urlToObjectToShare) {
-		// TODO Auto-generated method stub
+		
+		browser.openWith(facebookSharer + urlToObjectToShare.toString());
 		
 	}
 
